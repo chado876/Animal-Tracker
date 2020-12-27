@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  google_fonts: ^0.2.0
   flutter:
     sdk: flutter
 
@@ -36,6 +37,8 @@ dev_dependencies:
     sdk: flutter
   http: ^0.12.2
   provider: ^4.3.2+3
+  flutter_svg: ^0.19.2+1
+
 
 
 
@@ -58,6 +61,10 @@ flutter:
    - assets/logos/facebook.jpg
    - assets/logos/google.jpg
    - assets/logos/templogo.png
+   - assets/icons/
+   - assets/images/  
+
+  
 
   fonts:
     - family: OpenSans

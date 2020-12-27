@@ -128,6 +128,7 @@ import 'package:provider/provider.dart';
 
 import './providers/auth.dart';
 import './screens/auth_screen.dart';
+import './screens/home_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -142,13 +143,22 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        initialRoute: '/',
+        routes: {
+          // When navigating to the "/" route, build the FirstScreen widget.
+          '/': (context) => LoginScreen(),
+          '/home': (context) => HomeScreen(),
+
+          // When navigating to the "/second" route, build the SecondScreen widget.
+          // '/second': (context) => SecondScreen(),
+        },
         theme: ThemeData(
           primaryColor: Colors.black,
           buttonColor: Colors.black,
         ),
         title: 'Flutter Login UI',
         debugShowCheckedModeBanner: false,
-        home: LoginScreen(),
+        // home: HomeScreen(),
       ),
     );
   }

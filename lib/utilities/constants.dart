@@ -34,3 +34,10 @@ final BoxDecorationStyle = BoxDecoration(
     ),
   ],
 );
+
+// Colors that we use in our app
+const kPrimaryColor = Colors.black;
+const kTextColor = Color(0xFF3C4046);
+const kBackgroundColor = Color(0xFFF9F8FD);
+
+const double kDefaultPadding = 20.0;
