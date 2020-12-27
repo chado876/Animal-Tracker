@@ -121,8 +121,13 @@
 //     );
 //   }
 // }
+import 'package:animal_tracker/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import './screens/login_screen.dart';
+import 'package:provider/provider.dart';
+
+import './providers/auth.dart';
+import './screens/auth_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -130,10 +135,21 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Login UI',
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: Auth(),
+        )
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          primaryColor: Colors.black,
+          buttonColor: Colors.black,
+        ),
+        title: 'Flutter Login UI',
+        debugShowCheckedModeBanner: false,
+        home: LoginScreen(),
+      ),
     );
   }
 }
