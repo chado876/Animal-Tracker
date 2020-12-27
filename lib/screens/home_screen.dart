@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeCard> {
       animationDuration: Duration(
         milliseconds: 200,
       ),
-      index: 2,
+      index: 0,
       animationCurve: Curves.bounceInOut,
       items: <Widget>[
         Icon(Icons.home,

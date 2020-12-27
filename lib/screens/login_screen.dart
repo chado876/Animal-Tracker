@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../utilities/constants.dart';
 import '../models/http_exception.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -64,6 +65,11 @@ class LoginCard extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginCard> {
   bool _rememberMe = false;
+  bool err = false;
+  var errorMessage = '';
+  bool _obscureText = true;
+  bool _loginBtnDisabled = false;
+
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   AuthMode _authMode = AuthMode.Login;
@@ -75,6 +81,12 @@ class _LoginScreenState extends State<LoginCard> {
 
   var _isLoading = false;
   final _passwordController = TextEditingController();
+
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -106,7 +118,7 @@ class _LoginScreenState extends State<LoginCard> {
   }
 
   Future<void> _submit() async {
-    print('yes');
+    _loginBtnDisabled = true;
 
     if (!_formKey.currentState.validate()) {
       // Invalid!
@@ -132,7 +144,8 @@ class _LoginScreenState extends State<LoginCard> {
       }
       Navigator.pushNamed(context, '/home');
     } on HttpException catch (error) {
-      var errorMessage = 'Authentication failed';
+      err = true;
+      errorMessage = 'Authentication failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use.';
       } else if (error.toString().contains('INVALID_EMAIL')) {
@@ -146,12 +159,14 @@ class _LoginScreenState extends State<LoginCard> {
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
+      print(error.toString());
       var errorMessage = 'Could not authenticate. Please try again later.';
       _showErrorDialog(errorMessage);
     }
 
     setState(() {
       _isLoading = false;
+      _loginBtnDisabled = true;
     });
   }
 
@@ -160,8 +175,10 @@ class _LoginScreenState extends State<LoginCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Email',
-          style: kLabelStyle,
+          err ? errorMessage : '',
+          style: kLabelStyle.copyWith(
+            color: Colors.redAccent,
+          ),
         ),
         SizedBox(height: 10.0),
         Container(
@@ -169,6 +186,12 @@ class _LoginScreenState extends State<LoginCard> {
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
+            // validator: (value) {
+            //   if (value.isEmpty) {
+            //     return 'Email Address is Required';
+            //   }
+            //   return null;
+            // },
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.black,
@@ -199,17 +222,23 @@ class _LoginScreenState extends State<LoginCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Password',
-          style: kLabelStyle,
-        ),
+        // Text(
+        //   'Password',
+        //   style: kLabelStyle,
+        // ),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
-            obscureText: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Password is Required';
+              }
+              return null;
+            },
+            obscureText: _obscureText,
             style: TextStyle(
               color: Colors.black,
               fontFamily: 'OpenSans',
@@ -220,6 +249,13 @@ class _LoginScreenState extends State<LoginCard> {
               prefixIcon: Icon(
                 Icons.lock,
                 color: Colors.black,
+              ),
+              suffixIcon: FlatButton(
+                child: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.black,
+                ),
+                onPressed: _toggle,
               ),
               labelText: 'Password',
               hintStyle: kHintTextStyle,
@@ -237,17 +273,17 @@ class _LoginScreenState extends State<LoginCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Confirm Password',
-          style: kLabelStyle,
-        ),
+        // Text(
+        //   'Confirm Password',
+        //   style: kLabelStyle,
+        // ),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
-            obscureText: true,
+            obscureText: _obscureText,
             style: TextStyle(
               color: Colors.black,
               fontFamily: 'OpenSans',
@@ -258,6 +294,13 @@ class _LoginScreenState extends State<LoginCard> {
               prefixIcon: Icon(
                 Icons.lock,
                 color: Colors.black,
+              ),
+              suffixIcon: FlatButton(
+                child: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.black,
+                ),
+                onPressed: _toggle,
               ),
               labelText: 'Confirmation Password',
               hintStyle: kHintTextStyle,
@@ -314,6 +357,7 @@ class _LoginScreenState extends State<LoginCard> {
 
   Widget _buildLoginBtn() {
     var btnTxt = '';
+
     if (_authMode == AuthMode.Login) {
       btnTxt = 'LOGIN';
     } else {
@@ -331,18 +375,33 @@ class _LoginScreenState extends State<LoginCard> {
           borderRadius: BorderRadius.circular(30.0),
         ),
         color: Colors.blue,
-        child: Text(
-          btnTxt,
-          style: TextStyle(
-            color: Colors.white,
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              btnTxt,
+              style: TextStyle(
+                color: Colors.white,
+                letterSpacing: 1.5,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+            // _loginBtnDisabled
+            //     ? SpinKitSquareCircle(color: Colors.white, size: 10),
+          ],
         ),
       ),
     );
+  }
+
+  Function authRequest() {
+    if (_loginBtnDisabled) {
+      return null;
+    } else {
+      _submit();
+    }
   }
 
   Widget _buildSignInWithText() {
