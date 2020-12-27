@@ -130,6 +130,7 @@ class _LoginScreenState extends State<LoginCard> {
           _authData['password'],
         );
       }
+      Navigator.pushNamed(context, '/home');
     } on HttpException catch (error) {
       var errorMessage = 'Authentication failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
