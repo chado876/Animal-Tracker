@@ -26,19 +26,13 @@ class LoginScreen extends StatelessWidget {
               Container(
                 height: double.infinity,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF73AEF5),
-                      Color(0xFF61A4F1),
-                      Color(0xFF478DE0),
-                      Color(0xFF398AE5),
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
-                  ),
-                ),
+                // decoration: BoxDecoration(
+                //   gradient: LinearGradient(
+                //       begin: Alignment.centerLeft,
+                //       end: Alignment.centerRight,
+                //       colors: [Colors.purple, Colors.blue]),
+                // ),
+                color: Colors.white,
               ),
               Container(
                 height: double.infinity,
@@ -171,23 +165,24 @@ class _LoginScreenState extends State<LoginCard> {
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontFamily: 'OpenSans',
             ),
             controller: _passwordController,
             decoration: InputDecoration(
-              border: InputBorder.none,
+              // border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.email,
-                color: Colors.white,
+                color: Colors.black,
               ),
-              hintText: 'Enter your Email',
+              border: InputBorder.none,
+              labelText: 'Email Address',
               hintStyle: kHintTextStyle,
             ),
             onSaved: (value) {
@@ -210,12 +205,12 @@ class _LoginScreenState extends State<LoginCard> {
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             obscureText: true,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -223,9 +218,9 @@ class _LoginScreenState extends State<LoginCard> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.white,
+                color: Colors.black,
               ),
-              hintText: 'Enter your Password',
+              labelText: 'Password',
               hintStyle: kHintTextStyle,
             ),
             onSaved: (value) {
@@ -248,12 +243,12 @@ class _LoginScreenState extends State<LoginCard> {
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             obscureText: true,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -261,9 +256,9 @@ class _LoginScreenState extends State<LoginCard> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.white,
+                color: Colors.black,
               ),
-              hintText: 'Confirm your Password',
+              labelText: 'Confirmation Password',
               hintStyle: kHintTextStyle,
             ),
             onSaved: (value) {
@@ -274,28 +269,6 @@ class _LoginScreenState extends State<LoginCard> {
       ],
     );
   }
-
-  //   if(_authMode == AuthMode.Signup)
-  //   TextFormField(
-  //   obscureText: true,
-  //   style: TextStyle(
-  //     color: Colors.white,
-  //     fontFamily: 'OpenSans',
-  //   ),
-  //   decoration: InputDecoration(
-  //     border: InputBorder.none,
-  //     contentPadding: EdgeInsets.only(top: 14.0),
-  //     prefixIcon: Icon(
-  //       Icons.lock,
-  //       color: Colors.white,
-  //     ),
-  //     hintText: 'Enter your Password',
-  //     hintStyle: kHintTextStyle,
-  //   ),
-  //    onSaved: (value) {
-  //           _authData['password'] = value;
-  //         },
-  // ) : null,
 
   Widget _buildForgotPasswordBtn() {
     return Container(
@@ -317,7 +290,7 @@ class _LoginScreenState extends State<LoginCard> {
       child: Row(
         children: <Widget>[
           Theme(
-            data: ThemeData(unselectedWidgetColor: Colors.white),
+            data: ThemeData(unselectedWidgetColor: Colors.black),
             child: Checkbox(
               value: _rememberMe,
               checkColor: Colors.green,
@@ -339,6 +312,13 @@ class _LoginScreenState extends State<LoginCard> {
   }
 
   Widget _buildLoginBtn() {
+    var btnTxt = '';
+    if (_authMode == AuthMode.Login) {
+      btnTxt = 'LOGIN';
+    } else {
+      btnTxt = 'SIGN UP';
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
@@ -349,11 +329,11 @@ class _LoginScreenState extends State<LoginCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: Colors.blue,
         child: Text(
-          'LOGIN',
+          btnTxt,
           style: TextStyle(
-            color: Color(0xFF527DAA),
+            color: Colors.white,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -370,7 +350,7 @@ class _LoginScreenState extends State<LoginCard> {
         Text(
           '- OR -',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.blue,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -439,7 +419,7 @@ class _LoginScreenState extends State<LoginCard> {
             TextSpan(
               text: 'Don\'t have an Account? ',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w400,
               ),
@@ -447,7 +427,7 @@ class _LoginScreenState extends State<LoginCard> {
             TextSpan(
               text: 'Sign Up',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.blue,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -467,7 +447,7 @@ class _LoginScreenState extends State<LoginCard> {
             TextSpan(
               text: 'Already have an Account? ',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w400,
               ),
@@ -475,7 +455,7 @@ class _LoginScreenState extends State<LoginCard> {
             TextSpan(
               text: 'Sign In',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.blue,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -496,13 +476,14 @@ class _LoginScreenState extends State<LoginCard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Image.asset('assets/logos/templogo.png', height: 180, width: 180),
               if (_authMode == AuthMode.Login)
                 Text(
                   'Sign In',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontFamily: 'OpenSans',
-                    fontSize: 30.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -510,25 +491,25 @@ class _LoginScreenState extends State<LoginCard> {
                 Text(
                   'Sign Up',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontFamily: 'OpenSans',
-                    fontSize: 30.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              SizedBox(height: 30.0),
+              SizedBox(height: 20.0),
               _buildEmailTF(),
               SizedBox(
-                height: 30.0,
+                height: 5.0,
               ),
               _buildPasswordTF(),
-              SizedBox(height: 30.0),
+              SizedBox(height: 5.0),
               if (_authMode == AuthMode.Signup) _buildConfirmPasswordTF(),
               if (_authMode == AuthMode.Login) _buildForgotPasswordBtn(),
               if (_authMode == AuthMode.Login) _buildRememberMeCheckbox(),
               _buildLoginBtn(),
-              if (_authMode == AuthMode.Login) _buildSignInWithText(),
-              if (_authMode == AuthMode.Login) _buildSocialBtnRow(),
+              // if (_authMode == AuthMode.Login) _buildSignInWithText(),
+              // if (_authMode == AuthMode.Login) _buildSocialBtnRow(),
               if (_authMode == AuthMode.Login) _buildSignupBtn(),
               if (_authMode == AuthMode.Signup) _buildSignInTxt(),
             ],

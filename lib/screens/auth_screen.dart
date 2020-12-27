@@ -1,9 +1,9 @@
 import 'dart:math';
-import 'package:animal_tracker/providers/auth.dart';
-import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../models/http_exception.dart';
 
 enum AuthMode { Signup, Login }
@@ -106,17 +106,20 @@ class _AuthCardState extends State<AuthCard> {
 
   void _showErrorDialog(String message) {
     showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-                title: Text('An Error Occurred!'),
-                content: Text(message),
-                actions: <Widget>[
-                  FlatButton(
-                      child: Text('Ok'),
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                      }),
-                ]));
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An Error Occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
   }
 
   Future<void> _submit() async {
@@ -149,7 +152,7 @@ class _AuthCardState extends State<AuthCard> {
       } else if (error.toString().contains('INVALID_EMAIL')) {
         errorMessage = 'This is not a valid email address';
       } else if (error.toString().contains('WEAK_PASSWORD')) {
-        errorMessage = 'This passwordi s too weak.';
+        errorMessage = 'This password is too weak.';
       } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
         errorMessage = 'Could not find a user with that email.';
       } else if (error.toString().contains('INVALID_PASSWORD')) {
@@ -157,7 +160,9 @@ class _AuthCardState extends State<AuthCard> {
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
-      var errorMessage = 'Could not authenticate. Please try again later.';
+      print(error);
+      const errorMessage =
+          'Could not authenticate you. Please try again later.';
       _showErrorDialog(errorMessage);
     }
 
@@ -204,8 +209,6 @@ class _AuthCardState extends State<AuthCard> {
                     if (value.isEmpty || !value.contains('@')) {
                       return 'Invalid email!';
                     }
-                    return null;
-                    return null;
                   },
                   onSaved: (value) {
                     _authData['email'] = value;
