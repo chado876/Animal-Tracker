@@ -1,4 +1,3 @@
-import 'package:animal_tracker/components/bottomnavbar.dart';
 import 'package:animal_tracker/components/header.dart';
 import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';

@@ -142,7 +142,7 @@ class _LoginScreenState extends State<LoginCard> {
           _authData['password'],
         );
       }
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushNamed(context, '/main');
     } on HttpException catch (error) {
       err = true;
       errorMessage = 'Authentication failed';
