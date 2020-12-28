@@ -1,3 +1,4 @@
+import 'package:animal_tracker/models/parish.dart';
 import 'package:animal_tracker/screens/additional_info_screen.dart';
 import 'package:animal_tracker/utilities/background_painter.dart';
 import 'package:animal_tracker/widgets/fadein.dart';
@@ -35,14 +36,31 @@ class _ProfileScreenState extends State<ProfileCard>
 
   Section section = Section.Section1;
   AnimationController _controller;
+  List<Parish> _parishes = Parish.getParishes();
+  List<DropdownMenuItem<Parish>> _dropdownItems;
+  Parish _selectedParish;
 
   @override
   void initState() {
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
-
     _controller.forward();
+    _dropdownItems = _buildDropDownMenuItems(_parishes);
+    _selectedParish = _dropdownItems[0].value;
     super.initState();
+  }
+
+  List<DropdownMenuItem<Parish>> _buildDropDownMenuItems(List parishes) {
+    List<DropdownMenuItem<Parish>> items = [];
+    for (Parish parish in parishes) {
+      items.add(
+        DropdownMenuItem(
+          value: parish,
+          child: Text(parish.name),
+        ),
+      );
+    }
+    return items;
   }
 
   @override
@@ -68,6 +86,48 @@ class _ProfileScreenState extends State<ProfileCard>
         section = Section.Section1;
       });
     }
+  }
+
+  onChangeDropDownItem(Parish selectedParish) {
+    setState(() {
+      _selectedParish = selectedParish;
+    });
+  }
+
+  Widget _buildParishDropList() {
+    return FadeIn(
+      3,
+      Container(
+        child: Column(
+          children: [
+            Text(
+              "Select a parish",
+              style: kLabelStyle.copyWith(color: Colors.white, fontSize: 28),
+            ),
+            DropdownButton(
+              value: _selectedParish,
+              items: _dropdownItems,
+              onChanged: onChangeDropDownItem,
+              dropdownColor: Colors.white,
+              style: kLabelStyle.copyWith(
+                fontSize: 20,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              'Selected: ${_selectedParish.name}',
+              style: kLabelStyle.copyWith(
+                fontSize: 20,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildBackground() {
@@ -147,53 +207,24 @@ class _ProfileScreenState extends State<ProfileCard>
   }
 
   Widget _buildInfoSection2() {
-    return Column(
-      children: [
-        Container(
-          child: Text(
-            "What\'s your full name 2?",
-            style: const TextStyle(
-              color: Colors.blue,
-              fontWeight: FontWeight.w600,
-              fontSize: 24,
+    return FadeIn(
+      2,
+      Column(
+        children: [
+          Container(
+            child: Text(
+              "Which parish are you from?",
+              style: const TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.w600,
+                fontSize: 24,
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 30.0),
-        TextFormField(
-          style: const TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.only(top: 14.0),
-            prefixIcon: Icon(
-              Icons.edit,
-              color: Colors.blue,
-            ),
-            labelText: 'First Name',
-            labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
-          ),
-        ),
-        TextFormField(
-          style: const TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.edit,
-              color: Colors.blue,
-            ),
-            labelText: 'Last Name',
-            labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
-          ),
-        ),
-      ],
+          SizedBox(height: 30.0),
+          _buildParishDropList(),
+        ],
+      ),
     );
   }
 
