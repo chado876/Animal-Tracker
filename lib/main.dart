@@ -121,8 +121,10 @@
 //     );
 //   }
 // }
+import 'package:animal_tracker/screens/additional_info_screen.dart';
 import 'package:animal_tracker/screens/auth_screen.dart';
 import 'package:animal_tracker/screens/main_screen.dart';
+import 'package:animal_tracker/screens/profile_screen.dart';
 import 'package:animal_tracker/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import './screens/login_screen.dart';
@@ -150,9 +152,11 @@ class MyApp extends StatelessWidget {
           routes: {
             // When navigating to the "/" route, build the FirstScreen widget.
             '/login': (context) => LoginScreen(),
+            '/info': (context) => AdditionalInfoScreen(),
             '/main': (context) => MainScreen(),
             '/home': (context) => HomeScreen(),
             '/settings': (context) => SettingsScreen(),
+            '/profile': (context) => ProfileScreen(),
 
             // When navigating to the "/second" route, build the SecondScreen widget.
             // '/second': (context) => SecondScreen(),

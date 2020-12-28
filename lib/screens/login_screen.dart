@@ -1,3 +1,5 @@
+import 'package:animal_tracker/screens/additional_info_screen.dart';
+import 'package:animal_tracker/utilities/background_painter.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:animal_tracker/providers/auth.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/services.dart';
 import '../utilities/constants.dart';
 import '../models/http_exception.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:page_transition/page_transition.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -18,38 +21,45 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                // decoration: BoxDecoration(
-                //   gradient: LinearGradient(
-                //       begin: Alignment.centerLeft,
-                //       end: Alignment.centerRight,
-                //       colors: [Colors.purple, Colors.blue]),
-                // ),
-                color: Colors.white,
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 120.0,
-                  ),
-                  child: LoginCard(),
+      body: Stack(children: [
+        // SizedBox.expand(
+        //   child: CustomPaint(
+        //     painter: BackgroundPainter2(),
+        //   ),
+        // ),   not working
+        AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  // decoration: BoxDecoration(
+                  //   gradient: LinearGradient(
+                  //       begin: Alignment.centerLeft,
+                  //       end: Alignment.centerRight,
+                  //       colors: [Colors.purple, Colors.blue]),
+                  // ),
+                  color: Colors.white,
                 ),
-              )
-            ],
+                Container(
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 120.0,
+                    ),
+                    child: LoginCard(),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),
+      ]),
     );
   }
 }
@@ -369,7 +379,19 @@ class _LoginScreenState extends State<LoginCard> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => _submit(),
+        // onPressed: () => _submit(),
+        onPressed: () => Navigator.pushNamed(context, '/profile'),
+
+        // onPressed: () {
+        //   Navigator.push(
+        //     context,
+        //     PageTransition(
+        //       type: PageTransitionType.leftToRightWithFade,
+        //       // duration: Duration(seconds: 1),
+        //       child: AdditionalInfoScreen(),
+        //     ),
+        //   );
+        // },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),

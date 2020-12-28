@@ -43,6 +43,10 @@ dev_dependencies:
   cached_network_image: ^2.5.0
   flag: ^3.1.0
   emojis: ^0.9.3
+  page_transition: ^1.1.7+5
+  simple_animations: ^2.4.2
+
+
 
 
 
