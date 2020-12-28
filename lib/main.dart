@@ -144,25 +144,27 @@ class MyApp extends StatelessWidget {
           value: Auth(),
         )
       ],
-      child: MaterialApp(
-        initialRoute: '/',
-        routes: {
-          // When navigating to the "/" route, build the FirstScreen widget.
-          '/': (context) => LoginScreen(),
-          '/main': (context) => MainScreen(),
-          '/home': (context) => HomeScreen(),
-          '/settings': (context) => SettingsScreen(),
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          // initialRoute: '/',
+          routes: {
+            // When navigating to the "/" route, build the FirstScreen widget.
+            '/login': (context) => LoginScreen(),
+            '/main': (context) => MainScreen(),
+            '/home': (context) => HomeScreen(),
+            '/settings': (context) => SettingsScreen(),
 
-          // When navigating to the "/second" route, build the SecondScreen widget.
-          // '/second': (context) => SecondScreen(),
-        },
-        theme: ThemeData(
-          primaryColor: Colors.black,
-          buttonColor: Colors.black,
+            // When navigating to the "/second" route, build the SecondScreen widget.
+            // '/second': (context) => SecondScreen(),
+          },
+          theme: ThemeData(
+            primaryColor: Colors.black,
+            buttonColor: Colors.black,
+          ),
+          title: 'Flutter Login UI',
+          debugShowCheckedModeBanner: false,
+          home: auth.isAuth ? MainScreen() : LoginScreen(),
         ),
-        title: 'Flutter Login UI',
-        debugShowCheckedModeBanner: false,
-        // home: HomeScreen(),
       ),
     );
   }

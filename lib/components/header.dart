@@ -1,5 +1,3 @@
-
-
 import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -39,7 +37,7 @@ class HeaderWithSearchBox extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     Text(
-                      'Hi, Chad!',
+                      'Hi, John!',
                       style: kLabelStyle2,
                     ),
                     Spacer(),
