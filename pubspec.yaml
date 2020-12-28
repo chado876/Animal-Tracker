@@ -40,6 +40,13 @@ dev_dependencies:
   flutter_svg: ^0.19.2+1
   curved_navigation_bar: ^0.3.1
   flutter_spinkit: ^4.1.2+1
+  cached_network_image: ^2.5.0
+  flag: ^3.1.0
+  emojis: ^0.9.3
+
+
+
+
 
 
 
