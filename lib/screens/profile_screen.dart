@@ -1,6 +1,8 @@
+import 'package:animal_tracker/components/user_image_picker.dart';
 import 'package:animal_tracker/models/parish.dart';
 import 'package:animal_tracker/screens/additional_info_screen.dart';
 import 'package:animal_tracker/utilities/background_painter.dart';
+import 'package:animal_tracker/utilities/image_uploader.dart';
 import 'package:animal_tracker/widgets/fadein.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -11,19 +13,48 @@ import '../utilities/constants.dart';
 import '../models/http_exception.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_svg/svg.dart';
+import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-enum Section { Section1, Section2 }
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+
+import '../services/auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum Section { Section1, Section2, Section3 }
 
 class ProfileScreen extends StatelessWidget {
+  String userEmail;
+  String userPassword;
+
+  ProfileScreen({this.userEmail, this.userPassword});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: ProfileCard());
+    return Scaffold(
+      body: ProfileCard(
+        userEmail: this.userEmail,
+        userPassword: this.userPassword,
+      ),
+    );
   }
 }
 
 class ProfileCard extends StatefulWidget {
+  final String userEmail;
+  final String userPassword;
   const ProfileCard({
     Key key,
+    this.userEmail,
+    this.userPassword,
   }) : super(key: key);
 
   @override
@@ -33,12 +64,90 @@ class ProfileCard extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileCard>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
+  final GlobalKey<FormState> _formKey2 = GlobalKey();
 
   Section section = Section.Section1;
   AnimationController _controller;
   List<Parish> _parishes = Parish.getParishes();
   List<DropdownMenuItem<Parish>> _dropdownItems;
   Parish _selectedParish;
+  String imageUrl;
+
+  var _isLogin = true;
+  var _userEmail = '';
+  var _userName = '';
+  var _userPassword = '';
+  var _firstName;
+  var _lastName;
+  File _userImageFile;
+
+  void Function(
+    String email,
+    String password,
+    String firstName,
+    String lastName,
+    String parish,
+    File image,
+    bool isLogin,
+    BuildContext ctx,
+  ) submitFn;
+
+  void _trySubmit() async {
+    _userEmail = widget.userEmail;
+    _userPassword = widget.userPassword;
+    final _auth = FirebaseAuth.instance;
+
+    print(_userEmail);
+    print(_userPassword);
+    print(_firstName);
+    print(_lastName);
+    print(_selectedParish.name);
+
+    var result = await _auth.createUserWithEmailAndPassword(
+      email: _userEmail,
+      password: _userPassword,
+    );
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('user_image')
+        .child(result.user.uid + '.jpg');
+    await ref.putFile(_userImageFile);
+    final url = await ref.getDownloadURL();
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(result.user.uid)
+        .set({
+      'firstName': _firstName,
+      'lastName': _lastName,
+      'parish': _selectedParish,
+      'email': _userEmail,
+      'image_url': url,
+    });
+    // final isValid = _formKey.currentState.validate();
+    // FocusScope.of(context).unfocus();
+
+    // if (_userImageFile == null && !_isLogin) {
+    //   Scaffold.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('Please pick an image.'),
+    //       backgroundColor: Theme.of(context).errorColor,
+    //     ),
+    //   );
+    //return;
+
+    // if (isValid) {
+    //   _formKey.currentState.save();
+    //   widget.submitFn(
+    //     _userEmail.trim(),
+    //     _userPassword.trim(),
+    //     _userName.trim(),
+    //     _userImageFile,
+    //     _isLogin,
+    //     context,
+    //   );
+    // }
+  }
 
   @override
   void initState() {
@@ -74,18 +183,10 @@ class _ProfileScreenState extends State<ProfileCard>
     'password': '',
   };
 
-  void _switchPage() {
-    if (section == Section.Section1) {
-      setState(() {
-        section = Section.Section2;
-        print("Auth mode switched TO SIGNUP");
-      });
-    } else {
-      setState(() {
-        print("Auth mode switched TO LOGIN");
-        section = Section.Section1;
-      });
-    }
+  void _switchPage(Section s) {
+    setState(() {
+      section = s;
+    });
   }
 
   onChangeDropDownItem(Parish selectedParish) {
@@ -156,54 +257,133 @@ class _ProfileScreenState extends State<ProfileCard>
   }
 
   Widget _buildInfoSection1() {
+    return Form(
+      key: _formKey2,
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Tell Us \n A Little More \n About Yourself...",
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 34,
+              ),
+              // textAlign: TextAlign.left,
+            ),
+          ),
+          SizedBox(height: 40.0),
+          Container(
+            child: Text(
+              "What\'s your full name?",
+              style: const TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.w600,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          SizedBox(height: 30.0),
+          TextFormField(
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.edit,
+                color: Colors.blue,
+              ),
+              labelText: 'First Name',
+              labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
+            ),
+            onSaved: (value) {
+              _firstName = value;
+              print(value);
+            },
+          ),
+          TextFormField(
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              prefixIcon: Icon(
+                Icons.edit,
+                color: Colors.blue,
+              ),
+              labelText: 'Last Name',
+              labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
+            ),
+            onSaved: (value) {
+              _lastName = value;
+              print(value);
+            },
+          ),
+          RaisedButton(
+            elevation: 5,
+            color: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            child: Text(
+              "Next",
+              style: kHintTextStyle.copyWith(fontSize: 18),
+            ),
+            onPressed: () {
+              Section nextSection = Section.Section2;
+              _formKey2.currentState.save();
+
+              _switchPage(nextSection);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoSection3() {
     return Column(
       children: [
-        Container(
+        SizedBox(height: 15.0),
+        Align(
+          alignment: Alignment.topLeft,
           child: Text(
-            "What\'s your full name?",
+            "Almost there...",
             style: const TextStyle(
-              color: Colors.blue,
+              color: Colors.white,
               fontWeight: FontWeight.w600,
-              fontSize: 24,
+              fontSize: 34,
             ),
+            // textAlign: TextAlign.left,
           ),
         ),
-        SizedBox(height: 30.0),
-        TextFormField(
-          style: const TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+        SizedBox(height: 40.0),
+        UserImagePicker(_pickedImage),
+        RaisedButton(
+          elevation: 5,
+          color: Colors.green,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
           ),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.only(top: 14.0),
-            prefixIcon: Icon(
-              Icons.edit,
-              color: Colors.blue,
-            ),
-            labelText: 'First Name',
-            labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
+          child: Text(
+            "Finish",
+            style: kHintTextStyle.copyWith(fontSize: 18),
           ),
-        ),
-        TextFormField(
-          style: const TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.edit,
-              color: Colors.blue,
-            ),
-            labelText: 'Last Name',
-            labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
-          ),
-        ),
+          onPressed: _trySubmit,
+        )
       ],
     );
+  }
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
   }
 
   Widget _buildInfoSection2() {
@@ -211,6 +391,19 @@ class _ProfileScreenState extends State<ProfileCard>
       2,
       Column(
         children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Tell Us \n A Little More \n About Yourself...",
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 34,
+              ),
+              // textAlign: TextAlign.left,
+            ),
+          ),
+          SizedBox(height: 40.0),
           Container(
             child: Text(
               "Which parish are you from?",
@@ -223,6 +416,21 @@ class _ProfileScreenState extends State<ProfileCard>
           ),
           SizedBox(height: 30.0),
           _buildParishDropList(),
+          RaisedButton(
+            elevation: 5,
+            color: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            child: Text(
+              "Next",
+              style: kHintTextStyle.copyWith(fontSize: 18),
+            ),
+            onPressed: () {
+              Section nextSection = Section.Section3;
+              _switchPage(nextSection);
+            },
+          )
         ],
       ),
     );
@@ -232,51 +440,55 @@ class _ProfileScreenState extends State<ProfileCard>
     return SingleChildScrollView(
       child: FadeIn(
         3,
+        // Form(
+        //   key: _formKey,
+        //   child:
         Column(
           children: [
             SizedBox(
               height: 20.0,
             ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                "Tell Us \n A Little More \n About Yourself...",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 34,
-                ),
-                // textAlign: TextAlign.left,
-              ),
-            ),
-            SizedBox(height: 40.0),
             if (section == Section.Section1) _buildInfoSection1(),
             if (section == Section.Section2) _buildInfoSection2(),
-            RaisedButton(
-              elevation: 5,
-              color: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              child: Text(
-                "Next",
-                style: kHintTextStyle.copyWith(fontSize: 18),
-              ),
-
-              // child: Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Text("Next", style: kHintTextStyle),
-              //   ],
-              // ),
-              onPressed: () {
-                _switchPage();
-              },
-            )
+            if (section == Section.Section3) _buildInfoSection3(),
           ],
         ),
       ),
+      // ),
     );
+  }
+
+  uploadImage() async {
+    await Firebase.initializeApp();
+    final _storage = FirebaseStorage.instance;
+    final _picker = ImagePicker();
+    PickedFile image;
+
+    //Check Permissions
+    await Permission.photos.request();
+
+    var permissionStatus = await Permission.photos.status;
+
+    if (permissionStatus.isGranted) {
+      //Select Image
+      image = await _picker.getImage(source: ImageSource.gallery);
+      var file = File(image.path);
+
+      if (image != null) {
+        //Upload to Firebase
+        var snapshot =
+            await _storage.ref().child('folderName/imageName').putFile(file);
+        var downloadUrl = await snapshot.ref.getDownloadURL();
+
+        setState(() {
+          imageUrl = downloadUrl;
+        });
+      } else {
+        print('No Path Received');
+      }
+    } else {
+      print('Grant Permissions and try again');
+    }
   }
 
   @override

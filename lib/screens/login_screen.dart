@@ -1,20 +1,16 @@
-import 'package:animal_tracker/screens/additional_info_screen.dart';
-import 'package:animal_tracker/utilities/background_painter.dart';
+import 'dart:io';
+
+import 'package:animal_tracker/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:animal_tracker/providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../utilities/constants.dart';
 import '../models/http_exception.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:page_transition/page_transition.dart';
 
 enum AuthMode { Signup, Login }
 
 class LoginScreen extends StatelessWidget {
-  static const routeName = '/auth';
-
   // @override
   // _LoginScreenState createState() => _LoginScreenState();
 
@@ -36,12 +32,6 @@ class LoginScreen extends StatelessWidget {
                 Container(
                   height: double.infinity,
                   width: double.infinity,
-                  // decoration: BoxDecoration(
-                  //   gradient: LinearGradient(
-                  //       begin: Alignment.centerLeft,
-                  //       end: Alignment.centerRight,
-                  //       colors: [Colors.purple, Colors.blue]),
-                  // ),
                   color: Colors.white,
                 ),
                 Container(
@@ -380,7 +370,20 @@ class _LoginScreenState extends State<LoginCard> {
       child: RaisedButton(
         elevation: 5.0,
         // onPressed: () => _submit(),
-        onPressed: () => Navigator.pushNamed(context, '/profile'),
+        // onPressed: () => Navigator.pushNamed(context, '/profile'),
+        onPressed: () => {
+          _formKey.currentState.save(),
+          print(_authData['email']),
+          print(_authData['password']),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ProfileScreen(
+                userEmail: _authData['email'],
+                userPassword: _authData['password'],
+              ),
+            ),
+          ),
+        },
 
         // onPressed: () {
         //   Navigator.push(
