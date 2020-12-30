@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import '../utilities/constants.dart';
 import '../models/http_exception.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 enum AuthMode { Signup, Login }
 
 class LoginScreen extends StatelessWidget {
@@ -69,6 +71,8 @@ class _LoginScreenState extends State<LoginCard> {
   var errorMessage = '';
   bool _obscureText = true;
   bool _loginBtnDisabled = false;
+  bool _isLoading = false;
+  final _auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -79,7 +83,6 @@ class _LoginScreenState extends State<LoginCard> {
     'password': '',
   };
 
-  var _isLoading = false;
   final _passwordController = TextEditingController();
 
   void _toggle() {
@@ -143,6 +146,67 @@ class _LoginScreenState extends State<LoginCard> {
         );
       }
       Navigator.pushNamed(context, '/main');
+    } on HttpException catch (error) {
+      err = true;
+      errorMessage = 'Authentication failed';
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'This email address is already in use.';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'This is not a valid email address';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = 'This passwordi s too weak.';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Could not find a user with that email.';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid password.';
+      }
+      _showErrorDialog(errorMessage);
+    } catch (error) {
+      print(error.toString());
+      var errorMessage = 'Could not authenticate. Please try again later.';
+      _showErrorDialog(errorMessage);
+    }
+
+    setState(() {
+      _isLoading = false;
+      _loginBtnDisabled = true;
+    });
+  }
+
+  Future<void> _submitV2() async {
+    _loginBtnDisabled = true;
+
+    if (!_formKey.currentState.validate()) {
+      // Invalid!
+      return;
+    }
+
+    _formKey.currentState.save();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        print(_authData['email']);
+        // Log user in
+        await _auth.signInWithEmailAndPassword(
+          email: _authData['email'],
+          password: _authData['password'],
+        );
+        Navigator.pushNamed(context, '/main');
+      } else {
+        // Sign user up
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProfileScreen(
+              userEmail: _authData['email'],
+              userPassword: _authData['password'],
+            ),
+          ),
+        );
+      }
     } on HttpException catch (error) {
       err = true;
       errorMessage = 'Authentication failed';
@@ -371,20 +435,7 @@ class _LoginScreenState extends State<LoginCard> {
         elevation: 5.0,
         // onPressed: () => _submit(),
         // onPressed: () => Navigator.pushNamed(context, '/profile'),
-        onPressed: () => {
-          _formKey.currentState.save(),
-          print(_authData['email']),
-          print(_authData['password']),
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ProfileScreen(
-                userEmail: _authData['email'],
-                userPassword: _authData['password'],
-              ),
-            ),
-          ),
-        },
-
+        onPressed: () => _submitV2(),
         // onPressed: () {
         //   Navigator.push(
         //     context,

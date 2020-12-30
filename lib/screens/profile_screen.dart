@@ -79,6 +79,7 @@ class _ProfileScreenState extends State<ProfileCard>
   var _firstName;
   var _lastName;
   File _userImageFile;
+  var _isLoading = false;
 
   void Function(
     String email,
@@ -92,67 +93,65 @@ class _ProfileScreenState extends State<ProfileCard>
   ) submitFn;
 
   void _trySubmit() async {
-    _userEmail = widget.userEmail;
-    _userPassword = widget.userPassword;
-    final _auth = FirebaseAuth.instance;
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      _userEmail = widget.userEmail;
+      _userPassword = widget.userPassword;
+      final _auth = FirebaseAuth.instance;
 
-    print(_userEmail);
-    print(_userPassword);
-    print(_firstName);
-    print(_lastName);
-    print(_selectedParish.name);
+      var result = await _auth.createUserWithEmailAndPassword(
+        email: _userEmail,
+        password: _userPassword,
+      );
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('user_image')
+          .child(result.user.uid + '.jpg');
+      await ref.putFile(_userImageFile).onComplete;
+      final url = await ref.getDownloadURL();
 
-    // Firestore.instance.collection('users/sBIKnl4VihYexSfVxiAz/users').add({
-    //   'firstName': _firstName,
-    //   'lastName': _lastName,
-    //   'parish': _selectedParish.name,
-    //   'email': _userEmail,
-    // });
-    var result = await _auth.createUserWithEmailAndPassword(
-      email: _userEmail,
-      password: _userPassword,
-    );
-    // final ref = FirebaseStorage.instance
-    //     .ref()
-    //     .child('user_image')
-    //     .child(result.user.uid + '.jpg');
-    // await ref.putFile(_userImageFile);
-    // final url = await ref.getDownloadURL();
+      print(ref.getDownloadURL());
+      await Firestore.instance
+          .collection('users')
+          .document(result.user.uid)
+          .setData({
+        'firstName': _firstName,
+        'lastName': _lastName,
+        'parish': _selectedParish.name,
+        'email': _userEmail,
+        'image_url': url,
+      });
 
-    await Firestore.instance
-        .collection('users')
-        .document(result.user.uid)
-        .setData({
-      'firstName': _firstName,
-      'lastName': _lastName,
-      'parish': _selectedParish.name,
-      'email': _userEmail,
-      // 'image_url': url,
-    });
+      await _auth.signInWithEmailAndPassword(
+        email: _userEmail,
+        password: _userPassword,
+      );
 
-    // final isValid = _formKey.currentState.validate();
-    // FocusScope.of(context).unfocus();
+      Navigator.pushNamed(context, '/main');
+    } on PlatformException catch (err) {
+      var message = 'An error occurred, pelase check your credentials!';
 
-    // if (_userImageFile == null && !_isLogin) {
-    //   Scaffold.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('Please pick an image.'),
-    //       backgroundColor: Theme.of(context).errorColor,
-    //     ),
-    //   );
-    //return;
+      if (err.message != null) {
+        message = err.message;
+      }
 
-    // if (isValid) {
-    //   _formKey.currentState.save();
-    //   widget.submitFn(
-    //     _userEmail.trim(),
-    //     _userPassword.trim(),
-    //     _userName.trim(),
-    //     _userImageFile,
-    //     _isLogin,
-    //     context,
-    //   );
-    // }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).errorColor,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (err) {
+      print(err);
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

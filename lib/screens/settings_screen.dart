@@ -7,10 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:emojis/emojis.dart';
 import 'package:emojis/emoji.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
+
     return Settings();
   }
 }
@@ -25,6 +29,33 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<Settings> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseUser user;
+  String uid;
+  String photoLink;
+
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
+  void fetchData() async {
+    user = await _auth.currentUser();
+    uid = user.uid;
+    Firestore.instance
+        .collection('users')
+        .document(uid)
+        .snapshots()
+        .listen((data) {
+      // print(data.data['image_url']);
+      photoLink = data.data['image_url'];
+    });
+    // Firestore.instance.collection('users/$uid').snapshots().listen((data) {
+    //   photoLink = data.documents[0]['image_url'];
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,8 +83,7 @@ class _SettingsScreenState extends State<Settings> {
                       color: Colors.black,
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: NetworkImage(
-                            'https://upload.wikimedia.org/wikipedia/commons/8/80/Farmer%2C_Nicaragua.jpg'),
+                        image: NetworkImage(photoLink),
                         fit: BoxFit.cover,
                       ),
                       // border: Border.all(color: Colors.lightBlueAccent),
