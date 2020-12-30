@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import './home_screen.dart';
 import './settings_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import '../screens/management_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -15,8 +16,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final screens = [
-    HomeScreen(),
-    HomeScreen(),
+    ManagementScreen(),
+    ManagementScreen(),
     HomeScreen(),
     SettingsScreen(),
     HomeScreen()
@@ -38,10 +39,9 @@ class _MainScreenState extends State<MainScreen> {
 
   var section = 0;
   var currentPage;
-  List<Widget> _options = <Widget>[HomeScreen(), SettingsScreen()];
+  // List<Widget> _options = <Widget>[HomeScreen(), SettingsScreen()];
 
   void _onItemTap(int index) {
-    print(section);
     setState(() {
       section = index;
     });
@@ -49,9 +49,13 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(section);
     return Scaffold(
-      body: screens.elementAt(section),
+      // body: screens.elementAt(section),
+      body: section == 0
+          ? HomeScreen()
+          : section == 1
+              ? ManagementScreen()
+              : SettingsScreen(),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.white,
         color: Colors.black,
@@ -66,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
           Icon(Icons.home,
               size: 30,
               color: section == 0 ? Colors.lightBlueAccent : Colors.white),
-          Icon(Icons.verified_user,
+          Icon(Icons.inventory,
               size: 30,
               color: section == 1 ? Colors.lightBlueAccent : Colors.white),
           Icon(Icons.public,
