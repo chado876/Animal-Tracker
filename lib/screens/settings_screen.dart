@@ -31,6 +31,9 @@ class Settings extends StatefulWidget {
 class _SettingsScreenState extends State<Settings> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseUser user;
+  String firstName;
+  String lastName;
+  String parish;
   String uid;
   String photoLink;
 
@@ -47,9 +50,12 @@ class _SettingsScreenState extends State<Settings> {
         .collection('users')
         .document(uid)
         .snapshots()
-        .listen((data) {
+        .listen((user) {
       // print(data.data['image_url']);
-      photoLink = data.data['image_url'];
+      firstName = user.data['firstName'];
+      lastName = user.data['lastName'];
+      parish = user.data['parish'];
+      photoLink = user.data['image_url'];
     });
     // Firestore.instance.collection('users/$uid').snapshots().listen((data) {
     //   photoLink = data.documents[0]['image_url'];
@@ -80,10 +86,12 @@ class _SettingsScreenState extends State<Settings> {
                     width: 85,
                     height: 85,
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: Colors.grey,
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: NetworkImage(photoLink),
+                        image: photoLink != null
+                            ? NetworkImage(photoLink)
+                            : AssetImage("assets/images/profile.png"),
                         fit: BoxFit.cover,
                       ),
                       // border: Border.all(color: Colors.lightBlueAccent),
@@ -95,7 +103,7 @@ class _SettingsScreenState extends State<Settings> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "John Doe",
+                          "$firstName $lastName",
                           style: GoogleFonts.ubuntu().copyWith(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
@@ -104,7 +112,7 @@ class _SettingsScreenState extends State<Settings> {
                         Row(
                           children: <Widget>[
                             Text(
-                              "Jamaica ${Emojis.flagJamaica}",
+                              "$parish, Jamaica ${Emojis.flagJamaica}",
                               style: GoogleFonts.abel().copyWith(),
                             ),
                             // Flag(
