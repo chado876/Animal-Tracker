@@ -133,6 +133,7 @@ import 'package:provider/provider.dart';
 import './providers/auth.dart';
 import './screens/auth_screen.dart';
 import './screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() => runApp(MyApp());
 
@@ -167,7 +168,15 @@ class MyApp extends StatelessWidget {
           ),
           title: 'Flutter Login UI',
           debugShowCheckedModeBanner: false,
-          home: auth.isAuth ? MainScreen() : LoginScreen(),
+          home: StreamBuilder(
+            stream: FirebaseAuth.instance.onAuthStateChanged,
+            builder: (ctx, userSnapshot) {
+              if (userSnapshot.hasData) {
+                return MainScreen();
+              } else
+                return LoginScreen();
+            },
+          ),
         ),
       ),
     );

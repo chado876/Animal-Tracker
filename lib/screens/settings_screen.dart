@@ -140,7 +140,7 @@ class _SettingsScreenState extends State<Settings> {
                   color: Colors.black,
                 ),
                 onTap: () {
-                  Provider.of<Auth>(context, listen: false).logout();
+                  FirebaseAuth.instance.signOut();
                   Navigator.pushNamed(context, '/login');
                 },
               )
