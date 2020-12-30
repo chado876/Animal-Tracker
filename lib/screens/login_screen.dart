@@ -81,8 +81,10 @@ class _LoginScreenState extends State<LoginCard> {
   Map<String, String> _authData = {
     'email': '',
     'password': '',
+    'confirmationPassword': ''
   };
-
+  final TextEditingController _pass = TextEditingController();
+  final TextEditingController _confirmPass = TextEditingController();
   final _passwordController = TextEditingController();
 
   void _toggle() {
@@ -177,6 +179,8 @@ class _LoginScreenState extends State<LoginCard> {
   Future<void> _submitV2() async {
     _loginBtnDisabled = true;
 
+    final isValid = _formKey.currentState.validate();
+
     if (!_formKey.currentState.validate()) {
       // Invalid!
       return;
@@ -251,12 +255,12 @@ class _LoginScreenState extends State<LoginCard> {
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
-            // validator: (value) {
-            //   if (value.isEmpty) {
-            //     return 'Email Address is Required';
-            //   }
-            //   return null;
-            // },
+            validator: (value) {
+              if (value.isEmpty || !value.contains('@')) {
+                return 'Please enter a valid email address';
+              }
+              return null;
+            },
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.black,
@@ -297,9 +301,10 @@ class _LoginScreenState extends State<LoginCard> {
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
+            controller: _pass,
             validator: (value) {
-              if (value.isEmpty) {
-                return 'Password is Required';
+              if (value.isEmpty || value.length < 6) {
+                return 'Please enter a valid password';
               }
               return null;
             },
@@ -370,8 +375,14 @@ class _LoginScreenState extends State<LoginCard> {
               labelText: 'Confirmation Password',
               hintStyle: kHintTextStyle,
             ),
+            validator: (value) {
+              if (value.isEmpty)
+                return 'Please enter your confirmation password';
+              if (value != _pass.text) return 'Passwords do not match';
+              return null;
+            },
             onSaved: (value) {
-              _authData['password'] = value;
+              _authData['confirmationPassword'] = value;
             },
           ),
         ),
