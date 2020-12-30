@@ -16,18 +16,17 @@ import 'package:page_transition/page_transition.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum Section { Section1, Section2, Section3 }
 
@@ -103,27 +102,34 @@ class _ProfileScreenState extends State<ProfileCard>
     print(_lastName);
     print(_selectedParish.name);
 
+    // Firestore.instance.collection('users/sBIKnl4VihYexSfVxiAz/users').add({
+    //   'firstName': _firstName,
+    //   'lastName': _lastName,
+    //   'parish': _selectedParish.name,
+    //   'email': _userEmail,
+    // });
     var result = await _auth.createUserWithEmailAndPassword(
       email: _userEmail,
       password: _userPassword,
     );
-    final ref = FirebaseStorage.instance
-        .ref()
-        .child('user_image')
-        .child(result.user.uid + '.jpg');
-    await ref.putFile(_userImageFile);
-    final url = await ref.getDownloadURL();
+    // final ref = FirebaseStorage.instance
+    //     .ref()
+    //     .child('user_image')
+    //     .child(result.user.uid + '.jpg');
+    // await ref.putFile(_userImageFile);
+    // final url = await ref.getDownloadURL();
 
-    await FirebaseFirestore.instance
+    await Firestore.instance
         .collection('users')
-        .doc(result.user.uid)
-        .set({
+        .document(result.user.uid)
+        .setData({
       'firstName': _firstName,
       'lastName': _lastName,
-      'parish': _selectedParish,
+      'parish': _selectedParish.name,
       'email': _userEmail,
-      'image_url': url,
+      // 'image_url': url,
     });
+
     // final isValid = _formKey.currentState.validate();
     // FocusScope.of(context).unfocus();
 
@@ -458,38 +464,38 @@ class _ProfileScreenState extends State<ProfileCard>
     );
   }
 
-  uploadImage() async {
-    await Firebase.initializeApp();
-    final _storage = FirebaseStorage.instance;
-    final _picker = ImagePicker();
-    PickedFile image;
+  // uploadImage() async {
+  //   await Firebase.initializeApp();
+  //   final _storage = FirebaseStorage.instance;
+  //   final _picker = ImagePicker();
+  //   PickedFile image;
 
-    //Check Permissions
-    await Permission.photos.request();
+  //   //Check Permissions
+  //   await Permission.photos.request();
 
-    var permissionStatus = await Permission.photos.status;
+  //   var permissionStatus = await Permission.photos.status;
 
-    if (permissionStatus.isGranted) {
-      //Select Image
-      image = await _picker.getImage(source: ImageSource.gallery);
-      var file = File(image.path);
+  //   if (permissionStatus.isGranted) {
+  //     //Select Image
+  //     image = await _picker.getImage(source: ImageSource.gallery);
+  //     var file = File(image.path);
 
-      if (image != null) {
-        //Upload to Firebase
-        var snapshot =
-            await _storage.ref().child('folderName/imageName').putFile(file);
-        var downloadUrl = await snapshot.ref.getDownloadURL();
+  //     if (image != null) {
+  //       //Upload to Firebase
+  //       var snapshot =
+  //           await _storage.ref().child('folderName/imageName').putFile(file);
+  //       var downloadUrl = await snapshot.ref.getDownloadURL();
 
-        setState(() {
-          imageUrl = downloadUrl;
-        });
-      } else {
-        print('No Path Received');
-      }
-    } else {
-      print('Grant Permissions and try again');
-    }
-  }
+  //       setState(() {
+  //         imageUrl = downloadUrl;
+  //       });
+  //     } else {
+  //       print('No Path Received');
+  //     }
+  //   } else {
+  //     print('Grant Permissions and try again');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
