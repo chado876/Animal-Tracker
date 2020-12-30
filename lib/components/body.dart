@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class Body extends StatelessWidget {
+  String firstName;
+
+  Body(this.firstName);
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context)
@@ -12,7 +16,10 @@ class Body extends StatelessWidget {
       //it enable scrolling on small devices
       child: Column(
         children: [
-          HeaderWithSearchBox(size: size),
+          HeaderWithSearchBox(
+            size: size,
+            firstName: firstName,
+          ),
         ],
       ),
     );

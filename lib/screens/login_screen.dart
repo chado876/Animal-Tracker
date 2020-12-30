@@ -146,8 +146,9 @@ class _LoginScreenState extends State<LoginCard> {
         );
       }
       Navigator.pushNamed(context, '/main');
-    } on HttpException catch (error) {
+    } on PlatformException catch (error) {
       err = true;
+      print(error.toString());
       errorMessage = 'Authentication failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use.';
@@ -207,9 +208,9 @@ class _LoginScreenState extends State<LoginCard> {
           ),
         );
       }
-    } on HttpException catch (error) {
+    } on PlatformException catch (error) {
       err = true;
-      errorMessage = 'Authentication failed';
+      errorMessage = error.message;
       if (error.toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use.';
       } else if (error.toString().contains('INVALID_EMAIL')) {
@@ -221,11 +222,11 @@ class _LoginScreenState extends State<LoginCard> {
       } else if (error.toString().contains('INVALID_PASSWORD')) {
         errorMessage = 'Invalid password.';
       }
-      _showErrorDialog(errorMessage);
+      // _showErrorDialog(error.message);
     } catch (error) {
       print(error.toString());
-      var errorMessage = 'Could not authenticate. Please try again later.';
-      _showErrorDialog(errorMessage);
+      var errorMessage = error.toString();
+      // _showErrorDialog(errorMessage);
     }
 
     setState(() {

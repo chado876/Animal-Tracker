@@ -4,6 +4,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,11 +25,34 @@ class HomeCard extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeCard> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseUser user;
+  String firstName;
+
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
+  void fetchData() async {
+    user = await _auth.currentUser();
+    String uid = user.uid;
+    Firestore.instance
+        .collection('users')
+        .document(uid)
+        .snapshots()
+        .listen((user) {
+      // print(data.data['image_url']);
+      firstName = user.data['firstName'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: Body(),
+      body: Body(firstName),
     );
   }
 

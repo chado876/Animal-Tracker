@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class HeaderWithSearchBox extends StatelessWidget {
-  const HeaderWithSearchBox({
-    Key key,
-    @required this.size,
-  }) : super(key: key);
+  const HeaderWithSearchBox({Key key, @required this.size, this.firstName})
+      : super(key: key);
 
+  final String firstName;
   final Size size;
 
   @override
   Widget build(BuildContext context) {
+    print(firstName);
     return Column(
       children: <Widget>[
         Container(
@@ -37,7 +37,7 @@ class HeaderWithSearchBox extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     Text(
-                      'Hi, John!',
+                      'Hi, $firstName!',
                       style: kLabelStyle2,
                     ),
                     Spacer(),
