@@ -52,10 +52,13 @@ class _SettingsScreenState extends State<Settings> {
         .snapshots()
         .listen((user) {
       // print(data.data['image_url']);
-      firstName = user.data['firstName'];
-      lastName = user.data['lastName'];
-      parish = user.data['parish'];
-      photoLink = user.data['image_url'];
+
+      setState(() {
+        firstName = user.data['firstName'];
+        lastName = user.data['lastName'];
+        parish = user.data['parish'];
+        photoLink = user.data['image_url'];
+      });
     });
     // Firestore.instance.collection('users/$uid').snapshots().listen((data) {
     //   photoLink = data.documents[0]['image_url'];
