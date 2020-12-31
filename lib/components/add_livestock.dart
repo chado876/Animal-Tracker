@@ -38,6 +38,10 @@ class _AddLivestockState extends State<AddLivestockSection> {
     S2Choice<String>(value: 'Cattle', title: 'Cattle'),
     S2Choice<String>(value: 'Sheep', title: 'Sheep'),
     S2Choice<String>(value: 'Pig', title: 'Pig'),
+    S2Choice<String>(value: 'Goat', title: 'Goat'),
+    S2Choice<String>(value: 'Horse', title: 'Horse'),
+    S2Choice<String>(value: 'Donkey', title: 'Donkey'),
+    S2Choice<String>(value: 'Other', title: 'Other'),
   ];
 
   // @override
