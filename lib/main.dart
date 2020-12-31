@@ -121,8 +121,10 @@
 //     );
 //   }
 // }
+import 'package:animal_tracker/screens/additional_info_screen.dart';
 import 'package:animal_tracker/screens/auth_screen.dart';
 import 'package:animal_tracker/screens/main_screen.dart';
+import 'package:animal_tracker/screens/profile_screen.dart';
 import 'package:animal_tracker/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import './screens/login_screen.dart';
@@ -131,6 +133,7 @@ import 'package:provider/provider.dart';
 import './providers/auth.dart';
 import './screens/auth_screen.dart';
 import './screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() => runApp(MyApp());
 
@@ -150,9 +153,11 @@ class MyApp extends StatelessWidget {
           routes: {
             // When navigating to the "/" route, build the FirstScreen widget.
             '/login': (context) => LoginScreen(),
+            '/info': (context) => AdditionalInfoScreen(),
             '/main': (context) => MainScreen(),
             '/home': (context) => HomeScreen(),
             '/settings': (context) => SettingsScreen(),
+            '/profile': (context) => ProfileScreen(),
 
             // When navigating to the "/second" route, build the SecondScreen widget.
             // '/second': (context) => SecondScreen(),
@@ -163,7 +168,15 @@ class MyApp extends StatelessWidget {
           ),
           title: 'Flutter Login UI',
           debugShowCheckedModeBanner: false,
-          home: auth.isAuth ? MainScreen() : LoginScreen(),
+          home: StreamBuilder(
+            stream: FirebaseAuth.instance.onAuthStateChanged,
+            builder: (ctx, userSnapshot) {
+              if (userSnapshot.hasData) {
+                return MainScreen();
+              } else
+                return LoginScreen();
+            },
+          ),
         ),
       ),
     );

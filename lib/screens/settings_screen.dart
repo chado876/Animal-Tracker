@@ -7,10 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:emojis/emojis.dart';
 import 'package:emojis/emoji.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
+
     return Settings();
   }
 }
@@ -25,6 +29,42 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<Settings> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseUser user;
+  String firstName;
+  String lastName;
+  String parish;
+  String uid;
+  String photoLink;
+
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
+  void fetchData() async {
+    user = await _auth.currentUser();
+    uid = user.uid;
+    Firestore.instance
+        .collection('users')
+        .document(uid)
+        .snapshots()
+        .listen((user) {
+      // print(data.data['image_url']);
+
+      setState(() {
+        firstName = user.data['firstName'];
+        lastName = user.data['lastName'];
+        parish = user.data['parish'];
+        photoLink = user.data['image_url'];
+      });
+    });
+    // Firestore.instance.collection('users/$uid').snapshots().listen((data) {
+    //   photoLink = data.documents[0]['image_url'];
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,11 +89,12 @@ class _SettingsScreenState extends State<Settings> {
                     width: 85,
                     height: 85,
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: Colors.grey,
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: NetworkImage(
-                            'https://upload.wikimedia.org/wikipedia/commons/8/80/Farmer%2C_Nicaragua.jpg'),
+                        image: photoLink != null
+                            ? NetworkImage(photoLink)
+                            : AssetImage("assets/images/profile.png"),
                         fit: BoxFit.cover,
                       ),
                       // border: Border.all(color: Colors.lightBlueAccent),
@@ -65,7 +106,7 @@ class _SettingsScreenState extends State<Settings> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "John Doe",
+                          "$firstName $lastName",
                           style: GoogleFonts.ubuntu().copyWith(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
@@ -74,7 +115,7 @@ class _SettingsScreenState extends State<Settings> {
                         Row(
                           children: <Widget>[
                             Text(
-                              "Jamaica ${Emojis.flagJamaica}",
+                              "$parish, Jamaica ${Emojis.flagJamaica}",
                               style: GoogleFonts.abel().copyWith(),
                             ),
                             // Flag(
@@ -102,7 +143,7 @@ class _SettingsScreenState extends State<Settings> {
                   color: Colors.black,
                 ),
                 onTap: () {
-                  Provider.of<Auth>(context, listen: false).logout();
+                  FirebaseAuth.instance.signOut();
                   Navigator.pushNamed(context, '/login');
                 },
               )

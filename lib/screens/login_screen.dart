@@ -1,55 +1,57 @@
+import 'dart:io';
+
+import 'package:animal_tracker/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:animal_tracker/providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../utilities/constants.dart';
 import '../models/http_exception.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum AuthMode { Signup, Login }
 
 class LoginScreen extends StatelessWidget {
-  static const routeName = '/auth';
-
   // @override
   // _LoginScreenState createState() => _LoginScreenState();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                // decoration: BoxDecoration(
-                //   gradient: LinearGradient(
-                //       begin: Alignment.centerLeft,
-                //       end: Alignment.centerRight,
-                //       colors: [Colors.purple, Colors.blue]),
-                // ),
-                color: Colors.white,
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 120.0,
-                  ),
-                  child: LoginCard(),
+      body: Stack(children: [
+        // SizedBox.expand(
+        //   child: CustomPaint(
+        //     painter: BackgroundPainter2(),
+        //   ),
+        // ),   not working
+        AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: Colors.white,
                 ),
-              )
-            ],
+                Container(
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 120.0,
+                    ),
+                    child: LoginCard(),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),
+      ]),
     );
   }
 }
@@ -69,6 +71,8 @@ class _LoginScreenState extends State<LoginCard> {
   var errorMessage = '';
   bool _obscureText = true;
   bool _loginBtnDisabled = false;
+  bool _isLoading = false;
+  final _auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -77,9 +81,10 @@ class _LoginScreenState extends State<LoginCard> {
   Map<String, String> _authData = {
     'email': '',
     'password': '',
+    'confirmationPassword': ''
   };
-
-  var _isLoading = false;
+  final TextEditingController _pass = TextEditingController();
+  final TextEditingController _confirmPass = TextEditingController();
   final _passwordController = TextEditingController();
 
   void _toggle() {
@@ -143,8 +148,9 @@ class _LoginScreenState extends State<LoginCard> {
         );
       }
       Navigator.pushNamed(context, '/main');
-    } on HttpException catch (error) {
+    } on PlatformException catch (error) {
       err = true;
+      print(error.toString());
       errorMessage = 'Authentication failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use.';
@@ -170,6 +176,69 @@ class _LoginScreenState extends State<LoginCard> {
     });
   }
 
+  Future<void> _submitV2() async {
+    _loginBtnDisabled = true;
+
+    final isValid = _formKey.currentState.validate();
+
+    if (!_formKey.currentState.validate()) {
+      // Invalid!
+      return;
+    }
+
+    _formKey.currentState.save();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        print(_authData['email']);
+        // Log user in
+        await _auth.signInWithEmailAndPassword(
+          email: _authData['email'],
+          password: _authData['password'],
+        );
+        Navigator.pushNamed(context, '/main');
+      } else {
+        // Sign user up
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProfileScreen(
+              userEmail: _authData['email'],
+              userPassword: _authData['password'],
+            ),
+          ),
+        );
+      }
+    } on PlatformException catch (error) {
+      err = true;
+      errorMessage = error.message;
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'This email address is already in use.';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'This is not a valid email address';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = 'This passwordi s too weak.';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Could not find a user with that email.';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid password.';
+      }
+      // _showErrorDialog(error.message);
+    } catch (error) {
+      print(error.toString());
+      var errorMessage = error.toString();
+      // _showErrorDialog(errorMessage);
+    }
+
+    setState(() {
+      _isLoading = false;
+      _loginBtnDisabled = true;
+    });
+  }
+
   Widget _buildEmailTF() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,12 +255,12 @@ class _LoginScreenState extends State<LoginCard> {
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
-            // validator: (value) {
-            //   if (value.isEmpty) {
-            //     return 'Email Address is Required';
-            //   }
-            //   return null;
-            // },
+            validator: (value) {
+              if (value.isEmpty || !value.contains('@')) {
+                return 'Please enter a valid email address';
+              }
+              return null;
+            },
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.black,
@@ -232,9 +301,10 @@ class _LoginScreenState extends State<LoginCard> {
           decoration: BoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
+            controller: _pass,
             validator: (value) {
-              if (value.isEmpty) {
-                return 'Password is Required';
+              if (value.isEmpty || value.length < 6) {
+                return 'Please enter a valid password';
               }
               return null;
             },
@@ -305,8 +375,14 @@ class _LoginScreenState extends State<LoginCard> {
               labelText: 'Confirmation Password',
               hintStyle: kHintTextStyle,
             ),
+            validator: (value) {
+              if (value.isEmpty)
+                return 'Please enter your confirmation password';
+              if (value != _pass.text) return 'Passwords do not match';
+              return null;
+            },
             onSaved: (value) {
-              _authData['password'] = value;
+              _authData['confirmationPassword'] = value;
             },
           ),
         ),
@@ -369,7 +445,19 @@ class _LoginScreenState extends State<LoginCard> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => _submit(),
+        // onPressed: () => _submit(),
+        // onPressed: () => Navigator.pushNamed(context, '/profile'),
+        onPressed: () => _submitV2(),
+        // onPressed: () {
+        //   Navigator.push(
+        //     context,
+        //     PageTransition(
+        //       type: PageTransitionType.leftToRightWithFade,
+        //       // duration: Duration(seconds: 1),
+        //       child: AdditionalInfoScreen(),
+        //     ),
+        //   );
+        // },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),

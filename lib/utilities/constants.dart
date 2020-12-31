@@ -48,3 +48,24 @@ const kTextColor = Color(0xFF3C4046);
 const kBackgroundColor = Color(0xFFF9F8FD);
 
 const double kDefaultPadding = 20.0;
+
+InputDecoration infoInputDecoration({String hintText}) {
+  return InputDecoration(
+    contentPadding: const EdgeInsets.symmetric(vertical: 18.0),
+    hintStyle: const TextStyle(color: Colors.white, fontSize: 18),
+    hintText: hintText,
+    focusedBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.white, width: 2),
+    ),
+    enabledBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.white),
+    ),
+    errorBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.orange),
+    ),
+    focusedErrorBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(width: 2.0, color: Colors.orange),
+    ),
+    errorStyle: const TextStyle(color: Colors.white),
+  );
+}

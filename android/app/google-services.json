@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1058499415377",
+    "project_id": "livestock-tracker-2b2f4",
+    "storage_bucket": "livestock-tracker-2b2f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058499415377:android:2bbd4eecf569d902305770",
+        "android_client_info": {
+          "package_name": "com.example.animal_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1058499415377-pvkbrsfpt8ncba5sucs2jt56reou9jf0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhxluZBxggNeo9rjD5y4si9TFuO5A_-4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1058499415377-pvkbrsfpt8ncba5sucs2jt56reou9jf0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

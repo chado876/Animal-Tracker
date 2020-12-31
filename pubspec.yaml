@@ -43,6 +43,24 @@ dev_dependencies:
   cached_network_image: ^2.5.0
   flag: ^3.1.0
   emojis: ^0.9.3
+  page_transition: ^1.1.7+5
+  simple_animations: ^2.4.2
+  image_picker: ^0.6.7+17
+  permission_handler: ^5.0.1+1
+  cloud_firestore: 0.13.5
+  firebase_core: ^0.4.4
+  firebase_storage: ^3.1.5
+  firebase_auth: ^0.16.0
+  multi_image_picker: ^4.7.14
+  smart_select: ^4.3.2
+
+
+
+
+
+
+
+
 
 
 
