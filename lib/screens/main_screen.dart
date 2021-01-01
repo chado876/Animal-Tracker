@@ -51,12 +51,13 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       // body: screens.elementAt(section),
       body: section == 0
           ? HomeScreen()
           : section == 1
               ? ManagementScreen()
-              : section == 3
+              : section == 2
                   ? MapPage()
                   : SettingsScreen(),
       bottomNavigationBar: CurvedNavigationBar(
@@ -79,10 +80,10 @@ class _MainScreenState extends State<MainScreen> {
           Icon(Icons.public,
               size: 40,
               color: section == 2 ? Colors.lightBlueAccent : Colors.white),
-          Icon(Icons.settings,
+          Icon(Icons.more_horiz,
               size: 30,
               color: section == 3 ? Colors.lightBlueAccent : Colors.white),
-          Icon(Icons.more_horiz,
+          Icon(Icons.settings,
               size: 30,
               color: section == 4 ? Colors.lightBlueAccent : Colors.white),
         ],
