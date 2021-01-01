@@ -55,6 +55,7 @@ dev_dependencies:
   smart_select: ^4.3.2
   google_maps_flutter: ^1.0.6
   location: ^3.2.1
+  geolocator: ^6.1.13
 
 
 

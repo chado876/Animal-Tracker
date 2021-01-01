@@ -60,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
                   ? MapPage()
                   : SettingsScreen(),
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         color: Colors.black,
         buttonBackgroundColor: Colors.black,
         height: 60,
