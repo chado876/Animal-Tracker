@@ -53,6 +53,9 @@ dev_dependencies:
   firebase_auth: ^0.16.0
   multi_image_picker: ^4.7.14
   smart_select: ^4.3.2
+  google_maps_flutter: ^1.0.6
+  location: ^3.2.1
+  geolocator: ^6.1.13
 
 
 
