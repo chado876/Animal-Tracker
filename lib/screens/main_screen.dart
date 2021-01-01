@@ -5,6 +5,7 @@ import './home_screen.dart';
 import './settings_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import '../screens/management_screen.dart';
+import '../screens/mapscreen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -55,7 +56,9 @@ class _MainScreenState extends State<MainScreen> {
           ? HomeScreen()
           : section == 1
               ? ManagementScreen()
-              : SettingsScreen(),
+              : section == 3
+                  ? MapPage()
+                  : SettingsScreen(),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.white,
         color: Colors.black,
