@@ -72,7 +72,6 @@ class _SettingsScreenState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         brightness: Brightness.light,
         // iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,

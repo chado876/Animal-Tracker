@@ -11,6 +11,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../utilities/assetConverter.dart';
+import '../utilities/constants.dart';
 
 class AddLivestock extends StatelessWidget {
   @override
@@ -39,6 +40,10 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
   String _error = 'No Error Dectected';
   bool _isLoading;
+
+  bool imagesLoaded = false;
+  bool addImages = false;
+  bool imgError = false;
 
   List<String> _categories = [
     "Cattle",
@@ -192,6 +197,8 @@ class _AddLivestockState extends State<AddLivestockSection> {
   }
 
   Future<void> loadAssets() async {
+    addImages = true;
+    imgError = false;
     List<Asset> resultList = List<Asset>.empty();
     String error = 'No Error Dectected';
 
@@ -209,7 +216,10 @@ class _AddLivestockState extends State<AddLivestockSection> {
           selectCircleStrokeColor: "#000000",
         ),
       );
+      imagesLoaded = true;
     } on Exception catch (e) {
+      imgError = true;
+      imagesLoaded = false;
       error = e.toString();
     }
 
@@ -227,106 +237,120 @@ class _AddLivestockState extends State<AddLivestockSection> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
-      child: ListView(
-        children: <Widget>[
-          Text("Add Livestock",
-              style: kLabelStyle2.copyWith(color: Colors.black)),
-          Center(
-            child: Text('Error: $_error'),
-          ),
-          Container(
-            width: 50,
-            child: RaisedButton(
-              child: Text("Upload images"),
-              elevation: 5,
-              onPressed: loadAssets,
-              color: Colors.grey,
-            ),
-          ),
-          buildGridView(),
-          SmartSelect<String>.single(
-              title: 'Livestock Category',
-              value: value,
-              choiceItems: options,
-              onChange: (state) => setState(() => value = state.value)),
-          TextFormField(
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.tag,
-                color: Colors.blue,
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Text("Add Livestock",
+                  style: kLabelStyle2.copyWith(color: Colors.black)),
+              if (imgError)
+                Center(
+                  child: Text('Error: $_error'),
+                ),
+              addImages ? buildGridView() : Text("No Images Selected"),
+              Container(
+                width: 200,
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  color: Colors.blue,
+                  child: Text("Upload images",
+                      style: kLabelStyle.copyWith(color: Colors.white)),
+                  elevation: 5,
+                  onPressed: loadAssets,
+                ),
               ),
-              labelText: 'Tag ID',
-              labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
-            ),
-            onSaved: (value) {
-              _tagId = value;
-            },
-          ),
-          TextFormField(
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.tag,
-                color: Colors.blue,
+              SmartSelect<String>.single(
+                  title: 'Livestock Category',
+                  value: value,
+                  choiceItems: options,
+                  onChange: (state) => setState(() => value = state.value)),
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'Tag ID',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _tagId = value;
+                },
               ),
-              labelText: 'Weight (optional)',
-              labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
-            ),
-            onSaved: (value) {
-              _weight = double.parse(value);
-            },
-          ),
-          TextFormField(
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.tag,
-                color: Colors.blue,
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'Weight (optional)',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _weight = double.parse(value);
+                },
               ),
-              labelText: 'Distinguishing Features (optional)',
-              labelStyle: kHintTextStyle.copyWith(color: Colors.blue),
-            ),
-            onSaved: (value) {
-              _features = value;
-            },
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'Distinguishing Features (optional)',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _features = value;
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    elevation: 5,
+                    color: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Text(
+                      "Add",
+                      style: kHintTextStyle.copyWith(fontSize: 18),
+                    ),
+                    onPressed: () {
+                      _trySubmit();
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  RaisedButton(
+                    elevation: 5,
+                    color: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Text(
+                      "Cancel",
+                      style: kHintTextStyle.copyWith(fontSize: 18),
+                    ),
+                    onPressed: () {
+                      // _trySubmit();
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
-          RaisedButton(
-            elevation: 5,
-            color: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-            child: Text(
-              "Add",
-              style: kHintTextStyle.copyWith(fontSize: 18),
-            ),
-            onPressed: () {
-              _trySubmit();
-            },
-          )
-        ],
-      ),
-    );
+        ));
   }
 
   List<int> generateNumbers() => List<int>.generate(30, (i) => i + 1);
