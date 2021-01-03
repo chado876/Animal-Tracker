@@ -247,7 +247,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
                 Center(
                   child: Text('Error: $_error'),
                 ),
-              addImages ? buildGridView() : Text("No Images Selected"),
+              addImages ? buildGridView() : Text("No Image Selected"),
               Container(
                 width: 200,
                 child: RaisedButton(
@@ -343,7 +343,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
                       style: kHintTextStyle.copyWith(fontSize: 18),
                     ),
                     onPressed: () {
-                      // _trySubmit();
+                      Navigator.pushNamed(context, '/manage');
                     },
                   ),
                 ],
