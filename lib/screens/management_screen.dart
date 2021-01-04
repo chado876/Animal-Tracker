@@ -1,4 +1,4 @@
-import 'package:animal_tracker/components/add_livestock.dart';
+import 'package:animal_tracker/screens/add_livestock.dart';
 import 'package:animal_tracker/components/navbar.dart';
 import 'package:animal_tracker/providers/auth.dart';
 import 'package:animal_tracker/utilities/constants.dart';
