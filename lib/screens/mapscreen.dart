@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import './map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as geo;
@@ -31,20 +30,20 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition:
-                  CameraPosition(target: _initialcameraposition),
-              mapType: MapType.normal,
-              onMapCreated: _onMapCreated,
-              myLocationEnabled: true,
-            ),
-          ],
-        ),
-      ),
+          // height: MediaQuery.of(context).size.height,
+          // width: MediaQuery.of(context).size.width,
+          // child: Stack(
+          //   children: [
+          //     GoogleMap(
+          //       initialCameraPosition:
+          //           CameraPosition(target: _initialcameraposition),
+          //       mapType: MapType.normal,
+          //       onMapCreated: _onMapCreated,
+          //       myLocationEnabled: true,
+          //     ),
+          //   ],
+          // ),
+          ),
     );
   }
 }
