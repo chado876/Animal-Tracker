@@ -32,10 +32,9 @@ class _State extends State<LocationInput> {
               textColor: Colors.blue,
               onPressed: () {},
             ),
-          ],
-        ),
-        Row(
-          children: [
+            SizedBox(
+              width: 50,
+            ),
             FlatButton.icon(
               icon: Icon(Icons.map),
               label: Text('Select on Map'),
