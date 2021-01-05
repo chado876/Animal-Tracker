@@ -91,21 +91,23 @@ class _SettingsScreenState extends State<Settings> {
         children: <Widget>[
           SizedBox(height: 20.0),
           ListTile(
-            title: Text("Add Livestock",
-                style: GoogleFonts.sarala().copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                )),
-            trailing: Icon(
-              Icons.add,
-              color: Colors.black,
-            ),
-            onTap: () {
-              setState(() {
-                section = 1;
-              });
-            },
-          ),
+              title: Text("Add Livestock",
+                  style: GoogleFonts.sarala().copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  )),
+              trailing: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              onTap: () {
+                // setState(() {
+                //   section = 1;
+                // });
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) => AddLivestock(),
+                ));
+              }),
           ListTile(
             title: Text("Edit Livestock",
                 style: GoogleFonts.sarala().copyWith(

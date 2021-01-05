@@ -14,6 +14,10 @@ import '../utilities/assetConverter.dart';
 import '../utilities/constants.dart';
 import '../widgets/location_input.dart';
 
+import '../models/place.dart';
+
+import '../helpers/location_helper.dart';
+
 class AddLivestock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -38,6 +42,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
   double _weight;
   String _features;
   List<String> _imageUrls = [];
+  PlaceLocation locationData;
 
   String _error = 'No Error Dectected';
   bool _isLoading;
@@ -45,6 +50,8 @@ class _AddLivestockState extends State<AddLivestockSection> {
   bool imagesLoaded = false;
   bool addImages = false;
   bool imgError = false;
+
+  PlaceLocation _pickedLocation;
 
   List<String> _categories = [
     "Cattle",
@@ -67,11 +74,13 @@ class _AddLivestockState extends State<AddLivestockSection> {
     S2Choice<String>(value: 'Other', title: 'Other'),
   ];
 
-  void _trySubmit() async {
+  Future<void> _trySubmit() async {
     try {
       setState(() {
         _isLoading = true;
       });
+
+      PlaceLocation pickedLocation = _pickedLocation;
 
       _formKey.currentState.save();
       final _auth = FirebaseAuth.instance;
@@ -94,6 +103,21 @@ class _AddLivestockState extends State<AddLivestockSection> {
         x++;
       });
 
+      final address = await LocationHelper.getPlacedAddress(
+          pickedLocation.latitude, pickedLocation.longitude);
+
+      print("Address here" + address);
+      print(pickedLocation.latitude);
+      print(pickedLocation.longitude);
+
+      locationData = PlaceLocation(
+          latitude: pickedLocation.latitude,
+          longitude: pickedLocation.longitude,
+          address: address);
+
+      print(locationData.latitude);
+      print(locationData.longitude);
+      print(locationData.address);
       await Firestore.instance
           .collection('livestock')
           .document(_tagId)
@@ -103,6 +127,9 @@ class _AddLivestockState extends State<AddLivestockSection> {
         'weight': _weight,
         'distinguishingFeatures': _features,
         'image_urls': _imageUrls,
+        'latitude': locationData.latitude,
+        'longitude': locationData.longitude,
+        'address': locationData.address,
       });
     } on PlatformException catch (err) {
       var message = 'An error occurred, pelase check your credentials!';
@@ -140,26 +167,10 @@ class _AddLivestockState extends State<AddLivestockSection> {
     print(storageTaskSnapshot.ref.getDownloadURL());
     return storageTaskSnapshot.ref.getDownloadURL();
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   // TODO: implement build
-  //   return Column(children: [
-  //     Container(
-  //       height: 350,
-  //       width: MediaQuery.of(context).size.width,
-  //       child: ListView.builder(
-  //         itemCount: 10,
-  //         scrollDirection: Axis.horizontal,
-  //         itemBuilder: (ctx, index) => Image.asset(
-  //           "assets/images/cow2.jpg",
-  //           height: 350,
-  //           width: MediaQuery.of(context).size.width,
-  //           fit: BoxFit.cover,
-  //         ),
-  //       ),
-  //     ),
-  //   ]);
-  // }
+
+  void _selectPlace(double lat, double lng) {
+    _pickedLocation = PlaceLocation(latitude: lat, longitude: lng);
+  }
 
   Widget buildGridView() {
     return GridView.count(
@@ -237,150 +248,153 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text("Add Livestock",
-                style: kLabelStyle2.copyWith(color: Colors.black)),
-            if (imgError)
-              Center(
-                child: Text('Error: $_error'),
-              ),
-            addImages
-                ? buildGridView()
-                : Text(
-                    "No Image Selected",
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
-            Container(
-              width: 200,
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Add Livestock"),
+      ),
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              if (imgError)
+                Center(
+                  child: Text('Error: $_error'),
                 ),
-                color: Colors.blue,
-                child: Text(
-                  "Upload images",
-                  style: kLabelStyle.copyWith(color: Colors.white),
-                ),
-                elevation: 5,
-                onPressed: loadAssets,
-              ),
-            ),
-            SmartSelect<String>.single(
-                title: 'Livestock Category',
-                value: value,
-                choiceItems: options,
-                onChange: (state) => setState(() => value = state.value)),
-            TextFormField(
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                labelText: 'Tag ID',
-                labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-              ),
-              onSaved: (value) {
-                _tagId = value;
-              },
-            ),
-            TextFormField(
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                labelText: 'Weight (optional)',
-                labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-              ),
-              onSaved: (value) {
-                _weight = double.parse(value);
-              },
-            ),
-            TextFormField(
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                labelText: 'Distinguishing Features (optional)',
-                labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-              ),
-              onSaved: (value) {
-                _features = value;
-              },
-            ),
-            TextFormField(
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                labelText: 'RFID #',
-                labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-              ),
-              onSaved: (value) {
-                _features = value;
-              },
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            LocationInput(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RaisedButton(
-                  elevation: 5,
-                  color: Colors.green,
+              addImages
+                  ? buildGridView()
+                  : Text(
+                      "No Image Selected",
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+              Container(
+                width: 200,
+                child: RaisedButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
+                  color: Colors.blue,
                   child: Text(
-                    "Add",
-                    style: kHintTextStyle.copyWith(fontSize: 18),
+                    "Upload images",
+                    style: kLabelStyle.copyWith(color: Colors.white),
                   ),
-                  onPressed: () {
-                    _trySubmit();
-                  },
-                ),
-                SizedBox(width: 10),
-                RaisedButton(
                   elevation: 5,
-                  color: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  child: Text(
-                    "Cancel",
-                    style: kHintTextStyle.copyWith(fontSize: 18),
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/manage');
-                  },
+                  onPressed: loadAssets,
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 80,
-            ),
-          ],
+              ),
+              SmartSelect<String>.single(
+                  title: 'Livestock Category',
+                  value: value,
+                  choiceItems: options,
+                  onChange: (state) => setState(() => value = state.value)),
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'Tag ID',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _tagId = value;
+                },
+              ),
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'Weight (optional)',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _weight = double.parse(value);
+                },
+              ),
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'Distinguishing Features (optional)',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _features = value;
+                },
+              ),
+              TextFormField(
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
+                  labelText: 'RFID #',
+                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
+                ),
+                onSaved: (value) {
+                  _features = value;
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              LocationInput(_selectPlace),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    elevation: 5,
+                    color: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Text(
+                      "Add",
+                      style: kHintTextStyle.copyWith(fontSize: 18),
+                    ),
+                    onPressed: () {
+                      _trySubmit();
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  RaisedButton(
+                    elevation: 5,
+                    color: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Text(
+                      "Cancel",
+                      style: kHintTextStyle.copyWith(fontSize: 18),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/manage');
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 80,
+              ),
+            ],
+          ),
         ),
       ),
     );
