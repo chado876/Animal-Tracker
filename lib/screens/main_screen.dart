@@ -27,11 +27,14 @@ class _MainScreenState extends State<MainScreen> {
   int currentIndex = 0;
   int indx = 0;
 
+  bool mapScreen = false;
+
   Function setIndex(int index) {
     currentIndex = index;
   }
 
   void onTap(int index) {
+    index == 2 ? mapScreen = true : mapScreen = false;
     setState(() {
       currentIndex = index;
     });
@@ -43,6 +46,8 @@ class _MainScreenState extends State<MainScreen> {
   // List<Widget> _options = <Widget>[HomeScreen(), SettingsScreen()];
 
   void _onItemTap(int index) {
+    index == 2 ? mapScreen = true : mapScreen = false;
+
     setState(() {
       section = index;
     });
@@ -51,7 +56,9 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // extendBody: mapScreen ? true : false,
       extendBody: true,
+
       // body: screens.elementAt(section),
       body: section == 0
           ? HomeScreen()

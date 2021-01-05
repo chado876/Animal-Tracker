@@ -1,4 +1,4 @@
-import 'package:animal_tracker/components/add_livestock.dart';
+import 'package:animal_tracker/screens/add_livestock.dart';
 import 'package:animal_tracker/components/navbar.dart';
 import 'package:animal_tracker/providers/auth.dart';
 import 'package:animal_tracker/utilities/constants.dart';
@@ -72,7 +72,6 @@ class _SettingsScreenState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         brightness: Brightness.light,
         // iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,
@@ -92,21 +91,23 @@ class _SettingsScreenState extends State<Settings> {
         children: <Widget>[
           SizedBox(height: 20.0),
           ListTile(
-            title: Text("Add Livestock",
-                style: GoogleFonts.sarala().copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                )),
-            trailing: Icon(
-              Icons.add,
-              color: Colors.black,
-            ),
-            onTap: () {
-              setState(() {
-                section = 1;
-              });
-            },
-          ),
+              title: Text("Add Livestock",
+                  style: GoogleFonts.sarala().copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  )),
+              trailing: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              onTap: () {
+                // setState(() {
+                //   section = 1;
+                // });
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) => AddLivestock(),
+                ));
+              }),
           ListTile(
             title: Text("Edit Livestock",
                 style: GoogleFonts.sarala().copyWith(
