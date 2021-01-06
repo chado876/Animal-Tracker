@@ -17,6 +17,7 @@ class _MapPageState extends State<MapPage> {
       LatLng(18.018139159603447, -76.74373834686291);
   GoogleMapController _controller;
   Location _location = Location();
+  Set<Marker> _markers = {};
 
   @override
   void initState() {
@@ -29,9 +30,22 @@ class _MapPageState extends State<MapPage> {
     print("here YASSOOOOOOOOOOOOOOOOOOOO!!!!!!!");
     print(livestock.length);
 
+    addMarker(livestock);
+  }
+
+  void addMarker(List<Livestock> livestock) {
+    Set<Marker> markers = {};
     livestock.forEach((element) {
-      print("YASSOOOOOOOOOOOOOOOOOOOO!!!!!!!");
-      print(element.tagId);
+      markers.add(
+        Marker(
+          markerId: MarkerId(element.tagId),
+          position: LatLng(element.latitude, element.longitude),
+        ),
+      );
+    });
+
+    setState(() {
+      _markers = markers;
     });
   }
 
@@ -58,8 +72,9 @@ class _MapPageState extends State<MapPage> {
               initialCameraPosition:
                   CameraPosition(target: _initialcameraposition),
               mapType: MapType.normal,
-              onMapCreated: _onMapCreated,
+              // onMapCreated: _onMapCreated,
               myLocationEnabled: true,
+              markers: Set.from(_markers),
             ),
           ],
         ),
