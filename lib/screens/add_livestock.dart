@@ -119,11 +119,14 @@ class _AddLivestockState extends State<AddLivestockSection> {
       print(locationData.longitude);
       print(locationData.address);
       await Firestore.instance
+          .collection('users')
+          .document(user.uid)
           .collection('livestock')
           .document(_tagId)
           .setData({
         'uId': user.uid,
         'tagId': _tagId,
+        'category': value,
         'weight': _weight,
         'distinguishingFeatures': _features,
         'image_urls': _imageUrls,
