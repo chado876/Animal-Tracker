@@ -20,5 +20,5 @@ class Livestock {
       @required this.longitude,
       @required this.latitude,
       this.weight,
-      @required this.imageUrls});
+      this.imageUrls});
 }

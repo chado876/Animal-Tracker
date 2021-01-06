@@ -24,10 +24,10 @@ class LivestockHelper {
           address: livestock.data['address'],
           uId: livestock.data['uId'],
           tagId: livestock.data['tagId'],
-          category: 'SHEEP',
-          imageUrls: ['ww.com'],
-          latitude: 20.0,
-          longitude: 20.0);
+          category: livestock.data['category'],
+          // imageUrls: livestock.data['image_urls'],
+          latitude: livestock.data['latitude'],
+          longitude: livestock.data['longitude']);
 
       allLivestock.add(item);
     });
