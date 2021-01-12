@@ -37,6 +37,28 @@ class _BodyState extends State<BodySection> {
   String uid;
   String firstName;
 
+  // Title List Here
+  var titleList = [
+    "Success",
+    "Motivation",
+    "Hard Work",
+    "Decision",
+    "Confidence",
+    "Business",
+    "Team Work"
+  ];
+
+  // Description List Here
+  var descList = [
+    "Push yourself, because no one else is going to do it for you.",
+    "Your limitation—it's only your imagination.",
+    "Hard Work changes the life.",
+    "Sometimes it's the smallest decisions that can change your life forever.",
+    "Confidence is the most beautiful thing you can possess",
+    "A big business starts small.",
+    "Talent wins games, but teamwork and intelligence win championships."
+  ];
+
   @override
   void initState() {
     fetchData();
@@ -71,12 +93,156 @@ class _BodyState extends State<BodySection> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context)
         .size; // provides total height and width of screen
+
     return SingleChildScrollView(
-      //it enable scrolling on small devices
       child: Column(
-        children: [_buildHeader(size, firstName)],
+        children: [
+          _buildHeader(size, firstName),
+          Text(
+            'Cows',
+            style: TextStyle(fontSize: 18),
+          ),
+          Container(
+            height: 350,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 15,
+              itemBuilder: (BuildContext context, int index) => Card(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text("tag-1234"),
+                      Image.asset('assets/images/cow2.jpg',
+                          height: 300, width: 300),
+                      Text("May Pen St, May Pen, Clarendon"),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Text(
+            'Pigs',
+            style: TextStyle(fontSize: 18),
+          ),
+          Container(
+            height: 350,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 15,
+              itemBuilder: (BuildContext context, int index) => Card(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text("tag-1234"),
+                      Image.asset('assets/images/cow2.jpg',
+                          height: 300, width: 300),
+                      Text("May Pen St, May Pen, Clarendon"),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+
+    // SingleChildScrollView(
+    //   child: Column(
+    //     children: <Widget>[
+    //       _buildHeader(size, firstName),
+    //       Text(
+    //         'Cows',
+    //         style: TextStyle(fontSize: 18),
+    //       ),
+    //       Expanded(
+    //         child:
+    //ListView.builder(
+    //           scrollDirection: Axis.horizontal,
+    //           itemCount: 15,
+    //           itemBuilder: (BuildContext context, int index) => Container(
+    //             height: 330,
+    //             child: Card(
+    //               child: SingleChildScrollView(
+    //                 child: Column(
+    //                   children: [
+    //                     Text("tag-1234"),
+    //                     Image.asset('assets/images/cow2.jpg',
+    //                         height: 300, width: 300),
+    //                     Text("May Pen St, May Pen, Clarendon"),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       Text(
+    //         'Pigs',
+    //         style: TextStyle(fontSize: 18),
+    //       ),
+    //       Expanded(
+    //         child: ListView.builder(
+    //           scrollDirection: Axis.horizontal,
+    //           itemCount: 15,
+    //           itemBuilder: (BuildContext context, int index) => Container(
+    //             height: 330,
+    //             child: Card(
+    //               child: SingleChildScrollView(
+    //                 child: Column(
+    //                   children: [
+    //                     Text("tag-1234"),
+    //                     Image.asset('assets/images/cow2.jpg',
+    //                         height: 300, width: 300),
+    //                     Text("May Pen St, May Pen, Clarendon"),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
+
+    // Text(
+    //   'Demo Headline 2',
+    //   style: TextStyle(fontSize: 18),
+    // ),
+    // Expanded(
+    //   child: ListView.builder(
+    //     shrinkWrap: true,
+    //     itemBuilder: (ctx, int) {
+    //       return Card(
+    //         child: ListTile(
+    //             title: Text('Motivation $int'),
+    //             subtitle: Text('this is a description of the motivation')),
+    //       );
+    //     },
+    //   ),
+    // ),
+
+    // return SingleChildScrollView(
+    //   //it enable scrolling on small devices
+    //   child: Column(
+    //     children: [
+    //       _buildHeader(size, firstName),
+    //       Card(
+    //         child:
+
+    //         Column(
+    //           children: [
+    // Text("tag-1234"),
+    // Image.asset('assets/images/cow2.jpg', height: 300, width: 300),
+    // Text("May Pen St, May Pen, Clarendon"),
+    //           ],
+    //         ),
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 }
 
@@ -165,7 +331,7 @@ Widget _buildHeader(@required Size size, String name) {
             ),
           ],
         ),
-      )
+      ),
     ],
   );
 }
