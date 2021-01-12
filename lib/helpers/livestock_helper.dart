@@ -31,28 +31,48 @@ class LivestockHelper {
 
       allLivestock.add(item);
     });
-    // Firestore.instance
-    //     .collection('users')
-    //     .document(currentUser.uid)
-    //     .collection('livestock')
-    //     .snapshots()
-    //     .listen((snapshot) {
-    //   snapshot.documents.forEach((livestock) {
-    //     print(snapshot.documents[0].data.toString());
-    //     Livestock item = Livestock(
-    //         address: livestock.data['address'],
-    //         uId: livestock.data['uId'],
-    //         tagId: livestock.data['tagId'],
-    //         category: 'SHEEP',
-    //         imageUrls: ['ww.com'],
-    //         latitude: 20.0,
-    //         longitude: 20.0);
-
-    //     allLivestock.add(item);
-    //   });
-    // });
-
     return allLivestock;
+  }
+
+  static Future<List<Livestock>> getLivestockDataByCategory(
+      String category) async {
+    UserData currentUser = await AuthHelper.fetchData();
+    print(currentUser.uid);
+    List<Livestock> allLivestock = [];
+
+    QuerySnapshot querySnapshot = await Firestore.instance
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('livestock')
+        .where('category', isEqualTo: category)
+        .getDocuments();
+
+    querySnapshot.documents.forEach((livestock) {
+      Livestock item = Livestock(
+          address: livestock.data['address'],
+          uId: livestock.data['uId'],
+          tagId: livestock.data['tagId'],
+          category: livestock.data['category'],
+          // imageUrls: livestock.data['image_urls'],
+          latitude: livestock.data['latitude'],
+          longitude: livestock.data['longitude']);
+
+      allLivestock.add(item);
+    });
+    return allLivestock;
+  }
+
+  static Future<Stream<QuerySnapshot>> queryByCategory(String category) async {
+    UserData currentUser = await AuthHelper.fetchData();
+
+    Stream<QuerySnapshot> querySnapshot = Firestore.instance
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('livestock')
+        .where('category', isEqualTo: category)
+        .snapshots();
+
+    return querySnapshot;
   }
   //
 }
