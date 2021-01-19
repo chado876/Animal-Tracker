@@ -117,6 +117,8 @@ class _BodyState extends State<BodySection> {
                 );
               }
               final cattle = cattleSnapshot.data.documents;
+              print(cattle[0]['category']);
+
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: cattle.length,
@@ -124,15 +126,16 @@ class _BodyState extends State<BodySection> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Image.network(cattle[index].imageUrls[0],
-                              height: 300, width: 300),
-                        ),
-                        Text("Tag-1234"),
+                        Text(cattle[index]['category']),
+                        // Align(
+                        //   alignment: Alignment.topCenter,
+                        //   child: Image.network(cattle[index]['imageUrls'],
+                        //       height: 300, width: 300),
+                        // ),
+                        Text(cattle[index].documentID),
                         Row(
                           children: [
-                            Text("May Pen St, May Pen, Clarendon"),
+                            Text(cattle[index]['address']),
                             Icon(Icons.add_location),
                           ],
                         )
