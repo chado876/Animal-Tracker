@@ -15,15 +15,13 @@ class AuthHelper {
 
     user = await _auth.currentUser();
     uid = user.uid;
-    Firestore.instance
-        .collection('users')
-        .document(uid)
-        .snapshots()
-        .listen((user) {
-      firstName = user.data['firstName'];
-      lastName = user.data['lastName'];
-      parish = user.data['parish'];
-      photoLink = user.data['image_url'];
+    final document = Firestore.instance.collection('users').document(uid);
+
+    await document.get().then<dynamic>((DocumentSnapshot snapshot) async {
+      firstName = snapshot.data['firstName'];
+      lastName = snapshot.data['lastName'];
+      parish = snapshot.data['parish'];
+      photoLink = snapshot.data['image_url'];
     });
 
     return UserData(

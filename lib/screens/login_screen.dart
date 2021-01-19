@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import '../utilities/constants.dart';
 import '../models/http_exception.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -100,7 +102,7 @@ class _LoginScreenState extends State<LoginCard> {
                 title: Text('An Error Occurred!'),
                 content: Text(message),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                       child: Text('Ok'),
                       onPressed: () {
                         Navigator.of(ctx).pop();
@@ -200,6 +202,10 @@ class _LoginScreenState extends State<LoginCard> {
           email: _authData['email'],
           password: _authData['password'],
         );
+
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('firstName', 'Chad');
+
         Navigator.pushNamed(context, '/main');
       } else {
         // Sign user up

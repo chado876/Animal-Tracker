@@ -56,6 +56,8 @@ dev_dependencies:
   google_maps_flutter: ^1.0.6
   location: ^3.2.1
   geolocator: ^6.1.13
+  shared_preferences: ^0.5.12+4
+
 
 
 

@@ -11,12 +11,9 @@ import '../helpers/livestock_helper.dart';
 import '../models/livestock.dart';
 import '../helpers/auth_helper.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Body extends StatelessWidget {
-  String firstName;
-
-  Body(this.firstName);
-  UserDataProvider dataProvider;
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -43,7 +40,7 @@ class _BodyState extends State<BodySection> {
   List<Livestock> cattle;
   bool isLoading = true;
 
-  UserData currentUser;
+  UserData currentUser = new UserData();
 
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
@@ -57,7 +54,9 @@ class _BodyState extends State<BodySection> {
 
   @override
   void initState() {
-    fetchData();
+    print("TEST!!!!");
+    fetchUserData();
+
     // dataProvider.fetchData().then((value) {
     //   userData = value;
     //   print(userData.firstName);
@@ -68,7 +67,18 @@ class _BodyState extends State<BodySection> {
   }
 
   void fetchUserData() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // firstName = prefs.getString("firstname") ?? "John";
     currentUser = await AuthHelper.fetchData();
+    setState(() {
+      firstName = currentUser.firstName;
+      print(currentUser.firstName);
+      print(currentUser.uid);
+
+      uid = currentUser.uid;
+    });
+    // print(currentUser.uid);
+    // print(currentUser.firstName);
   }
 
   void fetchData() async {
@@ -83,6 +93,7 @@ class _BodyState extends State<BodySection> {
       // print(data.data['image_url']);
       setState(() {
         firstName = user.data['firstName'];
+        print("Here!!!!" + firstName);
       });
       // lastName = user.data['lastName'];
       // parish = user.data['parish'];
@@ -99,16 +110,20 @@ class _BodyState extends State<BodySection> {
       // parent ListView
       children: <Widget>[
         _buildHeader(size, firstName),
+        Text(
+          "Cattle",
+          style: TextStyle(fontSize: 20),
+        ),
         Container(
           height: 500, // give it a fixed height constraint
-          child: _fetchLivestock(),
+          child: _fetchLivestock(uid),
         ),
       ],
     );
   }
 }
 
-Widget _fetchLivestock() {
+Widget _fetchLivestock(String uid) {
   return FutureBuilder(
     future: FirebaseAuth.instance.currentUser(),
     builder: (ctx, futureSnapshot) {
@@ -120,7 +135,7 @@ Widget _fetchLivestock() {
       return StreamBuilder(
           stream: Firestore.instance
               .collection('users')
-              .document('5K9dh5XDBUSbj2iF1TZvPAUgyyT2')
+              .document(uid)
               .collection('livestock')
               .where('category', isEqualTo: "Cattle")
               .snapshots(),
@@ -131,39 +146,46 @@ Widget _fetchLivestock() {
               );
             }
             final cattle = cattleSnapshot.data.documents;
-            print(cattle[1]['image_urls'][0]);
 
-            return ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: cattle.length,
-              itemBuilder: (BuildContext context, int index) => Card(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text(cattle[index]['category']),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Image.network(cattle[1]['image_urls'][0],
-                            height: 300, width: 300),
-                      ),
-                      Text(cattle[index].documentID),
-                      Row(
-                        children: [
-                          Text(cattle[index]['address']),
-                          Icon(Icons.add_location),
-                        ],
-                      )
-                    ],
+            if (cattle.length > 0) {
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: cattle.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Image.network(cattle[1]['image_urls'][0],
+                              height: 300, width: 300),
+                        ),
+                        Text(cattle[index].documentID),
+                        Row(
+                          children: [
+                            Text(cattle[index]['address']),
+                            Icon(Icons.add_location),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
+              );
+            } else {
+              print(uid);
+              return Container(
+                alignment: Alignment.center,
+                child: Text("No Livestock"),
+              );
+            }
           });
     },
   );
 }
 
 Widget _buildHeader(@required Size size, String name) {
+  // print("HEREEEEE" + name);
   return Column(
     children: <Widget>[
       Container(

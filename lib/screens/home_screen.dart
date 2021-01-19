@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeCard> {
 
   @override
   void initState() {
-    fetchData();
+    // fetchData();
     super.initState();
   }
 
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeCard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: Body(firstName),
+      body: Body(),
     );
   }
 
