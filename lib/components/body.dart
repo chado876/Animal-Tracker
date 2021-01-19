@@ -95,222 +95,72 @@ class _BodyState extends State<BodySection> {
     Size size = MediaQuery.of(context)
         .size; // provides total height and width of screen
 
-    return FutureBuilder(
-      future: FirebaseAuth.instance.currentUser(),
-      builder: (ctx, futureSnapshot) {
-        if (futureSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        return StreamBuilder(
-            stream: Firestore.instance
-                .collection('users')
-                .document('5K9dh5XDBUSbj2iF1TZvPAUgyyT2')
-                .collection('livestock')
-                .where('category', isEqualTo: "Cattle")
-                .snapshots(),
-            builder: (ctx, cattleSnapshot) {
-              if (cattleSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              final cattle = cattleSnapshot.data.documents;
-              print(cattle[0]['category']);
+    return ListView(
+      // parent ListView
+      children: <Widget>[
+        _buildHeader(size, firstName),
+        Container(
+          height: 500, // give it a fixed height constraint
+          child: _fetchLivestock(),
+        ),
+      ],
+    );
+  }
+}
 
-              return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: cattle.length,
-                itemBuilder: (BuildContext context, int index) => Card(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Text(cattle[index]['category']),
-                        // Align(
-                        //   alignment: Alignment.topCenter,
-                        //   child: Image.network(cattle[index]['imageUrls'],
-                        //       height: 300, width: 300),
-                        // ),
-                        Text(cattle[index].documentID),
-                        Row(
-                          children: [
-                            Text(cattle[index]['address']),
-                            Icon(Icons.add_location),
-                          ],
-                        )
-                      ],
-                    ),
+Widget _fetchLivestock() {
+  return FutureBuilder(
+    future: FirebaseAuth.instance.currentUser(),
+    builder: (ctx, futureSnapshot) {
+      if (futureSnapshot.connectionState == ConnectionState.waiting) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return StreamBuilder(
+          stream: Firestore.instance
+              .collection('users')
+              .document('5K9dh5XDBUSbj2iF1TZvPAUgyyT2')
+              .collection('livestock')
+              .where('category', isEqualTo: "Cattle")
+              .snapshots(),
+          builder: (ctx, cattleSnapshot) {
+            if (cattleSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            final cattle = cattleSnapshot.data.documents;
+            print(cattle[1]['image_urls'][0]);
+
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: cattle.length,
+              itemBuilder: (BuildContext context, int index) => Card(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(cattle[index]['category']),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Image.network(cattle[1]['image_urls'][0],
+                            height: 300, width: 300),
+                      ),
+                      Text(cattle[index].documentID),
+                      Row(
+                        children: [
+                          Text(cattle[index]['address']),
+                          Icon(Icons.add_location),
+                        ],
+                      )
+                    ],
                   ),
                 ),
-              );
-            });
-      },
-    );
-
-    // return SingleChildScrollView(
-    //   child: Column(
-    //     children: [
-    //       _buildHeader(size, firstName),
-    //       Text(
-    //         'Cows (15)',
-    //         style: TextStyle(fontSize: 18),
-    //       ),
-    //       !isLoading
-    //           ? Container(
-    //               height: 350,
-    //               child: ListView.builder(
-    //                 scrollDirection: Axis.horizontal,
-    //                 itemCount: cattle.length,
-    //                 itemBuilder: (BuildContext context, int index) => Card(
-    //                   child: SingleChildScrollView(
-    //                     child: Column(
-    //                       children: [
-    //                         Align(
-    //                           alignment: Alignment.topCenter,
-    //                           child: Image.network(cattle[index].imageUrls[0],
-    //                               height: 300, width: 300),
-    //                         ),
-    //                         Text("Tag-1234"),
-    //                         Row(
-    //                           children: [
-    //                             Text("May Pen St, May Pen, Clarendon"),
-    //                             Icon(Icons.add_location),
-    //                           ],
-    //                         )
-    //                       ],
-    //                     ),
-    //                   ),
-    //                 ),
-    //               ),
-    //             )
-    //           : Text("yes"),
-    //       // Text(
-    //       //   'Pigs',
-    //       //   style: TextStyle(fontSize: 18),
-    //       // ),
-    //       // Container(
-    //       //   height: 350,
-    //       //   child: ListView.builder(
-    //       //     scrollDirection: Axis.horizontal,
-    //       //     itemCount: 15,
-    //       //     itemBuilder: (BuildContext context, int index) => Card(
-    //       //       child: SingleChildScrollView(
-    //       //         child: Column(
-    //       //           children: [
-    //       //             Text("tag-1234"),
-    //       //             Image.asset('assets/images/cow2.jpg',
-    //       //                 height: 300, width: 300),
-    //       //             Text("May Pen St, May Pen, Clarendon"),
-    //       //           ],
-    //       //         ),
-    //       //       ),
-    //       //     ),
-    //       //   ),
-    //       // ),
-    //       SizedBox(
-    //         height: 100,
-    //       ),
-    //     ],
-    //   ),
-    // );
-
-    // SingleChildScrollView(
-    //   child: Column(
-    //     children: <Widget>[
-    //       _buildHeader(size, firstName),
-    //       Text(
-    //         'Cows',
-    //         style: TextStyle(fontSize: 18),
-    //       ),
-    //       Expanded(
-    //         child:
-    //ListView.builder(
-    //           scrollDirection: Axis.horizontal,
-    //           itemCount: 15,
-    //           itemBuilder: (BuildContext context, int index) => Container(
-    //             height: 330,
-    //             child: Card(
-    //               child: SingleChildScrollView(
-    //                 child: Column(
-    //                   children: [
-    //                     Text("tag-1234"),
-    //                     Image.asset('assets/images/cow2.jpg',
-    //                         height: 300, width: 300),
-    //                     Text("May Pen St, May Pen, Clarendon"),
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       Text(
-    //         'Pigs',
-    //         style: TextStyle(fontSize: 18),
-    //       ),
-    //       Expanded(
-    //         child: ListView.builder(
-    //           scrollDirection: Axis.horizontal,
-    //           itemCount: 15,
-    //           itemBuilder: (BuildContext context, int index) => Container(
-    //             height: 330,
-    //             child: Card(
-    //               child: SingleChildScrollView(
-    //                 child: Column(
-    //                   children: [
-    //                     Text("tag-1234"),
-    //                     Image.asset('assets/images/cow2.jpg',
-    //                         height: 300, width: 300),
-    //                     Text("May Pen St, May Pen, Clarendon"),
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
-
-    // Text(
-    //   'Demo Headline 2',
-    //   style: TextStyle(fontSize: 18),
-    // ),
-    // Expanded(
-    //   child: ListView.builder(
-    //     shrinkWrap: true,
-    //     itemBuilder: (ctx, int) {
-    //       return Card(
-    //         child: ListTile(
-    //             title: Text('Motivation $int'),
-    //             subtitle: Text('this is a description of the motivation')),
-    //       );
-    //     },
-    //   ),
-    // ),
-
-    // return SingleChildScrollView(
-    //   //it enable scrolling on small devices
-    //   child: Column(
-    //     children: [
-    //       _buildHeader(size, firstName),
-    //       Card(
-    //         child:
-
-    //         Column(
-    //           children: [
-    // Text("tag-1234"),
-    // Image.asset('assets/images/cow2.jpg', height: 300, width: 300),
-    // Text("May Pen St, May Pen, Clarendon"),
-    //           ],
-    //         ),
-    //       )
-    //     ],
-    //   ),
-    // );
-  }
+              ),
+            );
+          });
+    },
+  );
 }
 
 Widget _buildHeader(@required Size size, String name) {
