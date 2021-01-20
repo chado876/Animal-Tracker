@@ -115,15 +115,15 @@ class _BodyState extends State<BodySection> {
           style: TextStyle(fontSize: 20),
         ),
         Container(
-          height: 500, // give it a fixed height constraint
-          child: _fetchLivestock(uid),
+          height: 350, // give it a fixed height constraint
+          child: _fetchLivestockByCategory(uid, "Cattle"),
         ),
       ],
     );
   }
 }
 
-Widget _fetchLivestock(String uid) {
+Widget _fetchCattle(String uid) {
   return FutureBuilder(
     future: FirebaseAuth.instance.currentUser(),
     builder: (ctx, futureSnapshot) {
@@ -173,10 +173,69 @@ Widget _fetchLivestock(String uid) {
                 ),
               );
             } else {
-              print(uid);
               return Container(
                 alignment: Alignment.center,
                 child: Text("No Livestock"),
+              );
+            }
+          });
+    },
+  );
+}
+
+Widget _fetchLivestockByCategory(String uid, String category) {
+  return FutureBuilder(
+    future: FirebaseAuth.instance.currentUser(),
+    builder: (ctx, futureSnapshot) {
+      if (futureSnapshot.connectionState == ConnectionState.waiting) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return StreamBuilder(
+          stream: Firestore.instance
+              .collection('users')
+              .document(uid)
+              .collection('livestock')
+              .where('category', isEqualTo: category)
+              .snapshots(),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            final livestock = snapshot.data.documents;
+
+            if (livestock.length > 0) {
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: livestock.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Image.network(livestock[1]['image_urls'][0],
+                              height: 300, width: 300),
+                        ),
+                        Text(livestock[index].documentID),
+                        Row(
+                          children: [
+                            Text(livestock[index]['address']),
+                            Icon(Icons.add_location),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return Container(
+                alignment: Alignment.center,
+                child: Text("No" + category),
               );
             }
           });
