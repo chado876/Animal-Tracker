@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animal_tracker/components/header.dart';
 import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +42,13 @@ class _BodyState extends State<BodySection> {
   List<Livestock> cattle;
   bool isLoading = true;
 
+  TextEditingController _searchQueryController = TextEditingController();
+  bool _isSearching = false;
+  String searchQuery = "Search query";
+  Timer _debounce;
+
+  List<Livestock> _searchResult;
+
   UserData currentUser = new UserData();
 
   List<String> _categories = [
@@ -65,8 +74,17 @@ class _BodyState extends State<BodySection> {
   @override
   void initState() {
     fetchUserData();
+    _searchQueryController.addListener(_onSearchChanged);
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchQueryController.removeListener(_onSearchChanged);
+    _searchQueryController.dispose();
+    _debounce?.cancel();
+    super.dispose();
   }
 
   void fetchUserData() async {
@@ -108,22 +126,191 @@ class _BodyState extends State<BodySection> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context)
         .size; // provides total height and width of screen
-
     return ListView(
       // parent ListView
       children: <Widget>[
         _buildHeader(size, firstName),
-        for (var category in _categories)
-          Column(
-            children: [
-              Text(category),
+        if (_isSearching && _searchQueryController.text.length != 0)
+          Container(
+            height: 350,
+            child: _searchResultView(_searchResult),
+          ),
+        if (!_isSearching)
+          for (var category in _categories)
+            Column(
+              children: [
+                Text(category),
+                Container(
+                  height: 350,
+                  child: _fetchLivestockByCategory(uid, category),
+                ),
+              ],
+            )
+      ],
+    );
+  }
+
+  Widget _buildHeader(@required Size size, String name) {
+    // print("HEREEEEE" + name);
+    return Column(
+      children: <Widget>[
+        Container(
+          //will cover 20% of screen height
+          margin: EdgeInsets.only(bottom: kDefaultPadding * 2.5),
+          height: size.height * 0.2,
+          child: Stack(
+            children: <Widget>[
               Container(
-                height: 350,
-                child: _fetchLivestockByCategory(uid, category),
+                padding: EdgeInsets.only(
+                  left: kDefaultPadding,
+                  right: kDefaultPadding,
+                  bottom: 36 + kDefaultPadding,
+                ),
+                height: size.height * 0.2 - 27,
+                decoration: BoxDecoration(
+                  color: kPrimaryColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(36),
+                    bottomRight: Radius.circular(36),
+                  ),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    name != null
+                        ? Text(
+                            'Hi, $name !',
+                            style: kLabelStyle2,
+                          )
+                        : Text(
+                            'Hi!',
+                            style: kLabelStyle2,
+                          ),
+                    Spacer(),
+                    Image.asset(
+                      "assets/logos/templogo.png",
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  height: 54,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0, 10),
+                          blurRadius: 50,
+                          color: kPrimaryColor.withOpacity(0.23),
+                        )
+                      ]),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TextField(
+                          controller: _searchQueryController,
+                          decoration: InputDecoration(
+                            hintText: "Search",
+                            hintStyle: TextStyle(
+                              color: kPrimaryColor.withOpacity(0.5),
+                            ),
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            // suffixIcon: SvgPicture.asset("assets/")
+                          ),
+                          // onChanged: (query) => _onSearchChanged(query),
+                          // onTap: _startSearch,
+                        ),
+                      ),
+                      SvgPicture.asset(
+                        "assets/icons/search.svg",
+                        color: Colors.black,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
-          )
+          ),
+        ),
       ],
+    );
+  }
+
+  void _startSearch() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  Future<void> _onSearchChanged() async {
+    if (_debounce?.isActive ?? false) _debounce.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {});
+
+    bool searching;
+
+    List<Livestock> searchResult = await search(_searchQueryController.text);
+
+    if (_searchQueryController.text.length == 0) {
+      searching = false;
+    } else {
+      searching = true;
+    }
+
+    setState(() {
+      _isSearching = searching;
+      searchQuery = _searchQueryController.text;
+      _searchResult = searchResult;
+    });
+  }
+
+  Future<List<Livestock>> search(String query) async {
+    var result = await LivestockHelper.getLivestockDataByTagID(query);
+
+    return result;
+  }
+}
+
+Widget _searchResultView(List<Livestock> livestock) {
+  if (livestock.length > 0) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: livestock.length,
+      itemBuilder: (BuildContext context, int index) => Card(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Align(
+              //   alignment: Alignment.topCenter,
+              //   child: Image.network(livestock[1]['image_urls'][0],
+              //       height: 300, width: 300),
+              // ),
+              Text(livestock[index].tagId),
+              Row(
+                children: [
+                  Text(livestock[index].address),
+                  Icon(Icons.add_location),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  } else {
+    return Container(
+      alignment: Alignment.center,
+      child: Text(
+        "No Results",
+        style: TextStyle(color: Colors.red),
+      ),
     );
   }
 }
@@ -188,96 +375,5 @@ Widget _fetchLivestockByCategory(String uid, String category) {
             }
           });
     },
-  );
-}
-
-Widget _buildHeader(@required Size size, String name) {
-  // print("HEREEEEE" + name);
-  return Column(
-    children: <Widget>[
-      Container(
-        //will cover 20% of screen height
-        margin: EdgeInsets.only(bottom: kDefaultPadding * 2.5),
-        height: size.height * 0.2,
-        child: Stack(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(
-                left: kDefaultPadding,
-                right: kDefaultPadding,
-                bottom: 36 + kDefaultPadding,
-              ),
-              height: size.height * 0.2 - 27,
-              decoration: BoxDecoration(
-                color: kPrimaryColor,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(36),
-                  bottomRight: Radius.circular(36),
-                ),
-              ),
-              child: Row(
-                children: <Widget>[
-                  name != null
-                      ? Text(
-                          'Hi, $name !',
-                          style: kLabelStyle2,
-                        )
-                      : Text(
-                          'Hi!',
-                          style: kLabelStyle2,
-                        ),
-                  Spacer(),
-                  Image.asset(
-                    "assets/logos/templogo.png",
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                height: 54,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0, 10),
-                        blurRadius: 50,
-                        color: kPrimaryColor.withOpacity(0.23),
-                      )
-                    ]),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Search",
-                          hintStyle: TextStyle(
-                            color: kPrimaryColor.withOpacity(0.5),
-                          ),
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          // suffixIcon: SvgPicture.asset("assets/")
-                        ),
-                      ),
-                    ),
-                    SvgPicture.asset(
-                      "assets/icons/search.svg",
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
   );
 }

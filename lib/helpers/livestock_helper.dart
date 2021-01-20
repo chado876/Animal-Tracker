@@ -74,5 +74,32 @@ class LivestockHelper {
 
     return querySnapshot;
   }
+
+  static Future<List<Livestock>> getLivestockDataByTagID(String tagID) async {
+    UserData currentUser = await AuthHelper.fetchData();
+    print(currentUser.uid);
+    List<Livestock> allLivestock = [];
+
+    QuerySnapshot querySnapshot = await Firestore.instance
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('livestock')
+        .where('tagId', isEqualTo: tagID)
+        .getDocuments();
+
+    querySnapshot.documents.forEach((livestock) {
+      Livestock item = Livestock(
+          address: livestock.data['address'],
+          uId: livestock.data['uId'],
+          tagId: livestock.data['tagId'],
+          category: livestock.data['category'],
+          // imageUrls: livestock.data['image_urls'],
+          latitude: livestock.data['latitude'],
+          longitude: livestock.data['longitude']);
+
+      allLivestock.add(item);
+    });
+    return allLivestock;
+  }
   //
 }
