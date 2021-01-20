@@ -46,6 +46,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
   String _error = 'No Error Dectected';
   bool _isLoading;
+  bool postSuccess = false;
 
   bool imagesLoaded = false;
   bool addImages = false;
@@ -134,7 +135,9 @@ class _AddLivestockState extends State<AddLivestockSection> {
         'longitude': locationData.longitude,
         'address': locationData.address,
       });
+      postSuccess = true;
     } on PlatformException catch (err) {
+      postSuccess = false;
       var message = 'An error occurred, pelase check your credentials!';
 
       if (err.message != null) {
@@ -373,7 +376,20 @@ class _AddLivestockState extends State<AddLivestockSection> {
                       style: kHintTextStyle.copyWith(fontSize: 18),
                     ),
                     onPressed: () {
-                      _trySubmit();
+                      _trySubmit().then((value) {
+                        SnackBar snackBar = SnackBar(
+                          content: Text(postSuccess
+                              ? "Livestock added successfully"
+                              : "An error occurred. Please try again."),
+                          action: SnackBarAction(
+                            label: 'Ok',
+                            onPressed: () {
+                              // Some code to undo the change.
+                            },
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      });
                     },
                   ),
                   SizedBox(width: 10),
@@ -399,6 +415,20 @@ class _AddLivestockState extends State<AddLivestockSection> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSnackBar(bool postSuccess) {
+    return SnackBar(
+      content: Text(postSuccess
+          ? "Livestock added successfully"
+          : "An error occurred. Please try again."),
+      action: SnackBarAction(
+        label: 'ok',
+        onPressed: () {
+          // Some code to undo the change.
+        },
       ),
     );
   }
