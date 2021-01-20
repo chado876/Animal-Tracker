@@ -42,6 +42,16 @@ class _BodyState extends State<BodySection> {
 
   UserData currentUser = new UserData();
 
+  List<String> _categories = [
+    "Cattle",
+    "Sheep",
+    "Pig",
+    "Goat",
+    "Horse",
+    "Donkey",
+    "Other",
+  ];
+
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
     print(livestock.length);
@@ -54,15 +64,8 @@ class _BodyState extends State<BodySection> {
 
   @override
   void initState() {
-    print("TEST!!!!");
     fetchUserData();
 
-    // dataProvider.fetchData().then((value) {
-    //   userData = value;
-    //   print(userData.firstName);
-    // });
-    // getLivestock();
-    // fetchUserData();
     super.initState();
   }
 
@@ -110,77 +113,19 @@ class _BodyState extends State<BodySection> {
       // parent ListView
       children: <Widget>[
         _buildHeader(size, firstName),
-        Text(
-          "Cattle",
-          style: TextStyle(fontSize: 20),
-        ),
-        Container(
-          height: 350, // give it a fixed height constraint
-          child: _fetchLivestockByCategory(uid, "Cattle"),
-        ),
+        for (var category in _categories)
+          Column(
+            children: [
+              Text(category),
+              Container(
+                height: 350,
+                child: _fetchLivestockByCategory(uid, category),
+              ),
+            ],
+          )
       ],
     );
   }
-}
-
-Widget _fetchCattle(String uid) {
-  return FutureBuilder(
-    future: FirebaseAuth.instance.currentUser(),
-    builder: (ctx, futureSnapshot) {
-      if (futureSnapshot.connectionState == ConnectionState.waiting) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-      return StreamBuilder(
-          stream: Firestore.instance
-              .collection('users')
-              .document(uid)
-              .collection('livestock')
-              .where('category', isEqualTo: "Cattle")
-              .snapshots(),
-          builder: (ctx, cattleSnapshot) {
-            if (cattleSnapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            final cattle = cattleSnapshot.data.documents;
-
-            if (cattle.length > 0) {
-              return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: cattle.length,
-                itemBuilder: (BuildContext context, int index) => Card(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Image.network(cattle[1]['image_urls'][0],
-                              height: 300, width: 300),
-                        ),
-                        Text(cattle[index].documentID),
-                        Row(
-                          children: [
-                            Text(cattle[index]['address']),
-                            Icon(Icons.add_location),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return Container(
-                alignment: Alignment.center,
-                child: Text("No Livestock"),
-              );
-            }
-          });
-    },
-  );
 }
 
 Widget _fetchLivestockByCategory(String uid, String category) {
@@ -235,7 +180,10 @@ Widget _fetchLivestockByCategory(String uid, String category) {
             } else {
               return Container(
                 alignment: Alignment.center,
-                child: Text("No" + category),
+                child: Text(
+                  "No " + category,
+                  style: TextStyle(color: Colors.red),
+                ),
               );
             }
           });
