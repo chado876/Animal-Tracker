@@ -243,14 +243,23 @@ class _BodyState extends State<BodySection> {
     });
   }
 
-  void _onSearchChanged() {
+  Future<void> _onSearchChanged() async {
     if (_debounce?.isActive ?? false) _debounce.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       setState(() {
         searchQuery = _searchQueryController.text;
       });
-      print(_searchQueryController.text);
     });
+
+    List<Livestock> searchResult = await search(_searchQueryController.text);
+
+    print(searchResult[0].tagId);
+  }
+
+  Future<List<Livestock>> search(String query) async {
+    var result = await LivestockHelper.getLivestockDataByTagID(query);
+
+    return result;
   }
 }
 
