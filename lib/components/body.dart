@@ -47,6 +47,8 @@ class _BodyState extends State<BodySection> {
   String searchQuery = "Search query";
   Timer _debounce;
 
+  List<Livestock> _searchResult;
+
   UserData currentUser = new UserData();
 
   List<String> _categories = [
@@ -124,21 +126,26 @@ class _BodyState extends State<BodySection> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context)
         .size; // provides total height and width of screen
-
     return ListView(
       // parent ListView
       children: <Widget>[
         _buildHeader(size, firstName),
-        for (var category in _categories)
-          Column(
-            children: [
-              Text(category),
-              Container(
-                height: 350,
-                child: _fetchLivestockByCategory(uid, category),
-              ),
-            ],
-          )
+        if (_isSearching && _searchQueryController.text.length != 0)
+          Container(
+            height: 350,
+            child: _searchResultView(_searchResult),
+          ),
+        if (!_isSearching)
+          for (var category in _categories)
+            Column(
+              children: [
+                Text(category),
+                Container(
+                  height: 350,
+                  child: _fetchLivestockByCategory(uid, category),
+                ),
+              ],
+            )
       ],
     );
   }
@@ -245,21 +252,66 @@ class _BodyState extends State<BodySection> {
 
   Future<void> _onSearchChanged() async {
     if (_debounce?.isActive ?? false) _debounce.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      setState(() {
-        searchQuery = _searchQueryController.text;
-      });
-    });
+    _debounce = Timer(const Duration(milliseconds: 500), () {});
+
+    bool searching;
 
     List<Livestock> searchResult = await search(_searchQueryController.text);
 
-    print(searchResult[0].tagId);
+    if (_searchQueryController.text.length == 0) {
+      searching = false;
+    } else {
+      searching = true;
+    }
+
+    setState(() {
+      _isSearching = searching;
+      searchQuery = _searchQueryController.text;
+      _searchResult = searchResult;
+    });
   }
 
   Future<List<Livestock>> search(String query) async {
     var result = await LivestockHelper.getLivestockDataByTagID(query);
 
     return result;
+  }
+}
+
+Widget _searchResultView(List<Livestock> livestock) {
+  if (livestock.length > 0) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: livestock.length,
+      itemBuilder: (BuildContext context, int index) => Card(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Align(
+              //   alignment: Alignment.topCenter,
+              //   child: Image.network(livestock[1]['image_urls'][0],
+              //       height: 300, width: 300),
+              // ),
+              Text(livestock[index].tagId),
+              Row(
+                children: [
+                  Text(livestock[index].address),
+                  Icon(Icons.add_location),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  } else {
+    return Container(
+      alignment: Alignment.center,
+      child: Text(
+        "No Results",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
   }
 }
 
