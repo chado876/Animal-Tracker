@@ -35,11 +35,13 @@ class _MapPageState extends State<MapPage> {
 
   void addMarker(List<Livestock> livestock) {
     Set<Marker> markers = {};
-    livestock.forEach((element) {
+    livestock.forEach((element) async {
       markers.add(
         Marker(
           markerId: MarkerId(element.tagId),
           position: LatLng(element.latitude, element.longitude),
+          icon: await BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(size: Size(48, 48)), 'assets/images/cow.png'),
         ),
       );
     });

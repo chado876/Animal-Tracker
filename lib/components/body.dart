@@ -7,12 +7,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/user_data_provider.dart';
 import '../models/profile.dart';
 
+import '../helpers/livestock_helper.dart';
+import '../models/livestock.dart';
+import '../helpers/auth_helper.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Body extends StatelessWidget {
-  String firstName;
-
-  Body(this.firstName);
-  UserDataProvider dataProvider;
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -36,22 +37,57 @@ class _BodyState extends State<BodySection> {
   FirebaseUser user;
   String uid;
   String firstName;
+  List<Livestock> cattle;
+  bool isLoading = true;
+
+  UserData currentUser = new UserData();
+
+  List<String> _categories = [
+    "Cattle",
+    "Sheep",
+    "Pig",
+    "Goat",
+    "Horse",
+    "Donkey",
+    "Other",
+  ];
+
+  void getLivestock() async {
+    List<Livestock> livestock = await LivestockHelper.getLivestockData();
+    print(livestock.length);
+  }
+
+  void getLivestockByCategory() async {
+    cattle = await LivestockHelper.getLivestockDataByCategory("Cattle");
+    isLoading = false;
+  }
 
   @override
   void initState() {
-    fetchData();
-    // dataProvider.fetchData().then((value) {
-    //   userData = value;
-    //   print(userData.firstName);
-    // });
+    fetchUserData();
+
     super.initState();
   }
 
-  void fetchUserData() async {}
+  void fetchUserData() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // firstName = prefs.getString("firstname") ?? "John";
+    currentUser = await AuthHelper.fetchData();
+    setState(() {
+      firstName = currentUser.firstName;
+      print(currentUser.firstName);
+      print(currentUser.uid);
+
+      uid = currentUser.uid;
+    });
+    // print(currentUser.uid);
+    // print(currentUser.firstName);
+  }
 
   void fetchData() async {
     user = await _auth.currentUser();
     uid = user.uid;
+    currentUser.uid = uid;
     Firestore.instance
         .collection('users')
         .document(uid)
@@ -60,6 +96,7 @@ class _BodyState extends State<BodySection> {
       // print(data.data['image_url']);
       setState(() {
         firstName = user.data['firstName'];
+        print("Here!!!!" + firstName);
       });
       // lastName = user.data['lastName'];
       // parish = user.data['parish'];
@@ -71,16 +108,91 @@ class _BodyState extends State<BodySection> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context)
         .size; // provides total height and width of screen
-    return SingleChildScrollView(
-      //it enable scrolling on small devices
-      child: Column(
-        children: [_buildHeader(size, firstName)],
-      ),
+
+    return ListView(
+      // parent ListView
+      children: <Widget>[
+        _buildHeader(size, firstName),
+        for (var category in _categories)
+          Column(
+            children: [
+              Text(category),
+              Container(
+                height: 350,
+                child: _fetchLivestockByCategory(uid, category),
+              ),
+            ],
+          )
+      ],
     );
   }
 }
 
+Widget _fetchLivestockByCategory(String uid, String category) {
+  return FutureBuilder(
+    future: FirebaseAuth.instance.currentUser(),
+    builder: (ctx, futureSnapshot) {
+      if (futureSnapshot.connectionState == ConnectionState.waiting) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return StreamBuilder(
+          stream: Firestore.instance
+              .collection('users')
+              .document(uid)
+              .collection('livestock')
+              .where('category', isEqualTo: category)
+              .snapshots(),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            final livestock = snapshot.data.documents;
+
+            if (livestock.length > 0) {
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: livestock.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Image.network(livestock[1]['image_urls'][0],
+                              height: 300, width: 300),
+                        ),
+                        Text(livestock[index].documentID),
+                        Row(
+                          children: [
+                            Text(livestock[index]['address']),
+                            Icon(Icons.add_location),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return Container(
+                alignment: Alignment.center,
+                child: Text(
+                  "No " + category,
+                  style: TextStyle(color: Colors.red),
+                ),
+              );
+            }
+          });
+    },
+  );
+}
+
 Widget _buildHeader(@required Size size, String name) {
+  // print("HEREEEEE" + name);
   return Column(
     children: <Widget>[
       Container(
@@ -165,7 +277,7 @@ Widget _buildHeader(@required Size size, String name) {
             ),
           ],
         ),
-      )
+      ),
     ],
   );
 }
