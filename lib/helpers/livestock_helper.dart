@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import '../models/livestock.dart';
 import '../models/profile.dart';
 import './auth_helper.dart';
@@ -77,7 +80,6 @@ class LivestockHelper {
 
   static Future<List<Livestock>> getLivestockDataByTagID(String tagID) async {
     UserData currentUser = await AuthHelper.fetchData();
-    print(currentUser.uid);
     List<Livestock> allLivestock = [];
 
     QuerySnapshot querySnapshot = await Firestore.instance
@@ -104,5 +106,58 @@ class LivestockHelper {
     });
     return allLivestock;
   }
-  //
+
+  static Future<void> postMissingLivestock(
+      Livestock livestock, BuildContext ctx) async {
+    UserData currentUser = await AuthHelper.fetchData();
+
+    try {
+      await Firestore.instance
+          .collection('users')
+          .document(currentUser.uid)
+          .collection('livestock')
+          .document(livestock.tagId)
+          .updateData({"isMissing": true}).then((value) async {
+        await Firestore.instance
+            .collection('missing_livestock')
+            .document(livestock.tagId)
+            .setData({
+          'uId': currentUser.uid,
+          'owner_name': currentUser.firstName + " " + currentUser.lastName,
+          'tagId': livestock.tagId,
+          'category': livestock.category,
+          'weight': livestock.weight,
+          'distinguishingFeatures': livestock.distinguishingFeatures,
+          'image_urls': livestock.imageUrls,
+          'latitude': livestock.latitude,
+          'longitude': livestock.longitude,
+          'address': livestock.address,
+        });
+      });
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text("Livestock with tag ID of " +
+              livestock.tagId +
+              " marked as missing successfully."),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on PlatformException catch (err) {
+      var message = 'An error occurred, please try again!';
+
+      if (err.message != null) {
+        message = err.message;
+      }
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(ctx).errorColor,
+        ),
+      );
+    } catch (err) {
+      print(err);
+    }
+  }
 }
