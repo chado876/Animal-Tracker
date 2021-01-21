@@ -141,7 +141,7 @@ class _BodyState extends State<BodySection> {
               children: [
                 Text(category),
                 Container(
-                  height: 350,
+                  height: 400,
                   child: _fetchLivestockByCategory(uid, category),
                 ),
               ],
@@ -357,6 +357,39 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                           children: [
                             Text(livestock[index]['address']),
                             Icon(Icons.add_location),
+                          ],
+                        ),
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: Row(
+                                children: [
+                                  Text("Show on Map"),
+                                  Icon(Icons.location_pin),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: Row(
+                                children: [
+                                  Text("Mark as Missing"),
+                                  Icon(Icons.warning_amber_outlined),
+                                ],
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.redAccent,
+                                padding: EdgeInsets.only(left: 5),
+                              ),
+                            ),
+                            // IconButton(
+                            //     icon: Icon(Icons.location_pin),
+                            //     onPressed: () {}),
                           ],
                         )
                       ],
