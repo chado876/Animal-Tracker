@@ -375,7 +375,25 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                               width: 15,
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                LivestockHelper.postMissingLivestock(
+                                    Livestock(
+                                        tagId: livestock[index]['tagId'],
+                                        address: livestock[index]['address'],
+                                        uId: livestock[index]['uId'],
+                                        latitude: livestock[index]['latitude'],
+                                        longitude: livestock[index]
+                                            ['longitude'],
+                                        distinguishingFeatures: livestock[index]
+                                            ['distinguishingFeatures'],
+                                        weight: livestock[index]['weight'],
+                                        imageUrls: (livestock[index]
+                                                ['image_urls'] as List)
+                                            ?.map((item) => item as String)
+                                            ?.toList(),
+                                        category: livestock[index]['category']),
+                                    context);
+                              },
                               child: Row(
                                 children: [
                                   Text("Mark as Missing"),
