@@ -93,10 +93,13 @@ class LivestockHelper {
           uId: livestock.data['uId'],
           tagId: livestock.data['tagId'],
           category: livestock.data['category'],
-          // imageUrls: livestock.data['image_urls'],
+          imageUrls: (livestock.data['image_urls'] as List)
+              ?.map((item) => item as String)
+              ?.toList(),
           latitude: livestock.data['latitude'],
           longitude: livestock.data['longitude']);
 
+      print(livestock.data['image_urls']);
       allLivestock.add(item);
     });
     return allLivestock;

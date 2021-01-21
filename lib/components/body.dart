@@ -287,11 +287,11 @@ Widget _searchResultView(List<Livestock> livestock) {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Align(
-              //   alignment: Alignment.topCenter,
-              //   child: Image.network(livestock[1]['image_urls'][0],
-              //       height: 300, width: 300),
-              // ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Image.network(livestock[index].imageUrls[0],
+                    height: 300, width: 300),
+              ),
               Text(livestock[index].tagId),
               Row(
                 children: [
