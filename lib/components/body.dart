@@ -349,8 +349,11 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                       children: [
                         Align(
                           alignment: Alignment.topCenter,
-                          child: Image.network(livestock[1]['image_urls'][0],
-                              height: 300, width: 300),
+                          child: Image.network(
+                              livestock[1]['image_urls']
+                                  [0], //this needs to be fixed (null checking)
+                              height: 300,
+                              width: 300),
                         ),
                         Text(livestock[index].documentID),
                         Row(

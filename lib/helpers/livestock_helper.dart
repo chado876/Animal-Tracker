@@ -160,4 +160,28 @@ class LivestockHelper {
       print(err);
     }
   }
+
+  static Future<List<Livestock>> getMissingLivestock() async {
+    UserData currentUser = await AuthHelper.fetchData();
+    List<Livestock> allLivestock = [];
+
+    QuerySnapshot querySnapshot =
+        await Firestore.instance.collection('missing_livestock').getDocuments();
+
+    querySnapshot.documents.forEach((livestock) {
+      Livestock item = Livestock(
+          address: livestock.data['address'],
+          uId: livestock.data['uId'],
+          tagId: livestock.data['tagId'],
+          category: livestock.data['category'],
+          imageUrls: (livestock.data['image_urls'] as List)
+              ?.map((item) => item as String)
+              ?.toList(),
+          latitude: livestock.data['latitude'],
+          longitude: livestock.data['longitude']);
+
+      allLivestock.add(item);
+    });
+    return allLivestock;
+  }
 }
