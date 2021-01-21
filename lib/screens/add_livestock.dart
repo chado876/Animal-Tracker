@@ -134,6 +134,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
         'latitude': locationData.latitude,
         'longitude': locationData.longitude,
         'address': locationData.address,
+        'isMissing': false,
       });
       postSuccess = true;
     } on PlatformException catch (err) {

@@ -113,20 +113,28 @@ class LivestockHelper {
 
     try {
       await Firestore.instance
-          .collection('missing_livestock')
+          .collection('users')
+          .document(currentUser.uid)
+          .collection('livestock')
           .document(livestock.tagId)
-          .setData({
-        'uId': currentUser.uid,
-        'owner_name': currentUser.firstName + " " + currentUser.lastName,
-        'tagId': livestock.tagId,
-        'category': livestock.category,
-        'weight': livestock.weight,
-        'distinguishingFeatures': livestock.distinguishingFeatures,
-        'image_urls': livestock.imageUrls,
-        'latitude': livestock.latitude,
-        'longitude': livestock.longitude,
-        'address': livestock.address,
+          .updateData({"isMissing": true}).then((value) async {
+        await Firestore.instance
+            .collection('missing_livestock')
+            .document(livestock.tagId)
+            .setData({
+          'uId': currentUser.uid,
+          'owner_name': currentUser.firstName + " " + currentUser.lastName,
+          'tagId': livestock.tagId,
+          'category': livestock.category,
+          'weight': livestock.weight,
+          'distinguishingFeatures': livestock.distinguishingFeatures,
+          'image_urls': livestock.imageUrls,
+          'latitude': livestock.latitude,
+          'longitude': livestock.longitude,
+          'address': livestock.address,
+        });
       });
+
       ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
           content: Text("Livestock with tag ID of " +
