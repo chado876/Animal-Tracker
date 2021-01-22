@@ -13,8 +13,13 @@ import './screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import './screens/management_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -49,7 +54,7 @@ class MyApp extends StatelessWidget {
           title: 'Flutter Login UI',
           debugShowCheckedModeBanner: false,
           home: StreamBuilder(
-            stream: FirebaseAuth.instance.onAuthStateChanged,
+            stream: FirebaseAuth.instance.authStateChanges(),
             builder: (ctx, userSnapshot) {
               if (userSnapshot.hasData) {
                 return MainScreen();

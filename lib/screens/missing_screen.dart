@@ -23,7 +23,7 @@ class MissingSection extends StatefulWidget {
 }
 
 class _MissingScreenState extends State<MissingSection> {
-  UserData currentUser = new UserData();
+  UserObject currentUser = new UserObject();
   String uid;
 
   void fetchUserData() async {
@@ -68,7 +68,7 @@ class _MissingScreenState extends State<MissingSection> {
 
   Widget _fetchMissingLivestock(String uid) {
     return FutureBuilder(
-      future: FirebaseAuth.instance.currentUser(),
+      future: AuthHelper.getCurrentUser(),
       builder: (ctx, futureSnapshot) {
         if (futureSnapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -76,15 +76,16 @@ class _MissingScreenState extends State<MissingSection> {
           );
         }
         return StreamBuilder(
-            stream:
-                Firestore.instance.collection('missing_livestock').snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection('missing_livestock')
+                .snapshots(),
             builder: (ctx, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
-              final livestock = snapshot.data.documents;
+              final livestock = snapshot.data.docs;
 
               if (livestock.length > 0) {
                 return ListView.builder(
@@ -102,7 +103,7 @@ class _MissingScreenState extends State<MissingSection> {
                                 height: 300,
                                 width: 300),
                           ),
-                          Text(livestock[index].documentID),
+                          Text(livestock[index].id),
                           Text(
                             "Last seen: " + livestock[index]['address'],
                             overflow: TextOverflow.ellipsis,

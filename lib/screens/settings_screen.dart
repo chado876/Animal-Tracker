@@ -30,7 +30,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsScreenState extends State<Settings> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseUser user;
+  User user;
   String firstName;
   String lastName;
   String parish;
@@ -44,20 +44,20 @@ class _SettingsScreenState extends State<Settings> {
   }
 
   void fetchData() async {
-    user = await _auth.currentUser();
+    user = _auth.currentUser;
     uid = user.uid;
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('users')
-        .document(uid)
+        .doc(uid)
         .snapshots()
         .listen((user) {
       // print(data.data['image_url']);
 
       setState(() {
-        firstName = user.data['firstName'];
-        lastName = user.data['lastName'];
-        parish = user.data['parish'];
-        photoLink = user.data['image_url'];
+        firstName = user.data()['firstName'];
+        lastName = user.data()['lastName'];
+        parish = user.data()['parish'];
+        photoLink = user.data()['image_url'];
       });
     });
     // Firestore.instance.collection('users/$uid').snapshots().listen((data) {

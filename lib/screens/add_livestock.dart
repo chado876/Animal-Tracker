@@ -85,7 +85,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
       _formKey.currentState.save();
       final _auth = FirebaseAuth.instance;
-      FirebaseUser user = await _auth.currentUser();
+      User user = _auth.currentUser;
 
       int x = 0;
 
@@ -119,12 +119,12 @@ class _AddLivestockState extends State<AddLivestockSection> {
       print(locationData.latitude);
       print(locationData.longitude);
       print(locationData.address);
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection('users')
-          .document(user.uid)
+          .doc(user.uid)
           .collection('livestock')
-          .document(_tagId)
-          .setData({
+          .doc(_tagId)
+          .set({
         'uId': user.uid,
         'tagId': _tagId,
         'category': value,
@@ -164,13 +164,13 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
   Future<dynamic> postImage(
       {Asset imageFile, String fileName, String tagId, String userId}) async {
-    StorageReference reference = FirebaseStorage.instance
+    Reference reference = FirebaseStorage.instance
         .ref()
         .child('livestock/' + userId + '/' + _tagId)
         .child(fileName + '.jpg');
-    StorageUploadTask uploadTask =
+    UploadTask uploadTask =
         reference.putData((await imageFile.getByteData()).buffer.asUint8List());
-    StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
+    TaskSnapshot storageTaskSnapshot = await uploadTask;
     print(storageTaskSnapshot.ref.getDownloadURL());
     return storageTaskSnapshot.ref.getDownloadURL();
   }

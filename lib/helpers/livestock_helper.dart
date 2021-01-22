@@ -8,29 +8,29 @@ import './auth_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LivestockHelper {
-  UserData currentUser;
+  UserObject currentUser;
   Livestock liveStock;
 
   static Future<List<Livestock>> getLivestockData() async {
-    UserData currentUser = await AuthHelper.fetchData();
+    UserObject currentUser = await AuthHelper.fetchData();
     print(currentUser.uid);
     List<Livestock> allLivestock = [];
 
-    QuerySnapshot querySnapshot = await Firestore.instance
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('livestock')
-        .getDocuments();
+        .get();
 
-    querySnapshot.documents.forEach((livestock) {
+    querySnapshot.docs.forEach((livestock) {
       Livestock item = Livestock(
-          address: livestock.data['address'],
-          uId: livestock.data['uId'],
-          tagId: livestock.data['tagId'],
-          category: livestock.data['category'],
-          // imageUrls: livestock.data['image_urls'],
-          latitude: livestock.data['latitude'],
-          longitude: livestock.data['longitude']);
+          address: livestock.data()['address'],
+          uId: livestock.data()['uId'],
+          tagId: livestock.data()['tagId'],
+          category: livestock.data()['category'],
+          // imageUrls: livestock.data()['image_urls'],
+          latitude: livestock.data()['latitude'],
+          longitude: livestock.data()['longitude']);
 
       allLivestock.add(item);
     });
@@ -39,26 +39,26 @@ class LivestockHelper {
 
   static Future<List<Livestock>> getLivestockDataByCategory(
       String category) async {
-    UserData currentUser = await AuthHelper.fetchData();
+    UserObject currentUser = await AuthHelper.fetchData();
     print(currentUser.uid);
     List<Livestock> allLivestock = [];
 
-    QuerySnapshot querySnapshot = await Firestore.instance
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('livestock')
         .where('category', isEqualTo: category)
-        .getDocuments();
+        .get();
 
-    querySnapshot.documents.forEach((livestock) {
+    querySnapshot.docs.forEach((livestock) {
       Livestock item = Livestock(
-          address: livestock.data['address'],
-          uId: livestock.data['uId'],
-          tagId: livestock.data['tagId'],
-          category: livestock.data['category'],
-          // imageUrls: livestock.data['image_urls'],
-          latitude: livestock.data['latitude'],
-          longitude: livestock.data['longitude']);
+          address: livestock.data()['address'],
+          uId: livestock.data()['uId'],
+          tagId: livestock.data()['tagId'],
+          category: livestock.data()['category'],
+          // imageUrls: livestock.data()['image_urls'],
+          latitude: livestock.data()['latitude'],
+          longitude: livestock.data()['longitude']);
 
       allLivestock.add(item);
     });
@@ -66,11 +66,11 @@ class LivestockHelper {
   }
 
   static Future<Stream<QuerySnapshot>> queryByCategory(String category) async {
-    UserData currentUser = await AuthHelper.fetchData();
+    UserObject currentUser = await AuthHelper.fetchData();
 
-    Stream<QuerySnapshot> querySnapshot = Firestore.instance
+    Stream<QuerySnapshot> querySnapshot = FirebaseFirestore.instance
         .collection('users')
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('livestock')
         .where('category', isEqualTo: category)
         .snapshots();
@@ -79,29 +79,29 @@ class LivestockHelper {
   }
 
   static Future<List<Livestock>> getLivestockDataByTagID(String tagID) async {
-    UserData currentUser = await AuthHelper.fetchData();
+    UserObject currentUser = await AuthHelper.fetchData();
     List<Livestock> allLivestock = [];
 
-    QuerySnapshot querySnapshot = await Firestore.instance
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('livestock')
         .where('tagId', isEqualTo: tagID)
-        .getDocuments();
+        .get();
 
-    querySnapshot.documents.forEach((livestock) {
+    querySnapshot.docs.forEach((livestock) {
       Livestock item = Livestock(
-          address: livestock.data['address'],
-          uId: livestock.data['uId'],
-          tagId: livestock.data['tagId'],
-          category: livestock.data['category'],
-          imageUrls: (livestock.data['image_urls'] as List)
+          address: livestock.data()['address'],
+          uId: livestock.data()['uId'],
+          tagId: livestock.data()['tagId'],
+          category: livestock.data()['category'],
+          imageUrls: (livestock.data()['image_urls'] as List)
               ?.map((item) => item as String)
               ?.toList(),
-          latitude: livestock.data['latitude'],
-          longitude: livestock.data['longitude']);
+          latitude: livestock.data()['latitude'],
+          longitude: livestock.data()['longitude']);
 
-      print(livestock.data['image_urls']);
+      print(livestock.data()['image_urls']);
       allLivestock.add(item);
     });
     return allLivestock;
@@ -109,19 +109,19 @@ class LivestockHelper {
 
   static Future<void> postMissingLivestock(
       Livestock livestock, BuildContext ctx) async {
-    UserData currentUser = await AuthHelper.fetchData();
+    var currentUser = await AuthHelper.fetchData();
 
     try {
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection('users')
-          .document(currentUser.uid)
+          .doc(currentUser.uid)
           .collection('livestock')
-          .document(livestock.tagId)
-          .updateData({"isMissing": true}).then((value) async {
-        await Firestore.instance
+          .doc(livestock.tagId)
+          .update({"isMissing": true}).then((value) async {
+        await FirebaseFirestore.instance
             .collection('missing_livestock')
-            .document(livestock.tagId)
-            .setData({
+            .doc(livestock.tagId)
+            .set({
           'uId': currentUser.uid,
           'owner_name': currentUser.firstName + " " + currentUser.lastName,
           'tagId': livestock.tagId,
@@ -162,23 +162,22 @@ class LivestockHelper {
   }
 
   static Future<List<Livestock>> getMissingLivestock() async {
-    UserData currentUser = await AuthHelper.fetchData();
     List<Livestock> allLivestock = [];
 
     QuerySnapshot querySnapshot =
-        await Firestore.instance.collection('missing_livestock').getDocuments();
+        await FirebaseFirestore.instance.collection('missing_livestock').get();
 
-    querySnapshot.documents.forEach((livestock) {
+    querySnapshot.docs.forEach((livestock) {
       Livestock item = Livestock(
-          address: livestock.data['address'],
-          uId: livestock.data['uId'],
-          tagId: livestock.data['tagId'],
-          category: livestock.data['category'],
-          imageUrls: (livestock.data['image_urls'] as List)
+          address: livestock.data()['address'],
+          uId: livestock.data()['uId'],
+          tagId: livestock.data()['tagId'],
+          category: livestock.data()['category'],
+          imageUrls: (livestock.data()['image_urls'] as List)
               ?.map((item) => item as String)
               ?.toList(),
-          latitude: livestock.data['latitude'],
-          longitude: livestock.data['longitude']);
+          latitude: livestock.data()['latitude'],
+          longitude: livestock.data()['longitude']);
 
       allLivestock.add(item);
     });

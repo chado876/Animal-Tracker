@@ -5,26 +5,26 @@ import '../models/profile.dart';
 
 class UserDataProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseUser user;
+  User user;
   String uid;
   String firstName;
   String lastName;
   String parish;
   String photoLink;
 
-  Future<UserData> fetchData() async {
-    user = await _auth.currentUser();
+  Future<UserObject> fetchData() async {
+    user = await _auth.currentUser;
     uid = user.uid;
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('users')
-        .document(uid)
+        .doc(uid)
         .snapshots()
         .listen((user) {
-      firstName = user.data['firstName'];
-      lastName = user.data['lastName'];
-      parish = user.data['parish'];
-      photoLink = user.data['image_url'];
-      return UserData(
+      firstName = user.data()['firstName'];
+      lastName = user.data()['lastName'];
+      parish = user.data()['parish'];
+      photoLink = user.data()['image_url'];
+      return UserObject(
           uid: uid,
           firstName: firstName,
           lastName: lastName,
