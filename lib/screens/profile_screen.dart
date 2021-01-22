@@ -109,14 +109,14 @@ class _ProfileScreenState extends State<ProfileCard>
           .ref()
           .child('user_image')
           .child(result.user.uid + '.jpg');
-      await ref.putFile(_userImageFile).onComplete;
+      await ref.putFile(_userImageFile);
       final url = await ref.getDownloadURL();
 
       print(ref.getDownloadURL());
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection('users')
-          .document(result.user.uid)
-          .setData({
+          .doc(result.user.uid)
+          .set({
         'firstName': _firstName,
         'lastName': _lastName,
         'parish': _selectedParish.name,

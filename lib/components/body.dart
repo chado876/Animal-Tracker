@@ -33,10 +33,10 @@ class BodySection extends StatefulWidget {
 }
 
 class _BodyState extends State<BodySection> {
-  UserData userData;
+  UserObject userData;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseUser user;
+  User user;
   String uid;
   String firstName;
   List<Livestock> cattle;
@@ -49,7 +49,7 @@ class _BodyState extends State<BodySection> {
 
   List<Livestock> _searchResult;
 
-  UserData currentUser = new UserData();
+  UserObject currentUser = new UserObject();
 
   List<String> _categories = [
     "Cattle",
@@ -103,17 +103,18 @@ class _BodyState extends State<BodySection> {
   }
 
   void fetchData() async {
-    user = await _auth.currentUser();
+    user = _auth.currentUser;
     uid = user.uid;
     currentUser.uid = uid;
-    Firestore.instance
+
+    FirebaseFirestore.instance
         .collection('users')
-        .document(uid)
+        .doc(uid)
         .snapshots()
         .listen((user) {
       // print(data.data['image_url']);
       setState(() {
-        firstName = user.data['firstName'];
+        firstName = user.data()['firstName'];
         print("Here!!!!" + firstName);
       });
       // lastName = user.data['lastName'];
@@ -317,7 +318,7 @@ Widget _searchResultView(List<Livestock> livestock) {
 
 Widget _fetchLivestockByCategory(String uid, String category) {
   return FutureBuilder(
-    future: FirebaseAuth.instance.currentUser(),
+    future: AuthHelper.getCurrentUser(),
     builder: (ctx, futureSnapshot) {
       if (futureSnapshot.connectionState == ConnectionState.waiting) {
         return Center(
@@ -325,9 +326,9 @@ Widget _fetchLivestockByCategory(String uid, String category) {
         );
       }
       return StreamBuilder(
-          stream: Firestore.instance
+          stream: FirebaseFirestore.instance
               .collection('users')
-              .document(uid)
+              .doc(uid)
               .collection('livestock')
               .where('category', isEqualTo: category)
               .snapshots(),
@@ -337,7 +338,7 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                 child: CircularProgressIndicator(),
               );
             }
-            final livestock = snapshot.data.documents;
+            final livestock = snapshot.data.docs;
 
             if (livestock.length > 0) {
               return ListView.builder(
@@ -349,10 +350,13 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                       children: [
                         Align(
                           alignment: Alignment.topCenter,
-                          child: Image.network(livestock[1]['image_urls'][0],
-                              height: 300, width: 300),
+                          child: Image.network(
+                              livestock[1]['image_urls']
+                                  [0], //this needs to be fixed (null checking)
+                              height: 300,
+                              width: 300),
                         ),
-                        Text(livestock[index].documentID),
+                        Text(livestock[index].id),
                         Row(
                           children: [
                             Text(livestock[index]['address']),

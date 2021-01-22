@@ -26,7 +26,7 @@ class HomeCard extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeCard> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseUser user;
+  User user;
   String firstName;
 
   @override
@@ -36,15 +36,15 @@ class _HomeScreenState extends State<HomeCard> {
   }
 
   void fetchData() async {
-    user = await _auth.currentUser();
+    user = await _auth.currentUser;
     String uid = user.uid;
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('users')
-        .document(uid)
+        .doc(uid)
         .snapshots()
         .listen((user) {
       // print(data.data['image_url']);
-      firstName = user.data['firstName'];
+      firstName = user.data()['firstName'];
     });
   }
 

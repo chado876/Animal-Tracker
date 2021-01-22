@@ -6,6 +6,7 @@ import './settings_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import '../screens/management_screen.dart';
 import '../screens/mapscreen.dart';
+import '../screens/missing_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -66,7 +67,9 @@ class _MainScreenState extends State<MainScreen> {
               ? ManagementScreen()
               : section == 2
                   ? MapPage()
-                  : SettingsScreen(),
+                  : section == 3
+                      ? MissingScreen()
+                      : SettingsScreen(),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.transparent,
         color: Colors.black,
@@ -87,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
           Icon(Icons.public,
               size: 40,
               color: section == 2 ? Colors.lightBlueAccent : Colors.white),
-          Icon(Icons.more_horiz,
+          Icon(Icons.warning_sharp,
               size: 30,
               color: section == 3 ? Colors.lightBlueAccent : Colors.white),
           Icon(Icons.settings,
