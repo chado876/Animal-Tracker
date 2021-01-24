@@ -78,6 +78,26 @@ class LivestockHelper {
     return querySnapshot;
   }
 
+  static Future<bool> checkIfCategoryExists(String category) async {
+    UserObject currentUser = await AuthHelper.fetchData();
+
+    bool exists = false;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('livestock')
+        .where('category', isEqualTo: category)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        exists = true;
+      }
+    });
+
+    return exists;
+  }
+
   static Future<List<Livestock>> getLivestockDataByTagID(String tagID) async {
     UserObject currentUser = await AuthHelper.fetchData();
     List<Livestock> allLivestock = [];
@@ -182,5 +202,48 @@ class LivestockHelper {
       allLivestock.add(item);
     });
     return allLivestock;
+  }
+
+  static Future<void> setLivestockAsFound(
+      String tagId, BuildContext ctx) async {
+    var currentUser = await AuthHelper.fetchData();
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('livestock')
+          .doc(tagId)
+          .update({"isMissing": false}).then((value) async {
+        await FirebaseFirestore.instance
+            .collection('missing_livestock')
+            .doc(tagId)
+            .delete();
+      });
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text("Livestock with tag ID of " +
+              tagId +
+              " marked as found successfully."),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on PlatformException catch (err) {
+      var message = 'An error occurred, please try again!';
+
+      if (err.message != null) {
+        message = err.message;
+      }
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(ctx).errorColor,
+        ),
+      );
+    } catch (err) {
+      print(err);
+    }
   }
 }
