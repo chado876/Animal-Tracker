@@ -5,6 +5,7 @@ import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/user_data_provider.dart';
 import '../models/profile.dart';
@@ -77,6 +78,9 @@ class _BodyState extends State<BodySection> {
   void initState() {
     fetchUserData();
     _searchQueryController.addListener(_onSearchChanged);
+
+    // FirebaseMessaging.instance.requestPermission();
+    // FirebaseMessaging.instance.s
 
     super.initState();
   }
