@@ -89,53 +89,45 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
       PlaceLocation pickedLocation = _pickedLocation;
 
-      _formKey.currentState.save();
+      // _formKey.currentState.save(); no longer using forms
       final _auth = FirebaseAuth.instance;
       User user = _auth.currentUser;
 
       int x = 0;
 
       images.forEach((image) {
-        String fileName = _tagId.toString() + x.toString();
+        String fileName = tagIdController.text + x.toString();
         postImage(
                 imageFile: image,
                 fileName: fileName,
-                tagId: _tagId,
+                tagId: tagIdController.text,
                 userId: user.uid)
             .then((url) {
           _imageUrls.add(url.toString());
           print(url.toString());
         });
-
         x++;
       });
 
       final address = await LocationHelper.getPlacedAddress(
           pickedLocation.latitude, pickedLocation.longitude);
 
-      print("Address here" + address);
-      print(pickedLocation.latitude);
-      print(pickedLocation.longitude);
-
       locationData = PlaceLocation(
           latitude: pickedLocation.latitude,
           longitude: pickedLocation.longitude,
           address: address);
 
-      print(locationData.latitude);
-      print(locationData.longitude);
-      print(locationData.address);
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('livestock')
-          .doc(_tagId)
+          .doc(tagIdController.text)
           .set({
         'uId': user.uid,
-        'tagId': _tagId,
+        'tagId': tagIdController.text,
         'category': value,
-        'weight': _weight,
-        'distinguishingFeatures': _features,
+        'weight': weightController.text,
+        'distinguishingFeatures': featuresController.text,
         'image_urls': _imageUrls,
         'latitude': locationData.latitude,
         'longitude': locationData.longitude,
@@ -172,7 +164,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
       {Asset imageFile, String fileName, String tagId, String userId}) async {
     Reference reference = FirebaseStorage.instance
         .ref()
-        .child('livestock/' + userId + '/' + _tagId)
+        .child('livestock/' + userId + '/' + tagIdController.text)
         .child(fileName + '.jpg');
     UploadTask uploadTask =
         reference.putData((await imageFile.getByteData()).buffer.asUint8List());
@@ -274,7 +266,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
-                  controller: weightController,
+                  controller: tagIdController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Tag ID',
@@ -294,10 +286,10 @@ class _AddLivestockState extends State<AddLivestockSection> {
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
-                  controller: weightController,
+                  controller: ageController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Weight (Optional)',
+                    labelText: 'Age (Optional)',
                   ),
                 ),
               ),
@@ -350,11 +342,28 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   width: 300,
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: RaisedButton(
+                    elevation: 5.0,
                     textColor: Colors.white,
-                    color: Colors.green,
+                    color: Colors.lightGreen,
                     child: Text('Add Livestock'),
                     onPressed: () {
-                      print(nameController.text);
+                      _trySubmit().then((value) {
+                        SnackBar snackBar = SnackBar(
+                          backgroundColor: postSuccess
+                              ? Colors.lightGreen
+                              : Colors.redAccent,
+                          content: Text(postSuccess
+                              ? "Livestock added successfully"
+                              : "An error occurred. Please try again."),
+                          action: SnackBarAction(
+                            label: 'Ok',
+                            onPressed: () {
+                              // Some code to undo the change.
+                            },
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      });
                     },
                   )),
               SizedBox(height: 10),
@@ -363,81 +372,20 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   width: 300,
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: RaisedButton(
+                    elevation: 5.0,
                     textColor: Colors.white,
-                    color: Colors.red,
+                    color: Colors.redAccent,
                     child: Text('Cancel'),
                     onPressed: () {
-                      print(nameController.text);
+                      Navigator.pop(context);
                     },
                   )),
-
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     RaisedButton(
-              //       elevation: 5,
-              //       color: Colors.green,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(30.0),
-              //       ),
-              //       child: Text(
-              //         "Add",
-              //         style: kHintTextStyle.copyWith(fontSize: 18),
-              //       ),
-              //       onPressed: () {
-              //         _trySubmit().then((value) {
-              //           SnackBar snackBar = SnackBar(
-              //             content: Text(postSuccess
-              //                 ? "Livestock added successfully"
-              //                 : "An error occurred. Please try again."),
-              //             action: SnackBarAction(
-              //               label: 'Ok',
-              //               onPressed: () {
-              //                 // Some code to undo the change.
-              //               },
-              //             ),
-              //           );
-              //           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              //         });
-              //       },
-              //     ),
-              //     SizedBox(width: 10),
-              //     RaisedButton(
-              //       elevation: 5,
-              //       color: Colors.red,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(30.0),
-              //       ),
-              //       child: Text(
-              //         "Cancel",
-              //         style: kHintTextStyle.copyWith(fontSize: 18),
-              //       ),
-              //       onPressed: () {
-              //         Navigator.pushNamed(context, '/manage');
-              //       },
-              //     ),
-              //   ],
-              // ),
               SizedBox(
                 height: 80,
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSnackBar(bool postSuccess) {
-    return SnackBar(
-      content: Text(postSuccess
-          ? "Livestock added successfully"
-          : "An error occurred. Please try again."),
-      action: SnackBarAction(
-        label: 'ok',
-        onPressed: () {
-          // Some code to undo the change.
-        },
       ),
     );
   }
