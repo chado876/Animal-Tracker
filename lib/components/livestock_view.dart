@@ -177,11 +177,8 @@ class _LivestockViewState extends State<LivestockViewSection>
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                    builder: (BuildContext context) => ShowMap(
-                        PlaceLocation(
-                            latitude: livestock.latitude,
-                            longitude: livestock.longitude),
-                        context),
+                    builder: (BuildContext context) =>
+                        showMap(livestock, context),
                   ));
             },
           ),
@@ -262,7 +259,14 @@ List<Widget> generateImageList(List<String> urls) {
       .toList();
 }
 
-Widget ShowMap(PlaceLocation initialLocation, BuildContext context) {
+Widget showMap(Livestock livestock, BuildContext context) {
+  Marker marker = Marker(
+    markerId: MarkerId(livestock.tagId),
+    position: LatLng(livestock.latitude, livestock.longitude),
+    // icon: BitmapDescriptor.fromAssetImage(
+    //     ImageConfiguration(size: Size(48, 48)), 'assets/images/cow.png'),
+  );
+
   return Scaffold(
     appBar: AppBar(
       title: Text("Map"),
@@ -274,13 +278,12 @@ Widget ShowMap(PlaceLocation initialLocation, BuildContext context) {
         children: [
           GoogleMap(
             initialCameraPosition: CameraPosition(
-                target:
-                    LatLng(initialLocation.latitude, initialLocation.longitude),
+                target: LatLng(livestock.latitude, livestock.longitude),
                 zoom: 15.0),
             mapType: MapType.normal,
             // onMapCreated: _onMapCreated,
             myLocationEnabled: true,
-            // markers: Set.from(_markers),
+            markers: {marker},
           ),
         ],
       ),
