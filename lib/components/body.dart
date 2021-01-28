@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/user_data_provider.dart';
 import '../models/profile.dart';
 
@@ -15,6 +16,8 @@ import '../models/livestock.dart';
 import '../helpers/auth_helper.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'livestock_view.dart';
 
 class Body extends StatelessWidget {
   @override
@@ -79,11 +82,31 @@ class _BodyState extends State<BodySection> {
     fetchUserData();
     _searchQueryController.addListener(_onSearchChanged);
 
-    // FirebaseMessaging.instance.requestPermission();
-    // FirebaseMessaging.instance.s
+    // notif();
 
     super.initState();
   }
+
+  // Future<void> notif() async {
+  //   RemoteMessage initialMessage =
+  //       await FirebaseMessaging.instance.getInitialMessage();
+
+  //     FirebaseMessaging.
+  //   print(initialMessage.toString());
+  //   if (initialMessage?.data['category'] == 'Cattle') {
+  //     print("HEREEEZ!");
+  //   } else {
+  //     print(initialMessage.toString());
+  //   }
+
+  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  //     if (message.data['category'] == 'Cattle') {
+  //       print("HEREEEZ!");
+  //     } else {
+  //       print(initialMessage.toString());
+  //     }
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -147,10 +170,14 @@ class _BodyState extends State<BodySection> {
             // if (LivestockHelper.checkIfCategoryExists(category) == false)
             Column(
               children: [
-                Text(category),
+                Text(category,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    )),
                 Container(
-                  height: 450,
-                  width: 400,
+                  height: 350,
+                  width: 500,
                   child: _fetchLivestockByCategory(uid, category),
                 ),
               ],
@@ -353,112 +380,177 @@ Widget _fetchLivestockByCategory(String uid, String category) {
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: livestock.length,
-                itemBuilder: (BuildContext context, int index) => Card(
-                  margin: EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        livestock[index]['isMissing']
-                            ? Text(
-                                "Missing",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 20,
+                itemBuilder: (BuildContext context, int index) =>
+                    GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LivestockView(
+                                livestock: Livestock(
+                                  tagId: livestock[index]['tagId'],
+                                  address: livestock[index]['address'],
+                                  uId: livestock[index]['uId'],
+                                  latitude: livestock[index]['latitude'],
+                                  longitude: livestock[index]['longitude'],
+                                  distinguishingFeatures: livestock[index]
+                                      ['distinguishingFeatures'],
+                                  weight: livestock[index]['weight'],
+                                  imageUrls:
+                                      (livestock[index]['image_urls'] as List)
+                                          ?.map((item) => item as String)
+                                          ?.toList(),
+                                  category: livestock[index]['category'],
+                                  isMissing: livestock[index]['isMissing'],
                                 ),
-                              )
-                            : Text(
-                                "Safe",
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 20,
-                                ),
+                              )),
+                    );
+                  },
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    margin: EdgeInsets.all(8.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ListTile(
+                          //   leading: Icon(Icons.arrow_drop_down_circle),
+                          //   title: Text('Card title 1'),
+                          //   subtitle: Text(
+                          //     'Secondary Text',
+                          //     style:
+                          //         TextStyle(color: Colors.black.withOpacity(0.6)),
+                          //   ),
+                          // ),
+                          Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Image.network(
+                                    livestock[index]['image_urls'][
+                                        0], //this needs to be fixed (null checking)
+                                    height: 300,
+                                    width: 300),
                               ),
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Image.network(
-                              livestock[index]['image_urls']
-                                  [0], //this needs to be fixed (null checking)
-                              height: 300,
-                              width: 300),
-                        ),
-                        Text(livestock[index].id),
-                        Row(
-                          children: [
-                            Container(
-                              width: 300,
-                              child: Text(livestock[index]['address']),
-                            )
-                          ],
-                        ),
-                        Row(
-                          // mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: Row(
-                                children: [
-                                  Text("Show on Map"),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            livestock[index]['isMissing']
-                                ? ElevatedButton(
-                                    onPressed: () {
-                                      LivestockHelper.setLivestockAsFound(
-                                          livestock[index]['tagId'], context);
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Text("Mark as Found "),
-                                      ],
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.green,
-                                      padding: EdgeInsets.only(left: 5),
-                                    ),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: () {
-                                      LivestockHelper.postMissingLivestock(
-                                          Livestock(
-                                              tagId: livestock[index]['tagId'],
-                                              address: livestock[index]
-                                                  ['address'],
-                                              uId: livestock[index]['uId'],
-                                              latitude: livestock[index]
-                                                  ['latitude'],
-                                              longitude: livestock[index]
-                                                  ['longitude'],
-                                              distinguishingFeatures: livestock[
-                                                      index]
-                                                  ['distinguishingFeatures'],
-                                              weight: livestock[index]
-                                                  ['weight'],
-                                              imageUrls: (livestock[index]
-                                                      ['image_urls'] as List)
-                                                  ?.map(
-                                                      (item) => item as String)
-                                                  ?.toList(),
-                                              category: livestock[index]
-                                                  ['category']),
-                                          context);
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Text("Mark as Missing "),
-                                      ],
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.redAccent,
-                                      padding: EdgeInsets.only(left: 5),
-                                    ),
-                                  ),
-                          ],
-                        )
-                      ],
+                            ],
+                          ),
+
+                          // Row(
+                          //   children: [
+                          //     livestock[index]['isMissing']
+                          //         ? Text(
+                          //             "Missing",
+                          //             style: TextStyle(
+                          //               color: Colors.red,
+                          //               fontSize: 20,
+                          //             ),
+                          //           )
+                          //         : Text(
+                          //             "Safe",
+                          //             style: TextStyle(
+                          //               color: Colors.green,
+                          //               fontSize: 20,
+                          //             ),
+                          //           ),
+                          //   ],
+                          // ),
+                          // Row(
+                          //   children: [
+                          //     Text("Tag ID"),
+                          //   ],
+                          // ),
+                          // Row(
+                          //   children: [
+                          //     Text(
+                          //       livestock[index]['tagId'],
+                          //       textAlign: TextAlign.left,
+                          //     ),
+                          //   ],
+                          // ),
+                          // Row(
+                          //   children: [
+                          //     Text("Current Location"),
+                          //   ],
+                          // ),
+                          // Row(
+                          //   children: [
+                          //     Container(
+                          //       width: 300,
+                          //       child: Text(livestock[index]['address']),
+                          //     )
+                          //   ],
+                          // ),
+                          // Row(
+                          //   // mainAxisAlignment: MainAxisAlignment.start,
+                          //   children: [
+                          //     SizedBox(width: 25),
+                          //     ElevatedButton(
+                          //       onPressed: () {},
+                          //       child: Row(
+                          //         children: [
+                          //           Text("Show on Map"),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //     SizedBox(
+                          //       width: 15,
+                          //     ),
+                          //     livestock[index]['isMissing']
+                          //         ? ElevatedButton(
+                          //             onPressed: () {
+                          //               LivestockHelper.setLivestockAsFound(
+                          //                   livestock[index]['tagId'], context);
+                          //             },
+                          //             child: Row(
+                          //               children: [
+                          //                 Text("Mark as Found "),
+                          //               ],
+                          //             ),
+                          //             style: ElevatedButton.styleFrom(
+                          //               primary: Colors.green,
+                          //               padding: EdgeInsets.only(left: 5),
+                          //             ),
+                          //           )
+                          //         : ElevatedButton(
+                          //             onPressed: () {
+                          //               LivestockHelper.postMissingLivestock(
+                          //                   Livestock(
+                          //                       tagId: livestock[index]['tagId'],
+                          //                       address: livestock[index]
+                          //                           ['address'],
+                          //                       uId: livestock[index]['uId'],
+                          //                       latitude: livestock[index]
+                          //                           ['latitude'],
+                          //                       longitude: livestock[index]
+                          //                           ['longitude'],
+                          //                       distinguishingFeatures: livestock[
+                          //                               index]
+                          //                           ['distinguishingFeatures'],
+                          //                       weight: livestock[index]
+                          //                           ['weight'],
+                          //                       imageUrls: (livestock[index]
+                          //                               ['image_urls'] as List)
+                          //                           ?.map(
+                          //                               (item) => item as String)
+                          //                           ?.toList(),
+                          //                       category: livestock[index]
+                          //                           ['category']),
+                          //                   context);
+                          //             },
+                          //             child: Row(
+                          //               children: [
+                          //                 Text("Mark as Missing "),
+                          //               ],
+                          //             ),
+                          //             style: ElevatedButton.styleFrom(
+                          //               primary: Colors.redAccent,
+                          //               padding: EdgeInsets.only(left: 5),
+                          //             ),
+                          //           ),
+                          //   ],
+                          // ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
