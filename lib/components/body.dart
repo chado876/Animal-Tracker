@@ -402,6 +402,8 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                                           ?.toList(),
                                   category: livestock[index]['category'],
                                   isMissing: livestock[index]['isMissing'],
+                                  dateAdded:
+                                      livestock[index]['dateAdded'].toDate(),
                                 ),
                               )),
                     );

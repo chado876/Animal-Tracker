@@ -111,7 +111,9 @@ class _LivestockViewState extends State<LivestockViewSection>
             ListTile(
               leading: FlutterLogo(size: 56.0),
               title: Text('Date Added'),
-              subtitle: Text("1/27/2021"),
+              subtitle: livestock.dateAdded != null
+                  ? (Text(livestock.dateAdded.toString()))
+                  : ("1/27/2021"),
             ),
           ],
         ),

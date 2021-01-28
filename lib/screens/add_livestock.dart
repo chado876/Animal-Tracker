@@ -104,7 +104,6 @@ class _AddLivestockState extends State<AddLivestockSection> {
                 userId: user.uid)
             .then((url) {
           _imageUrls.add(url.toString());
-          print(url.toString());
         });
         x++;
       });
@@ -126,13 +125,14 @@ class _AddLivestockState extends State<AddLivestockSection> {
         'uId': user.uid,
         'tagId': tagIdController.text,
         'category': value,
-        'weight': weightController.text,
+        'weight': double.parse(weightController.text),
         'distinguishingFeatures': featuresController.text,
         'image_urls': _imageUrls,
         'latitude': locationData.latitude,
         'longitude': locationData.longitude,
         'address': locationData.address,
         'isMissing': false,
+        'dateAdded': generateCurrentDate(),
       });
       postSuccess = true;
     } on PlatformException catch (err) {
@@ -169,7 +169,6 @@ class _AddLivestockState extends State<AddLivestockSection> {
     UploadTask uploadTask =
         reference.putData((await imageFile.getByteData()).buffer.asUint8List());
     TaskSnapshot storageTaskSnapshot = await uploadTask;
-    print(storageTaskSnapshot.ref.getDownloadURL());
     return storageTaskSnapshot.ref.getDownloadURL();
   }
 
@@ -391,4 +390,9 @@ class _AddLivestockState extends State<AddLivestockSection> {
   }
 
   List<int> generateNumbers() => List<int>.generate(30, (i) => i + 1);
+
+  DateTime generateCurrentDate() {
+    DateTime now = new DateTime.now();
+    return now;
+  }
 }
