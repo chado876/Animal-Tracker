@@ -176,7 +176,7 @@ class _BodyState extends State<BodySection> {
                       fontWeight: FontWeight.bold,
                     )),
                 Container(
-                  height: 350,
+                  height: 250,
                   width: 500,
                   child: _fetchLivestockByCategory(uid, category),
                 ),
@@ -323,11 +323,12 @@ Widget _searchResultView(List<Livestock> livestock) {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Image.network(livestock[index].imageUrls[0],
-                    height: 300, width: 300),
-              ),
+              SizedBox(
+                  child: Image.network(
+                    livestock[index].imageUrls[0],
+                  ),
+                  width: 300,
+                  height: 300),
               Text(livestock[index].tagId),
               Row(
                 children: [
@@ -413,7 +414,6 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                     margin: EdgeInsets.all(8.0),
                     child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // ListTile(
                           //   leading: Icon(Icons.arrow_drop_down_circle),
@@ -432,7 +432,7 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                                     livestock[index]['image_urls'][
                                         0], //this needs to be fixed (null checking)
                                     height: 300,
-                                    width: 300),
+                                    width: 200),
                               ),
                             ],
                           ),

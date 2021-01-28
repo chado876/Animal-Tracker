@@ -27,9 +27,6 @@ class _MapPageState extends State<MapPage> {
 
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
-    print("here YASSOOOOOOOOOOOOOOOOOOOO!!!!!!!");
-    print(livestock.length);
-
     addMarker(livestock);
   }
 
@@ -56,7 +53,7 @@ class _MapPageState extends State<MapPage> {
     _location.onLocationChanged.listen((l) {
       _controller.animateCamera(
         CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 15),
+          CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 95),
         ),
       );
     });
@@ -65,6 +62,9 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Map"),
+      ),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -72,7 +72,7 @@ class _MapPageState extends State<MapPage> {
           children: [
             GoogleMap(
               initialCameraPosition:
-                  CameraPosition(target: _initialcameraposition),
+                  CameraPosition(target: _initialcameraposition, zoom: 15.0),
               mapType: MapType.normal,
               // onMapCreated: _onMapCreated,
               myLocationEnabled: true,
