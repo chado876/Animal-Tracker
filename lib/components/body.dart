@@ -166,22 +166,29 @@ class _BodyState extends State<BodySection> {
             child: _searchResultView(_searchResult),
           ),
         if (!_isSearching)
-          for (var category in _categories)
-            // if (LivestockHelper.checkIfCategoryExists(category) == false)
-            Column(
-              children: [
-                Text(category,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    )),
-                Container(
-                  height: 350,
-                  width: 500,
-                  child: _fetchLivestockByCategory(uid, category),
-                ),
-              ],
-            )
+          Row(
+            children: [
+              Icon(Icons.info),
+              Text("Tap on a livestock card for more information and options"),
+            ],
+          ),
+        SizedBox(height: 20),
+        for (var category in _categories)
+          // if (LivestockHelper.checkIfCategoryExists(category) == false)
+          Column(
+            children: [
+              Text(category,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  )),
+              Container(
+                height: 300,
+                width: 500,
+                child: _fetchLivestockByCategory(uid, category),
+              ),
+            ],
+          )
       ],
     );
   }
@@ -323,11 +330,12 @@ Widget _searchResultView(List<Livestock> livestock) {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Image.network(livestock[index].imageUrls[0],
-                    height: 300, width: 300),
-              ),
+              SizedBox(
+                  child: Image.network(
+                    livestock[index].imageUrls[0],
+                  ),
+                  width: 300,
+                  height: 350),
               Text(livestock[index].tagId),
               Row(
                 children: [
@@ -409,152 +417,37 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                     );
                   },
                   child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    margin: EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ListTile(
-                          //   leading: Icon(Icons.arrow_drop_down_circle),
-                          //   title: Text('Card title 1'),
-                          //   subtitle: Text(
-                          //     'Secondary Text',
-                          //     style:
-                          //         TextStyle(color: Colors.black.withOpacity(0.6)),
-                          //   ),
-                          // ),
-                          Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: Image.network(
-                                    livestock[index]['image_urls'][
-                                        0], //this needs to be fixed (null checking)
-                                    height: 300,
-                                    width: 300),
-                              ),
-                            ],
+                      child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
+                            color: livestock[index]['isMissing']
+                                ? Colors.red
+                                : Colors.green,
                           ),
-
-                          // Row(
-                          //   children: [
-                          //     livestock[index]['isMissing']
-                          //         ? Text(
-                          //             "Missing",
-                          //             style: TextStyle(
-                          //               color: Colors.red,
-                          //               fontSize: 20,
-                          //             ),
-                          //           )
-                          //         : Text(
-                          //             "Safe",
-                          //             style: TextStyle(
-                          //               color: Colors.green,
-                          //               fontSize: 20,
-                          //             ),
-                          //           ),
-                          //   ],
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     Text("Tag ID"),
-                          //   ],
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     Text(
-                          //       livestock[index]['tagId'],
-                          //       textAlign: TextAlign.left,
-                          //     ),
-                          //   ],
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     Text("Current Location"),
-                          //   ],
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     Container(
-                          //       width: 300,
-                          //       child: Text(livestock[index]['address']),
-                          //     )
-                          //   ],
-                          // ),
-                          // Row(
-                          //   // mainAxisAlignment: MainAxisAlignment.start,
-                          //   children: [
-                          //     SizedBox(width: 25),
-                          //     ElevatedButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         children: [
-                          //           Text("Show on Map"),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //     SizedBox(
-                          //       width: 15,
-                          //     ),
-                          //     livestock[index]['isMissing']
-                          //         ? ElevatedButton(
-                          //             onPressed: () {
-                          //               LivestockHelper.setLivestockAsFound(
-                          //                   livestock[index]['tagId'], context);
-                          //             },
-                          //             child: Row(
-                          //               children: [
-                          //                 Text("Mark as Found "),
-                          //               ],
-                          //             ),
-                          //             style: ElevatedButton.styleFrom(
-                          //               primary: Colors.green,
-                          //               padding: EdgeInsets.only(left: 5),
-                          //             ),
-                          //           )
-                          //         : ElevatedButton(
-                          //             onPressed: () {
-                          //               LivestockHelper.postMissingLivestock(
-                          //                   Livestock(
-                          //                       tagId: livestock[index]['tagId'],
-                          //                       address: livestock[index]
-                          //                           ['address'],
-                          //                       uId: livestock[index]['uId'],
-                          //                       latitude: livestock[index]
-                          //                           ['latitude'],
-                          //                       longitude: livestock[index]
-                          //                           ['longitude'],
-                          //                       distinguishingFeatures: livestock[
-                          //                               index]
-                          //                           ['distinguishingFeatures'],
-                          //                       weight: livestock[index]
-                          //                           ['weight'],
-                          //                       imageUrls: (livestock[index]
-                          //                               ['image_urls'] as List)
-                          //                           ?.map(
-                          //                               (item) => item as String)
-                          //                           ?.toList(),
-                          //                       category: livestock[index]
-                          //                           ['category']),
-                          //                   context);
-                          //             },
-                          //             child: Row(
-                          //               children: [
-                          //                 Text("Mark as Missing "),
-                          //               ],
-                          //             ),
-                          //             style: ElevatedButton.styleFrom(
-                          //               primary: Colors.redAccent,
-                          //               padding: EdgeInsets.only(left: 5),
-                          //             ),
-                          //           ),
-                          //   ],
-                          // ),
-                        ],
-                      ),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              livestock[index]['isMissing']
+                                  ? "Missing"
+                                  : "Safe",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Image.network(livestock[index]['image_urls'][0],
+                            width: 250, height: 250),
+                        Text(livestock[index]['tagId']),
+                      ],
                     ),
-                  ),
+                  )),
                 ),
               );
             } else {

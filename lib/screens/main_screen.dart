@@ -49,6 +49,12 @@ class _MainScreenState extends State<MainScreen> {
   void _onItemTap(int index) {
     index == 2 ? mapScreen = true : mapScreen = false;
 
+    if (mapScreen) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MapPage()),
+      );
+    }
     setState(() {
       section = index;
     });

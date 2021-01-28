@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:animal_tracker/models/livestock.dart';
+import 'package:animal_tracker/models/place.dart';
 import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
+
+import '../helpers/livestock_helper.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 final List<String> imgList = [
   'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
@@ -143,7 +149,7 @@ class _LivestockViewState extends State<LivestockViewSection>
             icon: Icons.delete,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
-              _animationController.reverse();
+              LivestockHelper.deleteLivestock(livestock.tagId, context);
             },
           ),
           Bubble(
@@ -155,7 +161,10 @@ class _LivestockViewState extends State<LivestockViewSection>
                 : Icons.warning_outlined,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
-              _animationController.reverse();
+              livestock.isMissing
+                  ? LivestockHelper.setLivestockAsFound(
+                      livestock.tagId, context)
+                  : LivestockHelper.postMissingLivestock(livestock, context);
             },
           ),
           Bubble(
@@ -165,7 +174,12 @@ class _LivestockViewState extends State<LivestockViewSection>
             icon: Icons.location_on_outlined,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
-              _animationController.reverse();
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        showMap(livestock, context),
+                  ));
             },
           ),
           //Floating action menu item
@@ -243,4 +257,36 @@ List<Widget> generateImageList(List<String> urls) {
             ),
           ))
       .toList();
+}
+
+Widget showMap(Livestock livestock, BuildContext context) {
+  Marker marker = Marker(
+    markerId: MarkerId(livestock.tagId),
+    position: LatLng(livestock.latitude, livestock.longitude),
+    // icon: BitmapDescriptor.fromAssetImage(
+    //     ImageConfiguration(size: Size(48, 48)), 'assets/images/cow.png'),
+  );
+
+  return Scaffold(
+    appBar: AppBar(
+      title: Text("Map"),
+    ),
+    body: Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+                target: LatLng(livestock.latitude, livestock.longitude),
+                zoom: 15.0),
+            mapType: MapType.normal,
+            // onMapCreated: _onMapCreated,
+            myLocationEnabled: true,
+            markers: {marker},
+          ),
+        ],
+      ),
+    ),
+  );
 }
