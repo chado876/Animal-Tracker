@@ -11,6 +11,7 @@ class Livestock {
   double weight;
   List<String> imageUrls;
   bool isMissing = false;
+  DateTime dateAdded;
 
   Livestock(
       {@required this.tagId,
@@ -22,5 +23,6 @@ class Livestock {
       @required this.latitude,
       this.weight,
       @required this.imageUrls,
-      this.isMissing});
+      this.isMissing,
+      this.dateAdded});
 }

@@ -53,6 +53,8 @@ dev_dependencies:
   location: ^3.2.1
   geolocator: ^6.1.13
   shared_preferences: ^0.5.12+4
+  carousel_slider: ^2.3.1
+  floating_action_bubble: ^1.1.2
 
   firebase_core: "^0.7.0"
   firebase_auth: "^0.20.0+1"
@@ -60,23 +62,7 @@ dev_dependencies:
   cloud_functions: "^0.9.0"
   firebase_storage: "^7.0.0"
   firebase_messaging: "^8.0.0-dev.14"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
 
 
 # For information on the generic Dart part of this file, see the

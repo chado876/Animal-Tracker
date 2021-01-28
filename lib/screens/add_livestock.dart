@@ -75,6 +75,12 @@ class _AddLivestockState extends State<AddLivestockSection> {
     S2Choice<String>(value: 'Other', title: 'Other'),
   ];
 
+  TextEditingController tagIdController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
+  TextEditingController featuresController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+
   Future<void> _trySubmit() async {
     try {
       setState(() {
@@ -83,58 +89,50 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
       PlaceLocation pickedLocation = _pickedLocation;
 
-      _formKey.currentState.save();
+      // _formKey.currentState.save(); no longer using forms
       final _auth = FirebaseAuth.instance;
       User user = _auth.currentUser;
 
       int x = 0;
 
       images.forEach((image) {
-        String fileName = _tagId.toString() + x.toString();
+        String fileName = tagIdController.text + x.toString();
         postImage(
                 imageFile: image,
                 fileName: fileName,
-                tagId: _tagId,
+                tagId: tagIdController.text,
                 userId: user.uid)
             .then((url) {
           _imageUrls.add(url.toString());
-          print(url.toString());
         });
-
         x++;
       });
 
       final address = await LocationHelper.getPlacedAddress(
           pickedLocation.latitude, pickedLocation.longitude);
 
-      print("Address here" + address);
-      print(pickedLocation.latitude);
-      print(pickedLocation.longitude);
-
       locationData = PlaceLocation(
           latitude: pickedLocation.latitude,
           longitude: pickedLocation.longitude,
           address: address);
 
-      print(locationData.latitude);
-      print(locationData.longitude);
-      print(locationData.address);
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('livestock')
-          .doc(_tagId)
+          .doc(tagIdController.text)
           .set({
         'uId': user.uid,
-        'tagId': _tagId,
+        'tagId': tagIdController.text,
         'category': value,
-        'weight': _weight,
-        'distinguishingFeatures': _features,
+        'weight': double.parse(weightController.text),
+        'distinguishingFeatures': featuresController.text,
         'image_urls': _imageUrls,
         'latitude': locationData.latitude,
         'longitude': locationData.longitude,
         'address': locationData.address,
         'isMissing': false,
+        'dateAdded': generateCurrentDate(),
       });
       postSuccess = true;
     } on PlatformException catch (err) {
@@ -166,12 +164,11 @@ class _AddLivestockState extends State<AddLivestockSection> {
       {Asset imageFile, String fileName, String tagId, String userId}) async {
     Reference reference = FirebaseStorage.instance
         .ref()
-        .child('livestock/' + userId + '/' + _tagId)
+        .child('livestock/' + userId + '/' + tagIdController.text)
         .child(fileName + '.jpg');
     UploadTask uploadTask =
         reference.putData((await imageFile.getByteData()).buffer.asUint8List());
     TaskSnapshot storageTaskSnapshot = await uploadTask;
-    print(storageTaskSnapshot.ref.getDownloadURL());
     return storageTaskSnapshot.ref.getDownloadURL();
   }
 
@@ -265,6 +262,54 @@ class _AddLivestockState extends State<AddLivestockSection> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: tagIdController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Tag ID',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: weightController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Weight (Optional)',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: ageController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Age (Optional)',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: featuresController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Distinguishing Features (Optional)',
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SmartSelect<String>.single(
+                  title: 'Livestock Category',
+                  value: value,
+                  choiceItems: options,
+                  onChange: (state) => setState(() => value = state.value)),
               if (imgError)
                 Center(
                   child: Text('Error: $_error'),
@@ -290,95 +335,22 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   onPressed: loadAssets,
                 ),
               ),
-              SmartSelect<String>.single(
-                  title: 'Livestock Category',
-                  value: value,
-                  choiceItems: options,
-                  onChange: (state) => setState(() => value = state.value)),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'Tag ID',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _tagId = value;
-                },
-              ),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'Weight (optional)',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _weight = double.parse(value);
-                },
-              ),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'Distinguishing Features (optional)',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _features = value;
-                },
-              ),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'RFID #',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _features = value;
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
               LocationInput(_selectPlace),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RaisedButton(
-                    elevation: 5,
-                    color: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    child: Text(
-                      "Add",
-                      style: kHintTextStyle.copyWith(fontSize: 18),
-                    ),
+              Container(
+                  height: 50,
+                  width: 300,
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: RaisedButton(
+                    elevation: 5.0,
+                    textColor: Colors.white,
+                    color: Colors.lightGreen,
+                    child: Text('Add Livestock'),
                     onPressed: () {
                       _trySubmit().then((value) {
                         SnackBar snackBar = SnackBar(
+                          backgroundColor: postSuccess
+                              ? Colors.lightGreen
+                              : Colors.redAccent,
                           content: Text(postSuccess
                               ? "Livestock added successfully"
                               : "An error occurred. Please try again."),
@@ -392,24 +364,21 @@ class _AddLivestockState extends State<AddLivestockSection> {
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       });
                     },
-                  ),
-                  SizedBox(width: 10),
-                  RaisedButton(
-                    elevation: 5,
-                    color: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    child: Text(
-                      "Cancel",
-                      style: kHintTextStyle.copyWith(fontSize: 18),
-                    ),
+                  )),
+              SizedBox(height: 10),
+              Container(
+                  height: 50,
+                  width: 300,
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: RaisedButton(
+                    elevation: 5.0,
+                    textColor: Colors.white,
+                    color: Colors.redAccent,
+                    child: Text('Cancel'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/manage');
+                      Navigator.pop(context);
                     },
-                  ),
-                ],
-              ),
+                  )),
               SizedBox(
                 height: 80,
               ),
@@ -420,19 +389,10 @@ class _AddLivestockState extends State<AddLivestockSection> {
     );
   }
 
-  Widget _buildSnackBar(bool postSuccess) {
-    return SnackBar(
-      content: Text(postSuccess
-          ? "Livestock added successfully"
-          : "An error occurred. Please try again."),
-      action: SnackBarAction(
-        label: 'ok',
-        onPressed: () {
-          // Some code to undo the change.
-        },
-      ),
-    );
-  }
-
   List<int> generateNumbers() => List<int>.generate(30, (i) => i + 1);
+
+  DateTime generateCurrentDate() {
+    DateTime now = new DateTime.now();
+    return now;
+  }
 }
