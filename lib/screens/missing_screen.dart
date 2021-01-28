@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import '../helpers/livestock_helper.dart';
+
+final CarouselController _controller = CarouselController();
 
 class MissingScreen extends StatelessWidget {
   @override
@@ -55,6 +59,7 @@ class _MissingScreenState extends State<MissingSection> {
         children: <Widget>[
           Column(
             children: [
+              SizedBox(height: 10),
               Container(
                 height: 600,
                 child: _fetchMissingLivestock(uid),
@@ -67,6 +72,8 @@ class _MissingScreenState extends State<MissingSection> {
   }
 
   Widget _fetchMissingLivestock(String uid) {
+    TextEditingController tipController = new TextEditingController();
+
     return FutureBuilder(
       future: AuthHelper.getCurrentUser(),
       builder: (ctx, futureSnapshot) {
@@ -94,21 +101,82 @@ class _MissingScreenState extends State<MissingSection> {
                   itemBuilder: (BuildContext context, int index) => Card(
                     child: SingleChildScrollView(
                       child: Column(
-                        children: [
-                          Text(livestock[index]['category']),
-                          Align(
-                            alignment: Alignment.topCenter,
-                            child: Image.network(
-                                livestock[index]['image_urls'][0],
-                                height: 300,
-                                width: 300),
+                        children: <Widget>[
+                          ListTile(
+                            title: Text("Tag ID"),
+                            subtitle:
+                                Text(livestock[index]['tagId'].toString()),
                           ),
-                          Text(livestock[index].id),
-                          Text(
-                            "Last seen: " + livestock[index]['address'],
-                            overflow: TextOverflow.ellipsis,
+                          CarouselSlider(
+                            items: generateImageList(
+                              (livestock[index]['image_urls'] as List)
+                                  ?.map((item) => item as String)
+                                  ?.toList(),
+                            ),
+                            options: CarouselOptions(
+                                enlargeCenterPage: true, height: 200),
+                            carouselController: _controller,
                           ),
-                          Text("Owner: " + livestock[index]['owner_name']),
+                          ListTile(
+                            title: Text("Last Seen"),
+                            subtitle: Text(livestock[index]['address']),
+                          ),
+                          ListTile(
+                            title: Text("Owner"),
+                            subtitle: Text(livestock[index]['owner_name']),
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Dialog(
+                                        child: Container(
+                                          height: 200,
+                                          width: 150,
+                                          child: Column(
+                                            children: [
+                                              Text("Send Tip"),
+                                              Card(
+                                                // color: Colors.white70,
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: TextField(
+                                                    controller: tipController,
+                                                    maxLines: 4,
+                                                    decoration: InputDecoration
+                                                        .collapsed(
+                                                            hintText:
+                                                                "Enter your text here"),
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    print(tipController.text);
+                                                    LivestockHelper.postTip(
+                                                        livestock[index]['uId'],
+                                                        livestock[index]
+                                                            ['tagId'],
+                                                        tipController.text,
+                                                        context);
+                                                  },
+                                                  child: Text("Submit"))
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              },
+                              child: Container(
+                                width: 85,
+                                child: Row(
+                                  children: [
+                                    Text("Send Tip "),
+                                    Icon(Icons.report)
+                                  ],
+                                ),
+                              ))
                         ],
                       ),
                     ),
@@ -127,4 +195,48 @@ class _MissingScreenState extends State<MissingSection> {
       },
     );
   }
+}
+
+List<Widget> generateImageList(List<String> urls) {
+  return urls
+      .map((item) => Container(
+            child: Container(
+              margin: EdgeInsets.all(5.0),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  child: Stack(
+                    children: <Widget>[
+                      Image.network(item, fit: BoxFit.cover, width: 1000.0),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(200, 0, 0, 0),
+                                Color.fromARGB(0, 0, 0, 0)
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 20.0),
+                          // child: Text(
+                          //   'No. ${imgList.indexOf(item)} image',
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 20.0,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+          ))
+      .toList();
 }
