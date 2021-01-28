@@ -133,6 +133,51 @@ class _SettingsScreenState extends State<Settings> {
               ),
               SizedBox(height: 20.0),
               ListTile(
+                title: Text("Notification Settings",
+                    style: GoogleFonts.sarala().copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    )),
+                trailing: Icon(
+                  Icons.logout,
+                  color: Colors.black,
+                ),
+                onTap: () {
+                  // FirebaseAuth.instance.signOut();
+                  // Navigator.pushNamed(context, '/login');
+                },
+              ),
+              ListTile(
+                title: Text("Reset Password",
+                    style: GoogleFonts.sarala().copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    )),
+                trailing: Icon(
+                  Icons.logout,
+                  color: Colors.black,
+                ),
+                onTap: () {
+                  // FirebaseAuth.instance.signOut();
+                  // Navigator.pushNamed(context, '/login');
+                },
+              ),
+              ListTile(
+                title: Text("Help",
+                    style: GoogleFonts.sarala().copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    )),
+                trailing: Icon(
+                  Icons.logout,
+                  color: Colors.black,
+                ),
+                onTap: () {
+                  // FirebaseAuth.instance.signOut();
+                  // Navigator.pushNamed(context, '/login');
+                },
+              ),
+              ListTile(
                 title: Text("Log Out",
                     style: GoogleFonts.sarala().copyWith(
                       fontWeight: FontWeight.bold,
@@ -146,7 +191,7 @@ class _SettingsScreenState extends State<Settings> {
                   FirebaseAuth.instance.signOut();
                   Navigator.pushNamed(context, '/login');
                 },
-              )
+              ),
             ],
           ),
         ));
