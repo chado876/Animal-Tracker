@@ -6,6 +6,7 @@ import '../models/profile.dart';
 import './auth_helper.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class LivestockHelper {
   UserObject currentUser;
@@ -226,6 +227,50 @@ class LivestockHelper {
           content: Text("Livestock with tag ID of " +
               tagId +
               " marked as found successfully."),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on PlatformException catch (err) {
+      var message = 'An error occurred, please try again!';
+
+      if (err.message != null) {
+        message = err.message;
+      }
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(ctx).errorColor,
+        ),
+      );
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  static Future<void> deleteLivestock(String tagId, BuildContext ctx) async {
+    var currentUser = await AuthHelper.fetchData();
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('livestock')
+          .doc(tagId)
+          .delete()
+          .then((value) async {
+        // Reference reference = FirebaseStorage.instance
+        //     .ref()
+        //     .child('livestock/' + currentUser.uid + '/' + tagId);
+
+        //   reference.list().
+        // await reference.delete(); not working
+      });
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(
+              "Livestock with tag ID of " + tagId + " deleted successfully."),
           backgroundColor: Colors.green,
         ),
       );

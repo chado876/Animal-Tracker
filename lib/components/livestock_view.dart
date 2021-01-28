@@ -149,7 +149,7 @@ class _LivestockViewState extends State<LivestockViewSection>
             icon: Icons.delete,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
-              _animationController.reverse();
+              LivestockHelper.deleteLivestock(livestock.tagId, context);
             },
           ),
           Bubble(
