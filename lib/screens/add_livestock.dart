@@ -75,6 +75,12 @@ class _AddLivestockState extends State<AddLivestockSection> {
     S2Choice<String>(value: 'Other', title: 'Other'),
   ];
 
+  TextEditingController tagIdController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
+  TextEditingController featuresController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+
   Future<void> _trySubmit() async {
     try {
       setState(() {
@@ -265,6 +271,54 @@ class _AddLivestockState extends State<AddLivestockSection> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: weightController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Tag ID',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: weightController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Weight (Optional)',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: weightController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Weight (Optional)',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: featuresController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Distinguishing Features (Optional)',
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SmartSelect<String>.single(
+                  title: 'Livestock Category',
+                  value: value,
+                  choiceItems: options,
+                  onChange: (state) => setState(() => value = state.value)),
               if (imgError)
                 Center(
                   child: Text('Error: $_error'),
@@ -290,126 +344,80 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   onPressed: loadAssets,
                 ),
               ),
-              SmartSelect<String>.single(
-                  title: 'Livestock Category',
-                  value: value,
-                  choiceItems: options,
-                  onChange: (state) => setState(() => value = state.value)),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'Tag ID',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _tagId = value;
-                },
-              ),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'Weight (optional)',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _weight = double.parse(value);
-                },
-              ),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'Distinguishing Features (optional)',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _features = value;
-                },
-              ),
-              TextFormField(
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0),
-                  labelText: 'RFID #',
-                  labelStyle: kHintTextStyle.copyWith(color: Colors.grey),
-                ),
-                onSaved: (value) {
-                  _features = value;
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
               LocationInput(_selectPlace),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RaisedButton(
-                    elevation: 5,
+              Container(
+                  height: 50,
+                  width: 300,
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: RaisedButton(
+                    textColor: Colors.white,
                     color: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    child: Text(
-                      "Add",
-                      style: kHintTextStyle.copyWith(fontSize: 18),
-                    ),
+                    child: Text('Add Livestock'),
                     onPressed: () {
-                      _trySubmit().then((value) {
-                        SnackBar snackBar = SnackBar(
-                          content: Text(postSuccess
-                              ? "Livestock added successfully"
-                              : "An error occurred. Please try again."),
-                          action: SnackBarAction(
-                            label: 'Ok',
-                            onPressed: () {
-                              // Some code to undo the change.
-                            },
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      });
+                      print(nameController.text);
                     },
-                  ),
-                  SizedBox(width: 10),
-                  RaisedButton(
-                    elevation: 5,
+                  )),
+              SizedBox(height: 10),
+              Container(
+                  height: 50,
+                  width: 300,
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: RaisedButton(
+                    textColor: Colors.white,
                     color: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    child: Text(
-                      "Cancel",
-                      style: kHintTextStyle.copyWith(fontSize: 18),
-                    ),
+                    child: Text('Cancel'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/manage');
+                      print(nameController.text);
                     },
-                  ),
-                ],
-              ),
+                  )),
+
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     RaisedButton(
+              //       elevation: 5,
+              //       color: Colors.green,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(30.0),
+              //       ),
+              //       child: Text(
+              //         "Add",
+              //         style: kHintTextStyle.copyWith(fontSize: 18),
+              //       ),
+              //       onPressed: () {
+              //         _trySubmit().then((value) {
+              //           SnackBar snackBar = SnackBar(
+              //             content: Text(postSuccess
+              //                 ? "Livestock added successfully"
+              //                 : "An error occurred. Please try again."),
+              //             action: SnackBarAction(
+              //               label: 'Ok',
+              //               onPressed: () {
+              //                 // Some code to undo the change.
+              //               },
+              //             ),
+              //           );
+              //           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              //         });
+              //       },
+              //     ),
+              //     SizedBox(width: 10),
+              //     RaisedButton(
+              //       elevation: 5,
+              //       color: Colors.red,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(30.0),
+              //       ),
+              //       child: Text(
+              //         "Cancel",
+              //         style: kHintTextStyle.copyWith(fontSize: 18),
+              //       ),
+              //       onPressed: () {
+              //         Navigator.pushNamed(context, '/manage');
+              //       },
+              //     ),
+              //   ],
+              // ),
               SizedBox(
                 height: 80,
               ),
