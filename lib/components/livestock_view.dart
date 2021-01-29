@@ -107,7 +107,7 @@ class _LivestockViewState extends State<LivestockViewSection>
             ListTile(
               leading: FlutterLogo(size: 56.0),
               title: Text('Age'),
-              subtitle: Text("8 months"),
+              subtitle: Text(livestock.age),
             ),
             ListTile(
               leading: FlutterLogo(size: 56.0),

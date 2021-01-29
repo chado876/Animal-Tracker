@@ -12,11 +12,13 @@ class Livestock {
   List<String> imageUrls;
   bool isMissing = false;
   DateTime dateAdded;
+  String age;
 
   Livestock(
       {@required this.tagId,
       @required this.uId,
       @required this.category,
+      @required this.age,
       @required this.address,
       this.distinguishingFeatures,
       @required this.longitude,

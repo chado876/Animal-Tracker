@@ -12,6 +12,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../screens/drawable_map.dart';
+
 class ManagementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -139,7 +141,7 @@ class _SettingsScreenState extends State<Settings> {
             },
           ),
           ListTile(
-            title: Text("Report Livestock as Stolen",
+            title: Text("Draw Digital Permeters (Work In Progress)",
                 style: GoogleFonts.sarala().copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -148,7 +150,11 @@ class _SettingsScreenState extends State<Settings> {
               Icons.local_police,
               color: Colors.black,
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (ctx) => MapPage(),
+              ));
+            },
           ),
         ],
       ),
