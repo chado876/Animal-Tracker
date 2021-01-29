@@ -71,7 +71,10 @@ class _TipScreenBuilder extends State<TipScreenState> {
           if (futureSnapshot.hasData) {
             final List<Tip> tips = futureSnapshot.data;
             if (tips.length > 0) {
-              return ListView.builder(
+              return ListView.separated(
+                  separatorBuilder: (context, index) {
+                    return Divider();
+                  },
                   itemCount: tips.length,
                   itemBuilder: (BuildContext context, int index) => Dismissible(
                       // Each Dismissible must contain a Key. Keys allow Flutter to
