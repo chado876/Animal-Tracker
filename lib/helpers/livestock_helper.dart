@@ -29,6 +29,7 @@ class LivestockHelper {
           uId: livestock.data()['uId'],
           tagId: livestock.data()['tagId'],
           category: livestock.data()['category'],
+          age: livestock.data()['age'],
           // imageUrls: livestock.data()['image_urls'],
           latitude: livestock.data()['latitude'],
           longitude: livestock.data()['longitude']);
@@ -114,6 +115,7 @@ class LivestockHelper {
       Livestock item = Livestock(
           address: livestock.data()['address'],
           uId: livestock.data()['uId'],
+          age: livestock.data()['age'],
           tagId: livestock.data()['tagId'],
           category: livestock.data()['category'],
           imageUrls: (livestock.data()['image_urls'] as List)
@@ -271,44 +273,6 @@ class LivestockHelper {
         SnackBar(
           content: Text(
               "Livestock with tag ID of " + tagId + " deleted successfully."),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } on PlatformException catch (err) {
-      var message = 'An error occurred, please try again!';
-
-      if (err.message != null) {
-        message = err.message;
-      }
-
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Theme.of(ctx).errorColor,
-        ),
-      );
-    } catch (err) {
-      print(err);
-    }
-  }
-
-  static Future<void> postTip(
-      String uId, String tagId, String tip, BuildContext ctx) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uId)
-          .collection('tips')
-          .doc(tagId)
-          .set({
-        'tagId': tagId,
-        'tip': tip,
-        'dateSent': DateTime.now(),
-      });
-
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text("Anonymous tip sent for " + tagId + "  successfully."),
           backgroundColor: Colors.green,
         ),
       );
