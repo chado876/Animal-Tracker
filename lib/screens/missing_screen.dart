@@ -7,6 +7,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../helpers/livestock_helper.dart';
+import '../helpers/tip_helper.dart';
+import '../models/tip.dart';
+
+import 'package:badges/badges.dart';
 
 final CarouselController _controller = CarouselController();
 
@@ -29,6 +33,25 @@ class MissingSection extends StatefulWidget {
 class _MissingScreenState extends State<MissingSection> {
   UserObject currentUser = new UserObject();
   String uid;
+  List<Tip> tips = [];
+  int tipsNum;
+
+  void initState() {
+    fetchUserData();
+    // setTips();
+    getNumberOfTips();
+
+    super.initState();
+  }
+
+  void getNumberOfTips() async {
+    int numOfTips = await TipHelper.getNumberOfTips(context);
+
+    setState(() {
+      tipsNum = numOfTips;
+      print(tipsNum);
+    });
+  }
 
   void fetchUserData() async {
     // final prefs = await SharedPreferences.getInstance();
@@ -39,6 +62,16 @@ class _MissingScreenState extends State<MissingSection> {
     });
     // print(currentUser.uid);
     // print(currentUser.firstName);
+  }
+
+  Future<void> setTips() async {
+    tips = await fetchTips();
+  }
+
+  Future<List<Tip>> fetchTips() async {
+    var tipList = await TipHelper.getAllTips(context);
+
+    return tipList;
   }
 
   @override
@@ -53,6 +86,14 @@ class _MissingScreenState extends State<MissingSection> {
           'Missing Livestock',
           style: kLabelStyle2.copyWith(color: Colors.white),
         ),
+        actions: <Widget>[
+          Badge(
+            toAnimate: true,
+            badgeContent: Text(tipsNum.toString()),
+            child: Icon(Icons.inbox_sharp),
+            position: BadgePosition.topStart(),
+          )
+        ],
       ),
       body: ListView(
         // parent ListView
@@ -154,7 +195,7 @@ class _MissingScreenState extends State<MissingSection> {
                                             ElevatedButton(
                                                 onPressed: () {
                                                   print(tipController.text);
-                                                  LivestockHelper.postTip(
+                                                  TipHelper.postTip(
                                                       livestock[index]['uId'],
                                                       livestock[index]['tagId'],
                                                       tipController.text,
