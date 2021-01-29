@@ -13,6 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class TipScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class TipScreenState extends StatefulWidget {
 
 class _TipScreenBuilder extends State<TipScreenState> {
   List<Tip> tips;
+  final f = new DateFormat('yyyy-MM-dd hh:mm');
 
   @override
   void initState() {
@@ -65,7 +68,6 @@ class _TipScreenBuilder extends State<TipScreenState> {
               child: CircularProgressIndicator(),
             );
           }
-          print(futureSnapshot.data);
           if (futureSnapshot.hasData) {
             final List<Tip> tips = futureSnapshot.data;
             if (tips.length > 0) {
@@ -98,7 +100,7 @@ class _TipScreenBuilder extends State<TipScreenState> {
                         ),
                         title: Text(
                             '(${tips[index].tagId}) ' + tips[index].tipMessage),
-                        subtitle: Text(tips[index].dateSent.toString()),
+                        subtitle: Text(timeago.format(tips[index].dateSent)),
                       ))
                   // Card(
                   //   child:

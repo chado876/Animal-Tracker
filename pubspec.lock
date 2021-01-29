@@ -417,7 +417,7 @@ packages:
     source: sdk
     version: "0.9.2+2"
   intl:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -792,6 +792,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.19-nullsafety.6"
+  timeago:
+    dependency: "direct dev"
+    description:
+      name: timeago
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.29"
   typed_data:
     dependency: transitive
     description:

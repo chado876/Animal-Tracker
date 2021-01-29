@@ -1,3 +1,5 @@
+import 'package:animal_tracker/helpers/location_helper.dart';
+import 'package:animal_tracker/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,11 +10,15 @@ import './auth_helper.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 
 class TipHelper {
-  static Future<void> postTip(
-      String uId, String tagId, String tip, BuildContext ctx) async {
+  static Future<void> postTip(String uId, String tagId, String tip,
+      PlaceLocation location, BuildContext ctx) async {
     try {
+      final address = await LocationHelper.getPlacedAddress(
+          location.latitude, location.longitude);
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uId)
@@ -21,6 +27,9 @@ class TipHelper {
           .set({
         'tagId': tagId,
         'tip': tip,
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'address': address,
         'dateSent': DateTime.now(),
       });
 
@@ -72,8 +81,6 @@ class TipHelper {
           .collection('tips')
           .get();
 
-      print("HERE" + querySnapshot.size.toString());
-
       querySnapshot.docs.forEach((element) {
         Tip tip = Tip(
             id: element.id,
@@ -83,6 +90,14 @@ class TipHelper {
         print(tip.tipMessage);
         tips.add(tip);
       });
+
+      tips.sort((a, b) {
+        var adate = a.dateSent;
+        var bdate = b.dateSent;
+
+        return bdate.compareTo(adate);
+      }); //sort time from newest
+
     } on PlatformException catch (err) {
       var message = 'An error occurred, please try again!';
 
