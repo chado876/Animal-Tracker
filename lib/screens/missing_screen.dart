@@ -12,6 +12,8 @@ import '../models/tip.dart';
 
 import 'package:badges/badges.dart';
 
+import '../screens/tip_screen.dart';
+
 final CarouselController _controller = CarouselController();
 
 class MissingScreen extends StatelessWidget {
@@ -34,7 +36,7 @@ class _MissingScreenState extends State<MissingSection> {
   UserObject currentUser = new UserObject();
   String uid;
   List<Tip> tips = [];
-  int tipsNum;
+  int tipsNum = 0;
 
   void initState() {
     fetchUserData();
@@ -87,14 +89,31 @@ class _MissingScreenState extends State<MissingSection> {
           style: kLabelStyle2.copyWith(color: Colors.white),
         ),
         actions: <Widget>[
-          Badge(
-            toAnimate: true,
-            badgeContent: Text(tipsNum.toString()),
-            child: Icon(Icons.inbox_sharp),
-            position: BadgePosition.topStart(),
+          GestureDetector(
+            child: Badge(
+              toAnimate: true,
+              badgeContent: Text(tipsNum.toString()),
+              child: Icon(Icons.inbox_sharp),
+              position: BadgePosition.topStart(),
+            ),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => TipScreen()));
+            },
           )
         ],
       ),
+      // body: SingleChildScrollView(
+      //     child: Column(
+      //   children: [
+      //     SizedBox(height: 10),
+      //     Container(
+      //       height: 800,
+      //       child: _fetchMissingLivestock(uid),
+      //     ),
+      //     SizedBox(height: 300),
+      //   ],
+      // )));
       body: ListView(
         // parent ListView
         children: <Widget>[
@@ -196,10 +215,17 @@ class _MissingScreenState extends State<MissingSection> {
                                                 onPressed: () {
                                                   print(tipController.text);
                                                   TipHelper.postTip(
-                                                      livestock[index]['uId'],
-                                                      livestock[index]['tagId'],
-                                                      tipController.text,
-                                                      context);
+                                                          livestock[index]
+                                                              ['uId'],
+                                                          livestock[index]
+                                                              ['tagId'],
+                                                          tipController.text,
+                                                          context)
+                                                      .then((value) {
+                                                    setState(() {
+                                                      getNumberOfTips();
+                                                    });
+                                                  });
                                                 },
                                                 child: Text("Submit"))
                                           ],
@@ -218,6 +244,7 @@ class _MissingScreenState extends State<MissingSection> {
                               ),
                             ),
                           ),
+                          if (index == 2) Container(height: 180),
                         ],
                       ),
                     ),

@@ -62,7 +62,7 @@ class TipHelper {
   static Future<List<Tip>> getAllTips(BuildContext ctx) async {
     UserObject currentUser = await AuthHelper.fetchData();
 
-    List tips = [];
+    List<Tip> tips = [];
     print(currentUser.uid);
 
     try {
@@ -76,10 +76,11 @@ class TipHelper {
 
       querySnapshot.docs.forEach((element) {
         Tip tip = Tip(
+            id: element.id,
             dateSent: element['dateSent'].toDate(),
             tipMessage: element['tip'],
             tagId: element['tagId']);
-        print(tip.toString());
+        print(tip.tipMessage);
         tips.add(tip);
       });
     } on PlatformException catch (err) {
@@ -98,8 +99,9 @@ class TipHelper {
     } catch (err) {
       print(err);
     }
-
-    print(tips.length);
+    tips.forEach((element) {
+      print(element.tipMessage);
+    });
     return tips;
   }
 
@@ -133,5 +135,44 @@ class TipHelper {
     }
     print(length);
     return length;
+  }
+
+  static Future<bool> deleteTip(BuildContext ctx, String tipId) async {
+    UserObject currentUser = await AuthHelper.fetchData();
+    print(currentUser.uid);
+    bool success = true;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('tips')
+          .doc(tipId)
+          .delete();
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+            content: Text("Tip deleted successfully."),
+            backgroundColor: Colors.green),
+      );
+    } on PlatformException catch (err) {
+      success = false;
+      var message = 'An error occurred, please try again!';
+
+      if (err.message != null) {
+        message = err.message;
+      }
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(ctx).errorColor,
+        ),
+      );
+    } catch (err) {
+      print(err);
+    }
+
+    return success;
   }
 }
