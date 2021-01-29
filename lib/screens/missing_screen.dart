@@ -61,7 +61,7 @@ class _MissingScreenState extends State<MissingSection> {
             children: [
               SizedBox(height: 10),
               Container(
-                height: 600,
+                height: MediaQuery.of(context).size.height,
                 child: _fetchMissingLivestock(uid),
               ),
             ],
@@ -126,57 +126,57 @@ class _MissingScreenState extends State<MissingSection> {
                             subtitle: Text(livestock[index]['owner_name']),
                           ),
                           ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return Dialog(
-                                        child: Container(
-                                          height: 200,
-                                          width: 150,
-                                          child: Column(
-                                            children: [
-                                              Text("Send Tip"),
-                                              Card(
-                                                // color: Colors.white70,
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: TextField(
-                                                    controller: tipController,
-                                                    maxLines: 4,
-                                                    decoration: InputDecoration
-                                                        .collapsed(
-                                                            hintText:
-                                                                "Enter your text here"),
-                                                  ),
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Dialog(
+                                      child: Container(
+                                        height: 200,
+                                        width: 150,
+                                        child: Column(
+                                          children: [
+                                            Text("Send Tip"),
+                                            Card(
+                                              // color: Colors.white70,
+                                              child: Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: TextField(
+                                                  controller: tipController,
+                                                  maxLines: 4,
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                          hintText:
+                                                              "Enter your text here"),
                                                 ),
                                               ),
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                    print(tipController.text);
-                                                    LivestockHelper.postTip(
-                                                        livestock[index]['uId'],
-                                                        livestock[index]
-                                                            ['tagId'],
-                                                        tipController.text,
-                                                        context);
-                                                  },
-                                                  child: Text("Submit"))
-                                            ],
-                                          ),
+                                            ),
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  print(tipController.text);
+                                                  LivestockHelper.postTip(
+                                                      livestock[index]['uId'],
+                                                      livestock[index]['tagId'],
+                                                      tipController.text,
+                                                      context);
+                                                },
+                                                child: Text("Submit"))
+                                          ],
                                         ),
-                                      );
-                                    });
-                              },
-                              child: Container(
-                                width: 85,
-                                child: Row(
-                                  children: [
-                                    Text("Send Tip "),
-                                    Icon(Icons.report)
-                                  ],
-                                ),
-                              ))
+                                      ),
+                                    );
+                                  });
+                            },
+                            child: Container(
+                              width: 85,
+                              child: Row(
+                                children: [
+                                  Text("Send Tip "),
+                                  Icon(Icons.report)
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

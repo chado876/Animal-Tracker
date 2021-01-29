@@ -409,6 +409,7 @@ Widget _fetchLivestockByCategory(String uid, String category) {
                                           ?.map((item) => item as String)
                                           ?.toList(),
                                   category: livestock[index]['category'],
+                                  age: livestock[index]['age'],
                                   isMissing: livestock[index]['isMissing'],
                                   dateAdded:
                                       livestock[index]['dateAdded'].toDate(),
