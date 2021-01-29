@@ -91,11 +91,10 @@ class _MissingScreenState extends State<MissingSection> {
         actions: <Widget>[
           GestureDetector(
             child: Badge(
-              toAnimate: true,
-              badgeContent: Text(tipsNum.toString()),
-              child: Icon(Icons.inbox_sharp),
-              position: BadgePosition.topStart(),
-            ),
+                toAnimate: true,
+                badgeContent: Text(tipsNum.toString()),
+                child: Icon(Icons.inbox_sharp),
+                position: BadgePosition(top: 0, start: -10)),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => TipScreen()));
