@@ -1,6 +1,8 @@
 import 'package:animal_tracker/helpers/auth_helper.dart';
+import 'package:animal_tracker/models/place.dart';
 import 'package:animal_tracker/models/profile.dart';
 import 'package:animal_tracker/utilities/constants.dart';
+import 'package:animal_tracker/widgets/location_input.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,6 +39,7 @@ class _MissingScreenState extends State<MissingSection> {
   String uid;
   List<Tip> tips = [];
   int tipsNum = 0;
+  PlaceLocation _pickedLocation;
 
   void initState() {
     fetchUserData();
@@ -74,6 +77,10 @@ class _MissingScreenState extends State<MissingSection> {
     var tipList = await TipHelper.getAllTips(context);
 
     return tipList;
+  }
+
+  void _selectPlace(double lat, double lng) {
+    _pickedLocation = PlaceLocation(latitude: lat, longitude: lng);
   }
 
   @override
@@ -191,13 +198,18 @@ class _MissingScreenState extends State<MissingSection> {
                                   builder: (context) {
                                     return Dialog(
                                       child: Container(
-                                        height: 200,
-                                        width: 150,
+                                        height: 450,
+                                        width: 350,
                                         child: Column(
                                           children: [
-                                            Text("Send Tip"),
+                                            Text("Send Tip",
+                                                style: TextStyle(fontSize: 20)),
+                                            Text(
+                                                "*All tips sent are anonymous.",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
                                             Card(
-                                              // color: Colors.white70,
+                                              // color: Colors.white54,
                                               child: Padding(
                                                 padding: EdgeInsets.all(8.0),
                                                 child: TextField(
@@ -210,6 +222,8 @@ class _MissingScreenState extends State<MissingSection> {
                                                 ),
                                               ),
                                             ),
+                                            Text("Have a location?"),
+                                            LocationInput(_selectPlace),
                                             ElevatedButton(
                                                 onPressed: () {
                                                   print(tipController.text);
@@ -219,14 +233,16 @@ class _MissingScreenState extends State<MissingSection> {
                                                           livestock[index]
                                                               ['tagId'],
                                                           tipController.text,
+                                                          _pickedLocation,
                                                           context)
                                                       .then((value) {
                                                     setState(() {
                                                       getNumberOfTips();
                                                     });
+                                                    Navigator.pop(context);
                                                   });
                                                 },
-                                                child: Text("Submit"))
+                                                child: Text("Send"))
                                           ],
                                         ),
                                       ),
