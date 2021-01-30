@@ -85,6 +85,10 @@ class TipHelper {
         Tip tip = Tip(
             id: element.id,
             dateSent: element['dateSent'].toDate(),
+            location: PlaceLocation(
+                latitude: element['latitude'],
+                longitude: element['longitude'],
+                address: element['address']),
             tipMessage: element['tip'],
             tagId: element['tagId']);
         print(tip.tipMessage);
