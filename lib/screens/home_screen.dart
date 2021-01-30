@@ -7,6 +7,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,8 @@ class _HomeScreenState extends State<HomeCard> {
   @override
   void initState() {
     // fetchData();
+    FirebaseMessaging.instance.subscribeToTopic("MissingLivestock");
+
     super.initState();
   }
 

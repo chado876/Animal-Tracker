@@ -10,13 +10,11 @@ exports.myFunction = functions.firestore
     .onCreate((snapshot,context) => {
           const payload = {
             notification: {
-              title: "Test",
-              body: "MISSING",
+              title: "Missing Livestock",
+              body: "Livestock went missing in" +snapshot.data().address,
               sound: "default",
             },
           };
-          
-          token = "dwzm4HVYTrKdk7v9gXlFPA:APA91bFIra_xMLxx9aueX3HIRz3Q4PIM389Jdu6D7K7OKUPYLBlQ747FcNY7u9rvBsWLx8JdQK3-kMuWqGpQasc3qpSiwDNdMMKYSY5cgEOD5DdXQME1oB82lwAzozUqUCY1O7ywcBOt";
-
-          return fcm.sendToDevice(token, payload);
+          console.log(snapshot.data());
+          return fcm.sendToTopic("MissingLivestock", payload);
     });
