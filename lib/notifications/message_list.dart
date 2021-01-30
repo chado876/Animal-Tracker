@@ -37,7 +37,7 @@ class _MessageList extends State<MessageList> {
           RemoteMessage message = _messages[index];
 
           return ListTile(
-            title: Text(message.messageId),
+            title: Text(message.notification.body),
             subtitle: Text(message.sentTime?.toString() ?? 'N/A'),
             onTap: () => Navigator.pushNamed(context, '/message',
                 arguments: MessageArguments(message, false)),

@@ -97,6 +97,7 @@ class _Application extends State<Application> {
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.instance.subscribeToTopic("MissingLivestock");
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage message) {

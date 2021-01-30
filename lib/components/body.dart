@@ -166,13 +166,14 @@ class _BodyState extends State<BodySection> {
             child: _searchResultView(_searchResult),
           ),
         if (!_isSearching)
-          Row(
-            children: [
-              Icon(Icons.info),
-              Text("Tap on a livestock card for more information and options"),
-            ],
-          ),
-        SizedBox(height: 20),
+          // Row(
+          //   children: [
+          //     Icon(Icons.info),
+          //     Text("Tap on a livestock card for more information and options",),
+          //   ],
+          // ),
+
+          SizedBox(height: 20),
         for (var category in _categories)
           // if (LivestockHelper.checkIfCategoryExists(category) == false)
           Column(

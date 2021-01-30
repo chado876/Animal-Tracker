@@ -67,6 +67,14 @@ class _LivestockViewState extends State<LivestockViewSection>
     super.initState();
   }
 
+  refresh() async {
+    var data = await LivestockHelper.getLivestockDataByTagID(livestock.tagId);
+
+    setState(() {
+      livestock = data[0];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
