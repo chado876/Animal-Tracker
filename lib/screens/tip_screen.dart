@@ -148,7 +148,7 @@ Widget TipView(Tip tip, BuildContext ctx) {
         children: [
           if (tip.location != null) showMap(tip, ctx),
           ListTile(
-            leading: Text(tip.tipMessage),
+            title: Text(tip.tipMessage),
             subtitle: Text("Sent ${tip.dateSent}"),
           )
         ],

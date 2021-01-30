@@ -3,17 +3,20 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
+const fcm = admin.messaging();
+
 exports.myFunction = functions.firestore
     .document('missing_livestock/{livestock}')
     .onCreate((snapshot,context) => {
-                // console.log(snapshot.data());
-        return  admin.messaging().sendMulticast({
-            tokens: ["token_1", "token_2"],
+          const payload = {
             notification: {
-              title: "Weather Warning!",
-              body: "A new weather warning has been issued for your location.",
-              imageUrl: "https://my-cdn.com/extreme-weather.png",
+              title: "Test",
+              body: "MISSING",
+              sound: "default",
             },
-          });
+          };
+          
+          token = "dwzm4HVYTrKdk7v9gXlFPA:APA91bFIra_xMLxx9aueX3HIRz3Q4PIM389Jdu6D7K7OKUPYLBlQ747FcNY7u9rvBsWLx8JdQK3-kMuWqGpQasc3qpSiwDNdMMKYSY5cgEOD5DdXQME1oB82lwAzozUqUCY1O7ywcBOt";
 
+          return fcm.sendToDevice(token, payload);
     });
