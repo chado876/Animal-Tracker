@@ -12,6 +12,9 @@ import '../helpers/livestock_helper.dart';
 import '../models/livestock.dart';
 import 'dart:math' as Math;
 
+import '../utilities/areaChecker.dart';
+import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
+
 class MapPage extends StatefulWidget {
   @override
   _MapPageState createState() => _MapPageState();
@@ -142,6 +145,10 @@ class _MapPageState extends State<MapPage> {
           fillColor: Colors.blue.withOpacity(0.4),
         ),
       );
+
+      LatLng point = LatLng(37.42713664245048, -122.08062720043169);
+      print(AreaChecker.checkIfPointisInArea(point, _userPolyLinesLatLngList));
+
       setState(() {
         _clearDrawing = true;
       });
