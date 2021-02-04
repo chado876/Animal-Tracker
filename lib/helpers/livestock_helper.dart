@@ -97,6 +97,8 @@ class LivestockHelper {
       }
     });
 
+    print("$category $exists");
+
     return exists;
   }
 
@@ -292,5 +294,29 @@ class LivestockHelper {
     } catch (err) {
       print(err);
     }
+  }
+
+  static Future<List<String>> categoryChecker() async {
+    List<String> categories = [
+      "Cattle",
+      "Sheep",
+      "Pig",
+      "Goat",
+      "Horse",
+      "Donkey",
+      "Other",
+    ];
+
+    List<String> existingCategories = [];
+
+    for (var category in categories) {
+      final exists = await checkIfCategoryExists(category);
+      if (exists) {
+        existingCategories.add(category);
+        print(existingCategories.length);
+      }
+    }
+
+    return existingCategories;
   }
 }

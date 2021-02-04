@@ -67,6 +67,8 @@ class _BodyState extends State<BodySection> {
     "Other",
   ];
 
+  List<String> existingCategories = [];
+
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
     print(livestock.length);
@@ -82,9 +84,18 @@ class _BodyState extends State<BodySection> {
     fetchUserData();
     _searchQueryController.addListener(_onSearchChanged);
 
+    setCategories();
     // notif();
 
     super.initState();
+  }
+
+  Future<void> setCategories() async {
+    List<String> fetchedCategories = await LivestockHelper.categoryChecker();
+
+    setState(() {
+      existingCategories = fetchedCategories;
+    });
   }
 
   // Future<void> notif() async {
@@ -174,7 +185,7 @@ class _BodyState extends State<BodySection> {
           // ),
 
           SizedBox(height: 20),
-        for (var category in _categories)
+        for (var category in existingCategories)
           // if (LivestockHelper.checkIfCategoryExists(category) == false)
           Column(
             children: [

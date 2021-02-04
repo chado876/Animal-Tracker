@@ -52,11 +52,13 @@ class _MapPageState extends State<MapPage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleDrawing,
-        tooltip: 'Drawing',
-        child: Icon((_drawPolygonEnabled) ? Icons.cancel : Icons.edit),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat
+      // FloatingActionButtonLocation()
+      // FloatingActionButton(
+      //   onPressed: _toggleDrawing,
+      //   tooltip: 'Drawing',
+      //   child: Icon((_drawPolygonEnabled) ? Icons.cancel : Icons.edit),
+      // ),
     );
   }
 
