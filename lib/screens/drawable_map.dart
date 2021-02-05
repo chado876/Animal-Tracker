@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 
+import 'package:animal_tracker/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,7 +16,13 @@ import 'dart:math' as Math;
 import '../utilities/areaChecker.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 
+import '../helpers/parameter_helper.dart';
+import '../models/parameter.dart';
+
 class MapPage extends StatefulWidget {
+  final Livestock livestock;
+  MapPage({@required this.livestock});
+
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -54,9 +61,10 @@ class _MapPageState extends State<MapPage> {
   bool _isCircle = false;
 
   // This function is to change the marker icon
-  void _setMarkerIcon() async {
+  Future<BitmapDescriptor> _setMarkerIcon() async {
     _markerIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/farm.png');
+        ImageConfiguration(), 'assets/images/cow.png');
+    return _markerIcon;
   }
 
   // Draw Polygon to the map
@@ -87,19 +95,27 @@ class _MapPageState extends State<MapPage> {
   }
 
   // Set Markers to the map
-  void _setMarkers(LatLng point) {
+  Future<void> _setMarkers() async {
     final String markerIdVal = 'marker_id_$_markerIdCounter';
+    final BitmapDescriptor markerIcon = await _setMarkerIcon();
     _markerIdCounter++;
     setState(() {
       print(
-          'Marker | Latitude: ${point.latitude}  Longitude: ${point.longitude}');
+          'Marker | Latitude: ${widget.livestock.latitude}  Longitude: ${widget.livestock.latitude}');
       _markers.add(
         Marker(
-          markerId: MarkerId(markerIdVal),
-          position: point,
-        ),
+            markerId: MarkerId(markerIdVal),
+            position:
+                LatLng(widget.livestock.latitude, widget.livestock.longitude),
+            icon: markerIcon),
       );
     });
+  }
+
+  @override
+  void initState() {
+    _setMarkers();
+    super.initState();
   }
 
   // Start the map with this marker setted up
@@ -128,34 +144,31 @@ class _MapPageState extends State<MapPage> {
         });
       },
       icon: Icon(Icons.undo),
-      label: Text('Undo point'),
-      backgroundColor: Colors.orange,
+      label: Text('Undo Point'),
+      backgroundColor: Colors.red,
     );
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: GestureDetector(
-  //       onPanUpdate: (_drawPolygonEnabled) ? _onPanUpdate : null,
-  //       onPanEnd: (_drawPolygonEnabled) ? _onPanEnd : null,
-  //       child: GoogleMap(
-  //         mapType: MapType.normal,
-  //         initialCameraPosition: _kGooglePlex,
-  //         polygons: _polygons,
-  //         polylines: _polyLines,
-  //         onMapCreated: (GoogleMapController controller) {
-  //           _controller.complete(controller);
-  //         },
-  //       ),
-  //     ),
-  //     floatingActionButton: FloatingActionButton(
-  //       onPressed: _toggleDrawing,
-  //       tooltip: 'Drawing',
-  //       child: Icon((_drawPolygonEnabled) ? Icons.cancel : Icons.edit),
-  //     ),
-  //   );
-  // }
+  Widget _fabPost(BuildContext ctx) {
+    return FloatingActionButton.extended(
+      onPressed: () {
+        print(_isCircle);
+        print(_isPolygon);
+
+        ParameterHelper.postParameter(
+            ctx,
+            Parameter(
+                isCircle: _isCircle,
+                isPolygon: _isPolygon,
+                livestock: widget.livestock,
+                circle: _circles.isNotEmpty ? _circles.first : null,
+                polygon: _polygons.isNotEmpty ? _polygons.first : null));
+      },
+      icon: Icon(Icons.undo),
+      label: Text('Submit'),
+      backgroundColor: Colors.blue,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +177,19 @@ class _MapPageState extends State<MapPage> {
           title: Text('Set Digital Parameters'),
           centerTitle: true,
         ),
-        floatingActionButton:
-            _polygonLatLngs.length > 0 && _isPolygon ? _fabPolygon() : null,
+        floatingActionButton: _polygonLatLngs.length > 0 && _isPolygon
+            ? _fabPolygon()
+            : _circles.isNotEmpty || _polygons.isNotEmpty
+                ? _fabPost(context)
+                : null,
         body: Stack(
           children: <Widget>[
             GoogleMap(
-              initialCameraPosition: _kGooglePlex,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    widget.livestock.latitude, widget.livestock.longitude),
+                zoom: 16,
+              ),
               mapType: MapType.hybrid,
               markers: _markers,
               circles: _circles,
@@ -181,12 +201,14 @@ class _MapPageState extends State<MapPage> {
                     _polygonLatLngs.add(point);
                     _setPolygon();
                   });
-                } else if (_isMarker) {
-                  setState(() {
-                    _markers.clear();
-                    _setMarkers(point);
-                  });
-                } else if (_isCircle) {
+                }
+                // else if (_isMarker) {
+                //   setState(() {
+                //     _markers.clear();
+                //     _setMarkers(point);
+                //   });
+                // }
+                else if (_isCircle) {
                   setState(() {
                     _circles.clear();
                     _setCircles(point);
@@ -283,108 +305,5 @@ class _MapPageState extends State<MapPage> {
             )
           ],
         ));
-  }
-
-  _toggleDrawing() {
-    _clearPolygons();
-    setState(() => _drawPolygonEnabled = !_drawPolygonEnabled);
-  }
-
-  _onPanUpdate(DragUpdateDetails details) async {
-    // To start draw new polygon every time.
-    if (_clearDrawing) {
-      _clearDrawing = false;
-      _clearPolygons();
-    }
-
-    if (_drawPolygonEnabled) {
-      double x, y;
-      if (Platform.isAndroid) {
-        // It times in 3 without any meaning,
-        // We think it's an issue with GoogleMaps package.
-        x = details.globalPosition.dx * 3;
-        y = details.globalPosition.dy * 3;
-      } else if (Platform.isIOS) {
-        x = details.globalPosition.dx;
-        y = details.globalPosition.dy;
-      }
-
-      // Round the x and y.
-      int xCoordinate = x.round();
-      int yCoordinate = y.round();
-
-      // Check if the distance between last point is not too far.
-      // to prevent two fingers drawing.
-      if (_lastXCoordinate != null && _lastYCoordinate != null) {
-        var distance = Math.sqrt(Math.pow(xCoordinate - _lastXCoordinate, 2) +
-            Math.pow(yCoordinate - _lastYCoordinate, 2));
-        // Check if the distance of point and point is large.
-        if (distance > 80.0) return;
-      }
-
-      // Cached the coordinate.
-      _lastXCoordinate = xCoordinate;
-      _lastYCoordinate = yCoordinate;
-
-      ScreenCoordinate screenCoordinate =
-          ScreenCoordinate(x: xCoordinate, y: yCoordinate);
-
-      final GoogleMapController controller = await _controller.future;
-      LatLng latLng = await controller.getLatLng(screenCoordinate);
-
-      try {
-        // Add new point to list.
-        _userPolyLinesLatLngList.add(latLng);
-
-        _polyLines.removeWhere(
-            (polyline) => polyline.polylineId.value == 'user_polyline');
-        _polyLines.add(
-          Polyline(
-            polylineId: PolylineId('user_polyline'),
-            points: _userPolyLinesLatLngList,
-            width: 2,
-            color: Colors.blue,
-          ),
-        );
-      } catch (e) {
-        print(" error painting $e");
-      }
-      setState(() {});
-    }
-  }
-
-  _onPanEnd(DragEndDetails details) async {
-    // Reset last cached coordinate
-    _lastXCoordinate = null;
-    _lastYCoordinate = null;
-
-    if (_drawPolygonEnabled) {
-      _polygons
-          .removeWhere((polygon) => polygon.polygonId.value == 'user_polygon');
-      _polygons.add(
-        Polygon(
-          polygonId: PolygonId('user_polygon'),
-          points: _userPolyLinesLatLngList,
-          strokeWidth: 2,
-          strokeColor: Colors.blue,
-          fillColor: Colors.blue.withOpacity(0.4),
-        ),
-      );
-
-      LatLng point = LatLng(37.42713664245048, -122.08062720043169);
-      print(AreaChecker.checkIfPointisInArea(point, _userPolyLinesLatLngList));
-
-      setState(() {
-        _clearDrawing = true;
-      });
-    }
-  }
-
-  _clearPolygons() {
-    setState(() {
-      _polyLines.clear();
-      _polygons.clear();
-      _userPolyLinesLatLngList.clear();
-    });
   }
 }

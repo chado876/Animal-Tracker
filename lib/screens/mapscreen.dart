@@ -1,3 +1,5 @@
+import 'package:animal_tracker/helpers/parameter_helper.dart';
+import 'package:animal_tracker/models/parameter.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,11 +20,18 @@ class _MapPageState extends State<MapPage> {
   GoogleMapController _controller;
   Location _location = Location();
   Set<Marker> _markers = {};
+  List<Parameter> parameters = [];
 
   @override
   void initState() {
     getLivestock();
+    setParameters();
     super.initState();
+  }
+
+  void setParameters() async {
+    parameters = await ParameterHelper.getParameters();
+    print(parameters.length);
   }
 
   void getLivestock() async {
