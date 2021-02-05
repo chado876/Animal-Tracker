@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:animal_tracker/helpers/parameter_helper.dart';
 import 'package:animal_tracker/models/parameter.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,8 @@ class _MapPageState extends State<MapPage> {
   Location _location = Location();
   Set<Marker> _markers = {};
   List<Parameter> parameters = [];
+  Set<Polygon> _polygons = HashSet<Polygon>();
+  Set<Circle> _circles = HashSet<Circle>();
 
   @override
   void initState() {
@@ -32,11 +36,42 @@ class _MapPageState extends State<MapPage> {
   void setParameters() async {
     parameters = await ParameterHelper.getParameters();
     print(parameters.length);
+    _setCircles();
   }
 
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
     addMarker(livestock);
+  }
+
+  // Draw Polygon to the map
+  void _setPolygon() {
+    for (var param in parameters) {
+      if (param.isPolygon) {
+        _polygons.add(Polygon(
+          polygonId: param.polygon.polygonId,
+          points: param.polygon.points,
+          strokeWidth: param.polygon.strokeWidth,
+          strokeColor: param.polygon.strokeColor,
+          fillColor: Colors.yellow.withOpacity(0.15),
+        ));
+      }
+    }
+  }
+
+  // Set circles as points to the map
+  void _setCircles() {
+    for (var param in parameters) {
+      if (param.isCircle) {
+        _circles.add(Circle(
+            circleId: param.circle.circleId,
+            center: param.circle.center,
+            radius: param.circle.radius,
+            fillColor: Colors.redAccent.withOpacity(0.5),
+            strokeWidth: 3,
+            strokeColor: Colors.redAccent));
+      }
+    }
   }
 
   void addMarker(List<Livestock> livestock) {
@@ -86,6 +121,7 @@ class _MapPageState extends State<MapPage> {
               // onMapCreated: _onMapCreated,
               myLocationEnabled: true,
               markers: Set.from(_markers),
+              circles: _circles,
             ),
           ],
         ),

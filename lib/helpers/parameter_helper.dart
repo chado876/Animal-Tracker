@@ -107,12 +107,14 @@ class ParameterHelper {
               radius: doc.data()['Circle']['radius'],
               strokeColor: Color(doc.data()['Circle']['strokeColor']),
               strokeWidth: doc.data()['Circle']['strokeWidth']),
-          polygon: Polygon(
-              polygonId: PolygonId(doc.data()['Polygon']['polygonId']),
-              points: doc.data()['Polygon']['points'],
-              strokeColor: doc.data()['Polygon']['strokeColor'],
-              strokeWidth: doc.data()['Polygon']['strokeWidth'],
-              fillColor: doc.data()['Polygon']['fillColor']),
+          polygon: doc.data()['Polygon'] != null
+              ? Polygon(
+                  polygonId: PolygonId(doc.data()['Polygon']['polygonId']),
+                  points: doc.data()['Polygon']['points'],
+                  strokeColor: doc.data()['Polygon']['strokeColor'],
+                  strokeWidth: doc.data()['Polygon']['strokeWidth'],
+                  fillColor: doc.data()['Polygon']['fillColor'])
+              : null,
         ),
       );
     }
