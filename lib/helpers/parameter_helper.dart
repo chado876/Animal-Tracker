@@ -12,6 +12,17 @@ class ParameterHelper {
       BuildContext ctx, Parameter parameter) async {
     UserObject currentUser = await AuthHelper.fetchData();
 
+    int pointsLength = 0;
+    if (parameter.isPolygon) {
+      pointsLength = parameter.polygon.points.length;
+      print(parameter.polygon.points.length);
+      print(parameter.polygon.points[0].toString());
+      print(parameter.polygon.points[1].toString());
+      print(parameter.polygon.points[2].toString());
+      print(parameter.polygon.points[3].toString());
+      // print(parameter.polygon.points[4].toString());
+    }
+
     try {
       await FirebaseFirestore.instance
           .collection('parameters')
@@ -43,9 +54,39 @@ class ParameterHelper {
         "Polygon": parameter.polygon != null
             ? {
                 "polygonId": parameter.polygon.polygonId.value,
-                "points": parameter.polygon.points
-                    .map((point) => point.toJson())
-                    .toList(),
+                // "points": parameter.polygon.points
+                //     .map((point) => point.toJson())
+                //     .toList(),
+                "points": {
+                  "point0": {
+                    "latitude": parameter.polygon.points[0].latitude,
+                    "longitude": parameter.polygon.points[0].longitude,
+                  },
+                  "point1": {
+                    "latitude": parameter.polygon.points[1].latitude,
+                    "longitude": parameter.polygon.points[1].longitude,
+                  },
+                  if (3 <= pointsLength)
+                    "point2": {
+                      "latitude": parameter.polygon.points[2].latitude,
+                      "longitude": parameter.polygon.points[2].longitude,
+                    },
+                  if (4 <= pointsLength)
+                    "point3": {
+                      "latitude": parameter.polygon.points[3].latitude,
+                      "longitude": parameter.polygon.points[3].longitude,
+                    },
+                  if (5 <= pointsLength)
+                    "point4": {
+                      "latitude": parameter.polygon.points[4].latitude,
+                      "longitude": parameter.polygon.points[4].longitude,
+                    },
+                  if (6 <= pointsLength)
+                    "point5": {
+                      "latitude": parameter.polygon.points[5].latitude,
+                      "longitude": parameter.polygon.points[5].longitude,
+                    },
+                },
                 "strokeWidth": parameter.polygon.strokeWidth,
                 "strokeColor": parameter.polygon.strokeColor.value,
                 "fillColor": parameter.polygon.fillColor.value
@@ -92,6 +133,23 @@ class ParameterHelper {
         .get();
 
     for (var doc in documents.docs) {
+      List<Point> points = [];
+      if (doc.data()['Polygon'] != null) {
+        for (int i = 0; i < 5; i++) {
+          if (doc.data()['Polygon']['points']['point$i'] != null)
+            points.add(Point(
+                latitude: doc.data()['Polygon']['points']['point$i']
+                    ['latitude'],
+                longitude: doc.data()['Polygon']['points']['point$i']
+                    ['longitude']));
+        }
+
+// for (var point in doc.data()['Polygon']['points']) {
+//           points.add(
+//               Point(latitude: point['latitude'], longitude: point['latitude']));
+//         }
+      }
+
       parameters.add(
         Parameter(
           isCircle: doc.data()['isCircle'],
@@ -101,22 +159,24 @@ class ParameterHelper {
               longitude: doc.data()['livestock']['longitude'],
               tagId: doc.data()['livestock']['id'],
               uId: doc.data()['livestock']['ownerUid']),
-          circle: Circle(
-              circleId: CircleId(doc.data()['Circle']['circleId']),
-              center: LatLng(doc.data()['Circle']['center']['latitude'],
-                  doc.data()['Circle']['center']['longitude']),
-              fillColor: Color(doc.data()['Circle']['fillColor']),
-              radius: doc.data()['Circle']['radius'],
-              strokeColor: Color(doc.data()['Circle']['strokeColor']),
-              strokeWidth: doc.data()['Circle']['strokeWidth']),
+          circle: doc.data()['Circle'] != null
+              ? Circle(
+                  circleId: CircleId(doc.data()['Circle']['circleId']),
+                  center: LatLng(doc.data()['Circle']['center']['latitude'],
+                      doc.data()['Circle']['center']['longitude']),
+                  fillColor: Color(doc.data()['Circle']['fillColor']),
+                  radius: doc.data()['Circle']['radius'],
+                  strokeColor: Color(doc.data()['Circle']['strokeColor']),
+                  strokeWidth: doc.data()['Circle']['strokeWidth'])
+              : null,
           polygon: doc.data()['Polygon'] != null
               ? Polygon(
                   polygonId: PolygonId(doc.data()['Polygon']['polygonId']),
-                  points: doc.data()['Polygon']['points'],
-                  strokeColor: doc.data()['Polygon']['strokeColor'],
+                  strokeColor: Color(doc.data()['Polygon']['strokeColor']),
                   strokeWidth: doc.data()['Polygon']['strokeWidth'],
-                  fillColor: doc.data()['Polygon']['fillColor'])
+                  fillColor: Color(doc.data()['Polygon']['fillColor']))
               : null,
+          points: points,
         ),
       );
     }

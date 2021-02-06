@@ -37,6 +37,7 @@ class _MapPageState extends State<MapPage> {
     parameters = await ParameterHelper.getParameters();
     print(parameters.length);
     _setCircles();
+    _setPolygon();
   }
 
   void getLivestock() async {
@@ -48,13 +49,18 @@ class _MapPageState extends State<MapPage> {
   void _setPolygon() {
     for (var param in parameters) {
       if (param.isPolygon) {
+        List<LatLng> latLngpoints = [];
+        for (var p in param.points) {
+          latLngpoints.add(LatLng(p.latitude, p.longitude));
+        }
         _polygons.add(Polygon(
           polygonId: param.polygon.polygonId,
-          points: param.polygon.points,
+          points: latLngpoints,
           strokeWidth: param.polygon.strokeWidth,
           strokeColor: param.polygon.strokeColor,
           fillColor: Colors.yellow.withOpacity(0.15),
         ));
+        print(param.points[0]);
       }
     }
   }
@@ -122,6 +128,7 @@ class _MapPageState extends State<MapPage> {
               myLocationEnabled: true,
               markers: Set.from(_markers),
               circles: _circles,
+              polygons: _polygons,
             ),
           ],
         ),

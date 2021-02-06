@@ -8,11 +8,20 @@ class Parameter {
   bool isCircle;
   Circle circle;
   Polygon polygon;
+  List<Point> points;
 
   Parameter(
       {@required this.isPolygon,
       @required this.isCircle,
       @required this.livestock,
       this.circle,
-      this.polygon});
+      this.polygon,
+      this.points});
+}
+
+class Point {
+  double latitude;
+  double longitude;
+
+  Point({@required this.latitude, @required this.longitude});
 }
