@@ -176,12 +176,29 @@ class _MapPageState extends State<MapPage> {
         appBar: AppBar(
           title: Text('Set Digital Parameters'),
           centerTitle: true,
+          actions: [
+            if (_circles.isNotEmpty || _polygons.isNotEmpty)
+              IconButton(
+                icon: Icon(Icons.check),
+                onPressed: () {
+                  print(_isCircle);
+                  print(_isPolygon);
+
+                  ParameterHelper.postParameter(
+                      context,
+                      Parameter(
+                          isCircle: _isCircle,
+                          isPolygon: _isPolygon,
+                          livestock: widget.livestock,
+                          circle: _circles.isNotEmpty ? _circles.first : null,
+                          polygon:
+                              _polygons.isNotEmpty ? _polygons.first : null));
+                },
+              ),
+          ],
         ),
-        floatingActionButton: _polygonLatLngs.length > 0 && _isPolygon
-            ? _fabPolygon()
-            : _circles.isNotEmpty || _polygons.isNotEmpty
-                ? _fabPost(context)
-                : null,
+        floatingActionButton:
+            _polygonLatLngs.length > 0 && _isPolygon ? _fabPolygon() : null,
         body: Stack(
           children: <Widget>[
             GoogleMap(

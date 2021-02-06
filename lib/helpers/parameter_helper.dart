@@ -42,11 +42,13 @@ class ParameterHelper {
             : null,
         "Polygon": parameter.polygon != null
             ? {
-                "polygonId": parameter.polygon.polygonId,
-                "points": parameter.polygon.points,
+                "polygonId": parameter.polygon.polygonId.value,
+                "points": parameter.polygon.points
+                    .map((point) => point.toJson())
+                    .toList(),
                 "strokeWidth": parameter.polygon.strokeWidth,
-                "strokeColor": parameter.polygon.strokeColor,
-                "fillColor": parameter.polygon.fillColor
+                "strokeColor": parameter.polygon.strokeColor.value,
+                "fillColor": parameter.polygon.fillColor.value
               }
             : null,
       });

@@ -117,7 +117,7 @@ class _MapPageState extends State<MapPage> {
             GoogleMap(
               initialCameraPosition:
                   CameraPosition(target: _initialcameraposition, zoom: 15.0),
-              mapType: MapType.normal,
+              mapType: MapType.hybrid,
               // onMapCreated: _onMapCreated,
               myLocationEnabled: true,
               markers: Set.from(_markers),
