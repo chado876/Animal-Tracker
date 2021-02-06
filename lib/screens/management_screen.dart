@@ -110,52 +110,6 @@ class _SettingsScreenState extends State<Settings> {
                   builder: (ctx) => AddLivestock(),
                 ));
               }),
-          ListTile(
-            title: Text("Edit Livestock",
-                style: GoogleFonts.sarala().copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                )),
-            trailing: Icon(
-              Icons.edit,
-              color: Colors.black,
-            ),
-            onTap: () {
-              // FirebaseAuth.instance.signOut();
-              // Navigator.pushNamed(context, '/login');
-            },
-          ),
-          ListTile(
-            title: Text("Remove Livestock",
-                style: GoogleFonts.sarala().copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                )),
-            trailing: Icon(
-              Icons.delete,
-              color: Colors.black,
-            ),
-            onTap: () {
-              // FirebaseAuth.instance.signOut();
-              // Navigator.pushNamed(context, '/login');
-            },
-          ),
-          ListTile(
-            title: Text("Draw Digital Permeters (Work In Progress)",
-                style: GoogleFonts.sarala().copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                )),
-            trailing: Icon(
-              Icons.local_police,
-              color: Colors.black,
-            ),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (ctx) => MapPage(),
-              ));
-            },
-          ),
         ],
       ),
     );

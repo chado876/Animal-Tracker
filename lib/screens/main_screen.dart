@@ -90,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
           Icon(Icons.home,
               size: 30,
               color: section == 0 ? Colors.lightBlueAccent : Colors.white),
-          Icon(Icons.inventory,
+          Icon(Icons.show_chart,
               size: 30,
               color: section == 1 ? Colors.lightBlueAccent : Colors.white),
           Icon(Icons.public,
