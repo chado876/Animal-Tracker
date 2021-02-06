@@ -1,3 +1,7 @@
+import 'dart:collection';
+
+import 'package:animal_tracker/helpers/parameter_helper.dart';
+import 'package:animal_tracker/models/parameter.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,16 +22,62 @@ class _MapPageState extends State<MapPage> {
   GoogleMapController _controller;
   Location _location = Location();
   Set<Marker> _markers = {};
+  List<Parameter> parameters = [];
+  Set<Polygon> _polygons = HashSet<Polygon>();
+  Set<Circle> _circles = HashSet<Circle>();
 
   @override
   void initState() {
     getLivestock();
+    setParameters();
     super.initState();
+  }
+
+  void setParameters() async {
+    parameters = await ParameterHelper.getParameters();
+    print(parameters.length);
+    _setCircles();
+    _setPolygon();
   }
 
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
     addMarker(livestock);
+  }
+
+  // Draw Polygon to the map
+  void _setPolygon() {
+    for (var param in parameters) {
+      if (param.isPolygon) {
+        List<LatLng> latLngpoints = [];
+        for (var p in param.points) {
+          latLngpoints.add(LatLng(p.latitude, p.longitude));
+        }
+        _polygons.add(Polygon(
+          polygonId: param.polygon.polygonId,
+          points: latLngpoints,
+          strokeWidth: param.polygon.strokeWidth,
+          strokeColor: param.polygon.strokeColor,
+          fillColor: Colors.yellow.withOpacity(0.15),
+        ));
+        print(param.points[0]);
+      }
+    }
+  }
+
+  // Set circles as points to the map
+  void _setCircles() {
+    for (var param in parameters) {
+      if (param.isCircle) {
+        _circles.add(Circle(
+            circleId: param.circle.circleId,
+            center: param.circle.center,
+            radius: param.circle.radius,
+            fillColor: Colors.redAccent.withOpacity(0.5),
+            strokeWidth: 3,
+            strokeColor: Colors.redAccent));
+      }
+    }
   }
 
   void addMarker(List<Livestock> livestock) {
@@ -73,10 +123,12 @@ class _MapPageState extends State<MapPage> {
             GoogleMap(
               initialCameraPosition:
                   CameraPosition(target: _initialcameraposition, zoom: 15.0),
-              mapType: MapType.normal,
+              mapType: MapType.hybrid,
               // onMapCreated: _onMapCreated,
               myLocationEnabled: true,
               markers: Set.from(_markers),
+              circles: _circles,
+              polygons: _polygons,
             ),
           ],
         ),

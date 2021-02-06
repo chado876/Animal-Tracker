@@ -95,7 +95,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
       int x = 0;
 
-      images.forEach((image) async {
+      for (var image in images) {
         String fileName = tagIdController.text + x.toString();
         await postImage(
                 imageFile: image,
@@ -106,9 +106,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
           _imageUrls.add(url.toString());
         });
         x++;
-      });
-
-      print(_imageUrls[0]);
+      }
 
       final address = await LocationHelper.getPlacedAddress(
           pickedLocation.latitude, pickedLocation.longitude);

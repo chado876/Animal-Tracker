@@ -11,7 +11,7 @@ exports.myFunction = functions.firestore
           const payload = {
             notification: {
               title: "Missing Livestock",
-              body: "Livestock went missing in" +snapshot.data().address,
+              body: snapshot.data().category + " went missing in " + snapshot.data().address,
               sound: "default",
             },
           };

@@ -17,14 +17,14 @@ class Livestock {
   Livestock(
       {@required this.tagId,
       @required this.uId,
-      @required this.category,
-      @required this.age,
-      @required this.address,
+      this.category,
+      this.age,
+      this.address,
       this.distinguishingFeatures,
       @required this.longitude,
       @required this.latitude,
       this.weight,
-      @required this.imageUrls,
+      this.imageUrls,
       this.isMissing,
       this.dateAdded});
 }
