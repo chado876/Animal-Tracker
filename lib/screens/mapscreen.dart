@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart' as geo;
 
 import '../helpers/livestock_helper.dart';
 import '../models/livestock.dart';
+import '../helpers/marker_helper.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -57,8 +58,8 @@ class _MapPageState extends State<MapPage> {
           polygonId: param.polygon.polygonId,
           points: latLngpoints,
           strokeWidth: param.polygon.strokeWidth,
-          strokeColor: param.polygon.strokeColor,
-          fillColor: Colors.yellow.withOpacity(0.15),
+          strokeColor: Colors.greenAccent.withOpacity(0.30),
+          fillColor: Colors.greenAccent.withOpacity(0.30),
         ));
         print(param.points[0]);
       }
@@ -73,9 +74,9 @@ class _MapPageState extends State<MapPage> {
             circleId: param.circle.circleId,
             center: param.circle.center,
             radius: param.circle.radius,
-            fillColor: Colors.redAccent.withOpacity(0.5),
+            fillColor: Colors.greenAccent.withOpacity(0.5),
             strokeWidth: 3,
-            strokeColor: Colors.redAccent));
+            strokeColor: Colors.greenAccent.withOpacity(0.15)));
       }
     }
   }
@@ -87,8 +88,7 @@ class _MapPageState extends State<MapPage> {
         Marker(
           markerId: MarkerId(element.tagId),
           position: LatLng(element.latitude, element.longitude),
-          icon: await BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(size: Size(48, 48)), 'assets/images/cow.png'),
+          icon: await MarkerHelper.setIcon(element.category),
         ),
       );
     });

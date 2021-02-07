@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animal_tracker/models/livestock.dart';
 import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +18,7 @@ import '../widgets/location_input.dart';
 import '../models/place.dart';
 
 import '../helpers/location_helper.dart';
+import 'drawable_map.dart';
 
 class AddLivestock extends StatelessWidget {
   @override
@@ -53,6 +55,8 @@ class _AddLivestockState extends State<AddLivestockSection> {
   bool imgError = false;
 
   PlaceLocation _pickedLocation;
+
+  Livestock livestock;
 
   List<String> _categories = [
     "Cattle",
@@ -135,6 +139,20 @@ class _AddLivestockState extends State<AddLivestockSection> {
         'isMissing': false,
         'dateAdded': generateCurrentDate(),
       });
+      livestock = Livestock(
+        uId: user.uid,
+        tagId: tagIdController.text,
+        category: value,
+        age: ageController.text,
+        weight: double.parse(weightController.text),
+        distinguishingFeatures: featuresController.text,
+        imageUrls: _imageUrls,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        address: locationData.address,
+        isMissing: false,
+      );
+
       postSuccess = true;
     } on PlatformException catch (err) {
       postSuccess = false;
@@ -263,6 +281,16 @@ class _AddLivestockState extends State<AddLivestockSection> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Align(
+                child: Text(
+                  "Fill out the information below.",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                alignment: Alignment.center,
+              ),
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
@@ -363,7 +391,15 @@ class _AddLivestockState extends State<AddLivestockSection> {
                           ),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      });
+                      }).then((value) => postSuccess
+                          ? Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    MapPage(livestock: livestock),
+                              ),
+                            )
+                          : null);
                     },
                   )),
               SizedBox(height: 10),

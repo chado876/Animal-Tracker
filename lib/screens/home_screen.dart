@@ -1,5 +1,6 @@
 import 'package:animal_tracker/components/body.dart';
 import 'package:animal_tracker/components/navbar.dart';
+import 'package:animal_tracker/screens/add_livestock.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -57,15 +58,29 @@ class _HomeScreenState extends State<HomeCard> {
     return Scaffold(
       appBar: buildAppBar(),
       body: Body(),
+      floatingActionButton: Padding(
+        child: FloatingActionButton(
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          backgroundColor: Colors.black,
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) => AddLivestock(),
+              ),
+            );
+          },
+        ),
+        padding: EdgeInsets.only(bottom: 60),
+      ),
     );
   }
 
   AppBar buildAppBar() {
     return AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: SvgPicture.asset('assets/icons/menu.svg'),
-          onPressed: null,
-        ));
+      elevation: 0,
+    );
   }
 }
