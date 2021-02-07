@@ -1,28 +1,20 @@
 import 'dart:async';
 
-import 'package:animal_tracker/components/header.dart';
 import 'package:animal_tracker/utilities/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../providers/user_data_provider.dart';
-import '../models/profile.dart';
 
+import '../helpers/auth_helper.dart';
 import '../helpers/livestock_helper.dart';
 import '../models/livestock.dart';
-import '../helpers/auth_helper.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
+import '../models/profile.dart';
 import 'livestock_view.dart';
 
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return BodySection();
   }
 }
@@ -69,6 +61,17 @@ class _BodyState extends State<BodySection> {
 
   List<String> existingCategories = [];
 
+  String greeting() {
+    var hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    }
+    if (hour < 17) {
+      return 'Good Afternoon';
+    }
+    return 'Good Evening';
+  }
+
   void getLivestock() async {
     List<Livestock> livestock = await LivestockHelper.getLivestockData();
     print(livestock.length);
@@ -98,27 +101,6 @@ class _BodyState extends State<BodySection> {
     });
   }
 
-  // Future<void> notif() async {
-  //   RemoteMessage initialMessage =
-  //       await FirebaseMessaging.instance.getInitialMessage();
-
-  //     FirebaseMessaging.
-  //   print(initialMessage.toString());
-  //   if (initialMessage?.data['category'] == 'Cattle') {
-  //     print("HEREEEZ!");
-  //   } else {
-  //     print(initialMessage.toString());
-  //   }
-
-  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  //     if (message.data['category'] == 'Cattle') {
-  //       print("HEREEEZ!");
-  //     } else {
-  //       print(initialMessage.toString());
-  //     }
-  //   });
-  // }
-
   @override
   void dispose() {
     _searchQueryController.removeListener(_onSearchChanged);
@@ -128,8 +110,6 @@ class _BodyState extends State<BodySection> {
   }
 
   void fetchUserData() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // firstName = prefs.getString("firstname") ?? "John";
     currentUser = await AuthHelper.fetchData();
     setState(() {
       firstName = currentUser.firstName;
@@ -138,8 +118,6 @@ class _BodyState extends State<BodySection> {
 
       uid = currentUser.uid;
     });
-    // print(currentUser.uid);
-    // print(currentUser.firstName);
   }
 
   void fetchData() async {
@@ -152,14 +130,10 @@ class _BodyState extends State<BodySection> {
         .doc(uid)
         .snapshots()
         .listen((user) {
-      // print(data.data['image_url']);
       setState(() {
         firstName = user.data()['firstName'];
         print("Here!!!!" + firstName);
       });
-      // lastName = user.data['lastName'];
-      // parish = user.data['parish'];
-      // photoLink = user.data['image_url'];
     });
   }
 
@@ -177,14 +151,17 @@ class _BodyState extends State<BodySection> {
             child: _searchResultView(_searchResult),
           ),
         if (!_isSearching)
-          // Row(
-          //   children: [
-          //     Icon(Icons.info),
-          //     Text("Tap on a livestock card for more information and options",),
-          //   ],
-          // ),
-
-          SizedBox(height: 20),
+          Padding(
+              child: Row(
+                children: [
+                  Icon(Icons.info),
+                  Text(
+                      "Tap on a livestock card for more information and options",
+                      style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+              padding: EdgeInsets.all(5)),
+        SizedBox(height: 20),
         for (var category in existingCategories)
           // if (LivestockHelper.checkIfCategoryExists(category) == false)
           Column(

@@ -13,7 +13,7 @@ import './screens/auth_screen.dart';
 import './screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import './screens/management_screen.dart';
+import './screens/analytics_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
             '/home': (context) => HomeScreen(),
             '/settings': (context) => SettingsScreen(),
             '/profile': (context) => ProfileScreen(),
-            '/manage': (context) => ManagementScreen()
+            '/manage': (context) => AnalyticsScreen()
 
             // When navigating to the "/second" route, build the SecondScreen widget.
             // '/second': (context) => SecondScreen(),

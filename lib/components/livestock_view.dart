@@ -230,11 +230,10 @@ class _LivestockViewState extends State<LivestockViewSection>
             : _animationController.forward(),
 
         // Floating Action button Icon color
-        iconColor: Colors.blue,
-
+        iconColor: Colors.white,
         // Flaoting Action button Icon
         iconData: Icons.more_horiz,
-        backGroundColor: Colors.white,
+        backGroundColor: Colors.black,
       ),
     );
   }
