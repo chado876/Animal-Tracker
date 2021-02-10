@@ -37,6 +37,15 @@ exports.missingLivestock = functions.firestore
             if(inside == false){
                 outOfBounds = true;
               }
+          } else {
+            var inside = insidePolygon(livestockAfter.livestock.latitude,
+              livestockAfter.livestock.longitude,livestockAfter.Polygon.points);
+
+              console.log("INSIDE " + inside);
+
+            if(inside == false){
+                outOfBounds = true;
+              }
           }
             console.log("LIVESTOCK IS OUT OF BOUNDS " + outOfBounds);
 
@@ -56,6 +65,36 @@ exports.missingLivestock = functions.firestore
            
             return;
     });
+
+    function insidePolygon(pointx, pointy, points) {
+      // ray-casting algorithm based on
+      // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+
+      var point0x = points.point0.latitude;
+      var point0y = points.point0.longitude;
+      var point1x = points.point0.latitude;
+      var point1y = points.point0.longitude;
+      var point2x = points.point0.latitude;
+      var point2y = points.point0.longitude;
+      var point3x = points.point0.latitude;
+      var point3y = points.point0.longitude;
+
+      
+      var x = pointx, y = pointy;
+      var vs = [[point0x,point0y],[point1x,point1y],[point2x,point2y],[point3x,point3y]];
+
+      var inside = false;
+      for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+          var xi = vs[i][0], yi = vs[i][1];
+          var xj = vs[j][0], yj = vs[j][1];
+          
+          var intersect = ((yi > y) != (yj > y))
+              && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+          if (intersect) inside = !inside;
+      }
+      
+      return inside;
+  };
 
 
 function checkIfInside(pointx,pointy,circlex,circley,rad) {
