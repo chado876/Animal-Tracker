@@ -36,6 +36,7 @@ exports.missingLivestock = functions.firestore
 
             if(inside == false){
                 outOfBounds = true;
+                setAsMissing(livestockAfter);
               }
           } else {
             var inside = insidePolygon(livestockAfter.livestock.latitude,
@@ -45,6 +46,8 @@ exports.missingLivestock = functions.firestore
 
             if(inside == false){
                 outOfBounds = true;
+                setAsMissing(livestockAfter);
+
               }
           }
             console.log("LIVESTOCK IS OUT OF BOUNDS " + outOfBounds);
@@ -65,6 +68,21 @@ exports.missingLivestock = functions.firestore
            
             return;
     });
+
+
+    function setAsMissing(data){
+      console.log('users/' + data.livestock.ownerUid + '/livestock/'
+      + data.livestock.id);
+
+      admin.firestore().collection('users').doc(data.livestock.ownerUid).collection('livestock')
+      .doc(data.livestock.id).get().then(doc => {
+        doc.data().isMissing = true;
+        var newData = doc.data();
+        newData.isMissing = true;
+        admin.firestore().collection('missing_livestock').doc(data.livestock.id).set(newData);
+    });
+    }
+
 
     function insidePolygon(pointx, pointy, points) {
       // ray-casting algorithm based on
