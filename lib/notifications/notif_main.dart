@@ -98,6 +98,8 @@ class _Application extends State<Application> {
   void initState() {
     super.initState();
     FirebaseMessaging.instance.subscribeToTopic("MissingLivestock");
+    FirebaseMessaging.instance.subscribeToTopic("ParameterNotification");
+
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage message) {

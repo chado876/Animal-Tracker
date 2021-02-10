@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeCard> {
   void initState() {
     // fetchData();
     FirebaseMessaging.instance.subscribeToTopic("MissingLivestock");
+    FirebaseMessaging.instance.subscribeToTopic("ParameterNotification");
 
     super.initState();
   }
