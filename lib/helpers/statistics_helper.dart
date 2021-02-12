@@ -36,13 +36,25 @@ class StatsHelper {
       print("Number: $number");
       livestock.update(x, (value) => number);
     }
-
-    // livestock.forEach((key, value) async {
-    //   await LivestockHelper.getNumberOfLivestock(key)
-    //       .then((res) => value = res);
-    // });
-
     print(livestock);
     return livestock;
+  }
+
+  static Future<int> getNumberOfMissingLivestock() async {
+    UserObject currentUser = await AuthHelper.fetchData();
+
+    int result = 0;
+
+    await FirebaseFirestore.instance
+        .collection('missing_livestock')
+        .where('uId', isEqualTo: currentUser.uid)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        result = value.docs.length;
+      }
+    });
+
+    return result;
   }
 }

@@ -46,6 +46,8 @@ class _SettingsScreenState extends State<Settings> {
 
   int section = 0;
 
+  int numberMissing = 0;
+
   Map<String, int> livestock = {};
 
   @override
@@ -57,9 +59,11 @@ class _SettingsScreenState extends State<Settings> {
 
   Future<void> getStats() async {
     var res = await StatsHelper.categoryChecker();
+    var missing = await StatsHelper.getNumberOfMissingLivestock();
 
     setState(() {
       livestock.addAll(res);
+      numberMissing = missing;
     });
   }
 
@@ -101,7 +105,7 @@ class _SettingsScreenState extends State<Settings> {
         physics: ClampingScrollPhysics(),
         slivers: [
           _buildOptionsTabBar(),
-          _lostAndFoundSection(),
+          _lostAndFoundSection(numberMissing),
           _categorySection(),
           spacer()
         ],
@@ -178,7 +182,7 @@ class _SettingsScreenState extends State<Settings> {
   }
 }
 
-Widget _lostAndFoundSection() {
+Widget _lostAndFoundSection(int missing) {
   return SliverPadding(
     padding: EdgeInsets.only(top: 10),
     sliver: SliverToBoxAdapter(
@@ -199,7 +203,7 @@ Widget _lostAndFoundSection() {
               children: [
                 StatsCard(
                   title: "Missing Livestock",
-                  number: 10,
+                  number: missing,
                   prefix: "Animals",
                   imgPath: "thief.svg",
                 ),
