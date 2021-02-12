@@ -162,7 +162,12 @@ class _SettingsScreenState extends State<Settings> {
                 spacing: 20,
                 children: [
                   for (var x in livestock.entries)
-                    StatsCard(title: x.key, number: x.value, prefix: x.key),
+                    StatsCard(
+                      title: x.key,
+                      number: x.value,
+                      prefix: x.key,
+                      imgPath: "${x.key}.svg",
+                    ),
                 ],
               ),
             ),
@@ -193,14 +198,16 @@ Widget _lostAndFoundSection() {
               spacing: 20,
               children: [
                 StatsCard(
-                  title: "Livestock Stolen",
+                  title: "Missing Livestock",
                   number: 10,
                   prefix: "Animals",
+                  imgPath: "thief.svg",
                 ),
                 StatsCard(
                   title: "Livestock Found",
                   number: 10,
                   prefix: "Animals",
+                  imgPath: "found.svg",
                 ),
               ],
             ),
@@ -215,14 +222,16 @@ class StatsCard extends StatelessWidget {
   final String title;
   final int number;
   final String prefix;
+  final String imgPath;
   final Color iconColor;
 
   const StatsCard({
     Key key,
-    this.title,
-    this.number,
+    @required this.title,
+    @required this.number,
     this.iconColor,
-    this.prefix,
+    @required this.prefix,
+    @required this.imgPath,
   }) : super(key: key);
 
   @override
@@ -243,10 +252,9 @@ class StatsCard extends StatelessWidget {
                   height: 30,
                   width: 30,
                   decoration: BoxDecoration(
-                      color: Color(0xFFFF9C00).withOpacity(0.12),
-                      shape: BoxShape.circle),
+                      color: Colors.white, shape: BoxShape.circle),
                   child: SvgPicture.asset(
-                    "assets/svg/thief.svg",
+                    "assets/svg/$imgPath",
                     height: 12,
                     width: 12,
                   ),
@@ -265,7 +273,7 @@ class StatsCard extends StatelessWidget {
                     style: TextStyle(color: Colors.black),
                     children: [
                       TextSpan(
-                        text: "$number \n",
+                        text: "$number ",
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
