@@ -102,6 +102,26 @@ class LivestockHelper {
     return exists;
   }
 
+  static Future<int> getNumberOfLivestock(String category) async {
+    UserObject currentUser = await AuthHelper.fetchData();
+
+    int result = 0;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('livestock')
+        .where('category', isEqualTo: category)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        result = value.docs.length;
+      }
+    });
+
+    return result;
+  }
+
   static Future<List<Livestock>> getLivestockDataByTagID(String tagID) async {
     UserObject currentUser = await AuthHelper.fetchData();
     List<Livestock> allLivestock = [];
