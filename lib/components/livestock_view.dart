@@ -10,15 +10,7 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 
 import '../helpers/livestock_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-final List<String> imgList = [
-  'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-  // 'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-  // 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-  // 'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-  // 'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-  // 'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
-];
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final CarouselController _controller = CarouselController();
 
@@ -92,7 +84,7 @@ class _LivestockViewState extends State<LivestockViewSection>
               carouselController: _controller,
             ),
             ListTile(
-              leading: FlutterLogo(size: 56.0),
+              leading: FaIcon(FontAwesomeIcons.bell, color: Colors.black),
               title: Text('Status'),
               subtitle: livestock.isMissing
                   ? Text(
@@ -109,22 +101,26 @@ class _LivestockViewState extends State<LivestockViewSection>
                     ),
             ),
             ListTile(
-              leading: FlutterLogo(size: 56.0),
+              leading:
+                  FaIcon(FontAwesomeIcons.locationArrow, color: Colors.black),
               title: Text('Current Location'),
               subtitle: Text(livestock.address),
             ),
             ListTile(
-              leading: FlutterLogo(size: 56.0),
+              leading: FaIcon(FontAwesomeIcons.calendar, color: Colors.black),
               title: Text('Age'),
               subtitle: Text(livestock.age),
             ),
             ListTile(
-              leading: FlutterLogo(size: 56.0),
+              leading: FaIcon(FontAwesomeIcons.weight, color: Colors.black),
               title: Text('Weight'),
               subtitle: Text(livestock.weight.toString() + " lbs"),
             ),
             ListTile(
-              leading: FlutterLogo(size: 56.0),
+              leading: FaIcon(
+                FontAwesomeIcons.calendarAlt,
+                color: Colors.black,
+              ),
               title: Text('Date Added'),
               subtitle: livestock.dateAdded != null
                   ? (Text(livestock.dateAdded.toString()))
@@ -143,7 +139,7 @@ class _LivestockViewState extends State<LivestockViewSection>
           Bubble(
             title: "Edit",
             iconColor: Colors.white,
-            bubbleColor: Colors.blue,
+            bubbleColor: Colors.black,
             icon: Icons.edit,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
@@ -154,7 +150,7 @@ class _LivestockViewState extends State<LivestockViewSection>
           Bubble(
             title: "Delete",
             iconColor: Colors.white,
-            bubbleColor: Colors.blue,
+            bubbleColor: Colors.red,
             icon: Icons.delete,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
@@ -164,9 +160,9 @@ class _LivestockViewState extends State<LivestockViewSection>
           Bubble(
             title: livestock.isMissing ? "Mark as found" : "Mark as missing",
             iconColor: Colors.white,
-            bubbleColor: Colors.blue,
+            bubbleColor: livestock.isMissing ? Colors.green : Colors.red,
             icon: livestock.isMissing
-                ? Icons.find_in_page_outlined
+                ? Icons.find_in_page_rounded
                 : Icons.warning_outlined,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
@@ -174,13 +170,14 @@ class _LivestockViewState extends State<LivestockViewSection>
                   ? LivestockHelper.setLivestockAsFound(
                       livestock.tagId, context)
                   : LivestockHelper.postMissingLivestock(livestock, context);
+              Navigator.of(context).pop();
             },
           ),
           Bubble(
             title: "Show on map",
             iconColor: Colors.white,
-            bubbleColor: Colors.blue,
-            icon: Icons.location_on_outlined,
+            bubbleColor: Colors.black,
+            icon: FontAwesomeIcons.searchLocation,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               Navigator.push(
@@ -194,8 +191,8 @@ class _LivestockViewState extends State<LivestockViewSection>
           Bubble(
             title: "Set Digital Parameters",
             iconColor: Colors.white,
-            bubbleColor: Colors.blue,
-            icon: Icons.location_on_outlined,
+            bubbleColor: Colors.black,
+            icon: FontAwesomeIcons.mapMarkedAlt,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               Navigator.push(
@@ -211,12 +208,12 @@ class _LivestockViewState extends State<LivestockViewSection>
           Bubble(
             title: "Home",
             iconColor: Colors.white,
-            bubbleColor: Colors.blue,
+            bubbleColor: Colors.black,
             icon: Icons.home,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => Homepage()));
-              _animationController.reverse();
+              Navigator.of(context).pop();
             },
           ),
         ],

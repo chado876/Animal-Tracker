@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../helpers/livestock_helper.dart';
 import '../helpers/tip_helper.dart';
 import '../models/tip.dart';
@@ -165,10 +166,16 @@ class _MissingScreenState extends State<MissingSection> {
                   // scrollDirection: Axis.horizontal,
                   itemCount: livestock.length,
                   itemBuilder: (BuildContext context, int index) => Card(
+                    shadowColor: Colors.black,
+                    elevation: 5,
                     child: SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
                           ListTile(
+                            leading: FaIcon(
+                              FontAwesomeIcons.passport,
+                              color: Colors.black,
+                            ),
                             title: Text("Tag ID"),
                             subtitle:
                                 Text(livestock[index]['tagId'].toString()),
@@ -184,10 +191,18 @@ class _MissingScreenState extends State<MissingSection> {
                             carouselController: _controller,
                           ),
                           ListTile(
+                            leading: FaIcon(
+                              FontAwesomeIcons.mapPin,
+                              color: Colors.black,
+                            ),
                             title: Text("Last Seen"),
                             subtitle: Text(livestock[index]['address']),
                           ),
                           ListTile(
+                            leading: FaIcon(
+                              FontAwesomeIcons.user,
+                              color: Colors.black,
+                            ),
                             title: Text("Owner"),
                             subtitle: Text(livestock[index]['owner_name']),
                           ),
@@ -197,9 +212,12 @@ class _MissingScreenState extends State<MissingSection> {
                                   context: context,
                                   builder: (context) {
                                     return Dialog(
+                                      insetPadding: EdgeInsets.all(10),
                                       child: Container(
                                         height: 450,
-                                        width: 350,
+                                        width: double.infinity,
+                                        padding: EdgeInsets.only(
+                                            right: 10, left: 10),
                                         child: Column(
                                           children: [
                                             Text("Send Tip",
@@ -222,7 +240,12 @@ class _MissingScreenState extends State<MissingSection> {
                                                 ),
                                               ),
                                             ),
-                                            Text("Have a location?"),
+                                            Text(
+                                              "Have a location?",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                              ),
+                                            ),
                                             LocationInput(_selectPlace),
                                             ElevatedButton(
                                                 onPressed: () {
@@ -250,11 +273,11 @@ class _MissingScreenState extends State<MissingSection> {
                                   });
                             },
                             child: Container(
-                              width: 85,
+                              width: 70,
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text("Send Tip "),
-                                  Icon(Icons.report)
+                                  Text(" Send Tip "),
                                 ],
                               ),
                             ),

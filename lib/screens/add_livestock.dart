@@ -281,6 +281,9 @@ class _AddLivestockState extends State<AddLivestockSection> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(
+                height: 20,
+              ),
               Align(
                 child: Text(
                   "Fill out the information below.",

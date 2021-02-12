@@ -76,10 +76,27 @@ exports.missingLivestock = functions.firestore
 
       admin.firestore().collection('users').doc(data.livestock.ownerUid).collection('livestock')
       .doc(data.livestock.id).get().then(doc => {
-        doc.data().isMissing = true;
         var newData = doc.data();
         newData.isMissing = true;
-        admin.firestore().collection('missing_livestock').doc(data.livestock.id).set(newData);
+        var ownerName = "";
+
+        admin.firestore().collection('users').doc(data.livestock.ownerUid).get().then(val =>{
+          ownerName = val.data().firstName + " " + val.data().lastName;
+        });
+
+        admin.firestore().collection('missing_livestock').doc(data.livestock.id).set({
+          address: newData.address,
+          age: newData.age,
+          category: newData.category,
+          distinguishingFeatures: newData.distinguishingFeatures,
+          image_urls: newData.image_urls,
+          latitude: newData.latitude,
+          longitude: newData.longitude,
+          owner_name: ownerName,
+          tagId: newData.tagId,
+          uId: newData.uId,
+          weight: newData.weight
+        });
     });
     }
 
