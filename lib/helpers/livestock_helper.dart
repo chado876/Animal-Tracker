@@ -25,14 +25,21 @@ class LivestockHelper {
 
     querySnapshot.docs.forEach((livestock) {
       Livestock item = Livestock(
-          address: livestock.data()['address'],
-          uId: livestock.data()['uId'],
-          tagId: livestock.data()['tagId'],
-          category: livestock.data()['category'],
-          age: livestock.data()['age'],
-          // imageUrls: livestock.data()['image_urls'],
-          latitude: livestock.data()['latitude'],
-          longitude: livestock.data()['longitude']);
+        address: livestock.data()['address'],
+        uId: livestock.data()['uId'],
+        tagId: livestock.data()['tagId'],
+        category: livestock.data()['category'],
+        age: livestock.data()['age'],
+        imageUrls: (livestock.data()['image_urls'] as List)
+            ?.map((item) => item as String)
+            ?.toList(),
+        latitude: livestock.data()['latitude'],
+        longitude: livestock.data()['longitude'],
+        isMissing: livestock.data()['isMissing'],
+        distinguishingFeatures: livestock.data()['distinguishingFeatures'],
+        weight: livestock.data()['weight'],
+        dateAdded: livestock.data()['dateAdded'].toDate(),
+      );
 
       allLivestock.add(item);
     });
@@ -177,6 +184,7 @@ class LivestockHelper {
           'latitude': livestock.latitude,
           'longitude': livestock.longitude,
           'address': livestock.address,
+          'dateTime': DateTime.now(),
         });
       });
 

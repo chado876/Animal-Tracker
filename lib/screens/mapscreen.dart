@@ -11,6 +11,10 @@ import 'package:geolocator/geolocator.dart' as geo;
 import '../helpers/livestock_helper.dart';
 import '../models/livestock.dart';
 import '../helpers/marker_helper.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../components/livestock_view.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -26,6 +30,9 @@ class _MapPageState extends State<MapPage> {
   List<Parameter> parameters = [];
   Set<Polygon> _polygons = HashSet<Polygon>();
   Set<Circle> _circles = HashSet<Circle>();
+
+  bool show = false;
+  Livestock infoLivestock;
 
   @override
   void initState() {
@@ -86,10 +93,13 @@ class _MapPageState extends State<MapPage> {
     livestock.forEach((element) async {
       markers.add(
         Marker(
-          markerId: MarkerId(element.tagId),
-          position: LatLng(element.latitude, element.longitude),
-          icon: await MarkerHelper.setIcon(element.category),
-        ),
+            markerId: MarkerId(element.tagId),
+            position: LatLng(element.latitude, element.longitude),
+            // icon: await MarkerHelper.setIcon(element.category),
+            onTap: () {
+              print("yes" + element.tagId);
+              setInfoPopup(element);
+            }),
       );
     });
 
@@ -109,29 +119,108 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  setInfoPopup(Livestock livestock) {
+    setState(() {
+      infoLivestock = livestock;
+      show = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Map"),
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition:
-                  CameraPosition(target: _initialcameraposition, zoom: 15.0),
-              mapType: MapType.hybrid,
-              // onMapCreated: _onMapCreated,
-              myLocationEnabled: true,
-              markers: Set.from(_markers),
-              circles: _circles,
-              polygons: _polygons,
+      body: Stack(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                      target: _initialcameraposition, zoom: 15.0),
+                  mapType: MapType.hybrid,
+                  // onMapCreated: _onMapCreated,
+                  myLocationEnabled: true,
+                  markers: Set.from(_markers),
+                  circles: _circles,
+                  polygons: _polygons,
+                ),
+              ],
             ),
-          ],
+          ),
+          if (show == true) _buildInfoPopup(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoPopup() {
+    return Container(
+      margin: EdgeInsets.all(5),
+      height: 110,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Padding(
+                child: SvgPicture.asset(
+                  "assets/svg/${infoLivestock.category}.svg",
+                  height: 48,
+                  width: 48,
+                ),
+                padding: EdgeInsets.only(left: 8, top: 10, right: 5),
+              ),
+              Column(
+                children: [
+                  Text("${infoLivestock.category} - #${infoLivestock.tagId}"),
+                  Text(
+                    "${infoLivestock.address}",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LivestockView(livestock: infoLivestock)),
+                    );
+                  },
+                  child: Text("More"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                  ),
+                ),
+                padding: EdgeInsets.only(right: 10),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

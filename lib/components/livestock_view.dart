@@ -78,11 +78,12 @@ class _LivestockViewState extends State<LivestockViewSection>
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            CarouselSlider(
-              items: generateImageList(livestock.imageUrls),
-              options: CarouselOptions(enlargeCenterPage: true, height: 200),
-              carouselController: _controller,
-            ),
+            if (livestock.imageUrls != null)
+              CarouselSlider(
+                items: generateImageList(livestock.imageUrls),
+                options: CarouselOptions(enlargeCenterPage: true, height: 200),
+                carouselController: _controller,
+              ),
             ListTile(
               leading: FaIcon(FontAwesomeIcons.bell, color: Colors.black),
               title: Text('Status'),
