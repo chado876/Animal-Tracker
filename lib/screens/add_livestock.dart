@@ -81,6 +81,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
 
   TextEditingController tagIdController = TextEditingController();
   TextEditingController ageController = TextEditingController();
+  TextEditingController descController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   TextEditingController featuresController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -136,6 +137,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
         'latitude': locationData.latitude,
         'longitude': locationData.longitude,
         'address': locationData.address,
+        'description': descController.text,
         'isMissing': false,
         'dateAdded': generateCurrentDate(),
       });
@@ -146,6 +148,7 @@ class _AddLivestockState extends State<AddLivestockSection> {
         age: ageController.text,
         weight: double.parse(weightController.text),
         distinguishingFeatures: featuresController.text,
+        descripton: descController.text,
         imageUrls: _imageUrls,
         latitude: locationData.latitude,
         longitude: locationData.longitude,
@@ -321,6 +324,16 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Age (Optional)',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: descController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Descripton (for eg. color)',
                   ),
                 ),
               ),

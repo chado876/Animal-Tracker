@@ -9,6 +9,7 @@ class Livestock {
   double longitude;
   double latitude;
   double weight;
+  String description;
   List<String> imageUrls;
   bool isMissing = false;
   DateTime dateAdded;
@@ -24,6 +25,7 @@ class Livestock {
       @required this.longitude,
       @required this.latitude,
       this.weight,
+      @required descripton,
       this.imageUrls,
       this.isMissing,
       this.dateAdded});

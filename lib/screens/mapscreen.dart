@@ -91,11 +91,13 @@ class _MapPageState extends State<MapPage> {
   void addMarker(List<Livestock> livestock) {
     Set<Marker> markers = {};
     livestock.forEach((element) async {
+      BitmapDescriptor markerIcon =
+          await MarkerHelper.setIcon(element.category);
       markers.add(
         Marker(
             markerId: MarkerId(element.tagId),
             position: LatLng(element.latitude, element.longitude),
-            // icon: await MarkerHelper.setIcon(element.category),
+            icon: markerIcon,
             onTap: () {
               print("yes" + element.tagId);
               setInfoPopup(element);
