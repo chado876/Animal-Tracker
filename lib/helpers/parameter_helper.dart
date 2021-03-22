@@ -155,10 +155,11 @@ class ParameterHelper {
           isCircle: doc.data()['isCircle'],
           isPolygon: doc.data()['isPolygon'],
           livestock: Livestock(
-              latitude: doc.data()['livestock']['latitude'],
-              longitude: doc.data()['livestock']['longitude'],
-              tagId: doc.data()['livestock']['id'],
-              uId: doc.data()['livestock']['ownerUid']),
+            latitude: doc.data()['livestock']['latitude'],
+            longitude: doc.data()['livestock']['longitude'],
+            tagId: doc.data()['livestock']['id'],
+            uId: doc.data()['livestock']['ownerUid'],
+          ),
           circle: doc.data()['Circle'] != null
               ? Circle(
                   circleId: CircleId(doc.data()['Circle']['circleId']),

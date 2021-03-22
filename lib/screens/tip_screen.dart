@@ -16,6 +16,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 
 class TipScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -78,6 +80,7 @@ class _TipScreenBuilder extends State<TipScreenState> {
                 },
                 itemCount: tips.length,
                 itemBuilder: (BuildContext context, int index) => Dismissible(
+                  direction: DismissDirection.endToStart,
                   // Each Dismissible must contain a Key. Keys allow Flutter to
                   // uniquely identify widgets.
                   key: Key(tips[index].tagId),
@@ -99,9 +102,9 @@ class _TipScreenBuilder extends State<TipScreenState> {
                   background: Container(color: Colors.red),
                   child: GestureDetector(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.info_sharp,
-                        color: Colors.blue,
+                      leading: FaIcon(
+                        FontAwesomeIcons.commentDots,
+                        color: Colors.black,
                       ),
                       title: Text(
                           '(${tips[index].tagId}) ' + tips[index].tipMessage),

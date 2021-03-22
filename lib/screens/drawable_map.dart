@@ -18,6 +18,7 @@ import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 
 import '../helpers/parameter_helper.dart';
 import '../models/parameter.dart';
+import '../helpers/marker_helper.dart';
 
 class MapPage extends StatefulWidget {
   final Livestock livestock;
@@ -99,7 +100,7 @@ class _MapPageState extends State<MapPage> {
     final String markerIdVal = 'marker_id_$_markerIdCounter';
     final BitmapDescriptor markerIcon = await _setMarkerIcon();
     _markerIdCounter++;
-    setState(() {
+    setState(() async {
       print(
           'Marker | Latitude: ${widget.livestock.latitude}  Longitude: ${widget.livestock.latitude}');
       _markers.add(
@@ -107,7 +108,7 @@ class _MapPageState extends State<MapPage> {
             markerId: MarkerId(markerIdVal),
             position:
                 LatLng(widget.livestock.latitude, widget.livestock.longitude),
-            icon: markerIcon),
+            icon: await MarkerHelper.setIcon(widget.livestock.category)),
       );
     });
   }

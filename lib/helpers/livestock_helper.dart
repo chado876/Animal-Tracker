@@ -25,14 +25,21 @@ class LivestockHelper {
 
     querySnapshot.docs.forEach((livestock) {
       Livestock item = Livestock(
-          address: livestock.data()['address'],
-          uId: livestock.data()['uId'],
-          tagId: livestock.data()['tagId'],
-          category: livestock.data()['category'],
-          age: livestock.data()['age'],
-          // imageUrls: livestock.data()['image_urls'],
-          latitude: livestock.data()['latitude'],
-          longitude: livestock.data()['longitude']);
+        address: livestock.data()['address'],
+        uId: livestock.data()['uId'],
+        tagId: livestock.data()['tagId'],
+        category: livestock.data()['category'],
+        age: livestock.data()['age'],
+        imageUrls: (livestock.data()['image_urls'] as List)
+            ?.map((item) => item as String)
+            ?.toList(),
+        latitude: livestock.data()['latitude'],
+        longitude: livestock.data()['longitude'],
+        isMissing: livestock.data()['isMissing'],
+        distinguishingFeatures: livestock.data()['distinguishingFeatures'],
+        weight: livestock.data()['weight'],
+        dateAdded: livestock.data()['dateAdded'].toDate(),
+      );
 
       allLivestock.add(item);
     });
@@ -102,6 +109,26 @@ class LivestockHelper {
     return exists;
   }
 
+  static Future<int> getNumberOfLivestock(String category) async {
+    UserObject currentUser = await AuthHelper.fetchData();
+
+    int result = 0;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('livestock')
+        .where('category', isEqualTo: category)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        result = value.docs.length;
+      }
+    });
+
+    return result;
+  }
+
   static Future<List<Livestock>> getLivestockDataByTagID(String tagID) async {
     UserObject currentUser = await AuthHelper.fetchData();
     List<Livestock> allLivestock = [];
@@ -157,6 +184,7 @@ class LivestockHelper {
           'latitude': livestock.latitude,
           'longitude': livestock.longitude,
           'address': livestock.address,
+          'dateTime': DateTime.now(),
         });
       });
 
