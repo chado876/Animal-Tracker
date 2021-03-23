@@ -9,6 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import './qr_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -27,16 +31,29 @@ class HomeCard extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeCard> {
+class _HomeScreenState extends State<HomeCard>
+    with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User user;
   String firstName;
+
+  Animation<double> _animation;
+  AnimationController _animationController;
 
   @override
   void initState() {
     // fetchData();
     FirebaseMessaging.instance.subscribeToTopic("MissingLivestock");
     FirebaseMessaging.instance.subscribeToTopic("ParameterNotification");
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 260),
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     super.initState();
   }
@@ -59,22 +76,60 @@ class _HomeScreenState extends State<HomeCard> {
     return Scaffold(
       appBar: buildAppBar(),
       body: Body(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+      //Init Floating Action Bubble
       floatingActionButton: Padding(
-        child: FloatingActionButton(
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          backgroundColor: Colors.black,
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (ctx) => AddLivestock(),
-              ),
-            );
-          },
-        ),
         padding: EdgeInsets.only(bottom: 60),
+        child: FloatingActionBubble(
+          // Menu items
+          items: <Bubble>[
+            // Floating action menu item
+            Bubble(
+              title: "Scan QR Code",
+              iconColor: Colors.white,
+              bubbleColor: Colors.black,
+              icon: FontAwesomeIcons.qrcode,
+              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              onPress: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => QrScreen(),
+                  ),
+                );
+              },
+            ),
+            //Floating action menu item
+            Bubble(
+              title: "Add Livestock",
+              iconColor: Colors.white,
+              bubbleColor: Colors.black,
+              icon: FontAwesomeIcons.plus,
+              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              onPress: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => AddLivestock(),
+                  ),
+                );
+              },
+            ),
+          ],
+
+          // animation controller
+          animation: _animation,
+
+          // On pressed change animation state
+          onPress: () => _animationController.isCompleted
+              ? _animationController.reverse()
+              : _animationController.forward(),
+
+          // Floating Action button Icon color
+          iconColor: Colors.white,
+          // Flaoting Action button Icon
+          iconData: Icons.more_horiz,
+          backGroundColor: Colors.black,
+        ),
       ),
     );
   }
