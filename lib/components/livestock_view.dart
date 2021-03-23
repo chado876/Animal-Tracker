@@ -11,6 +11,8 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import '../helpers/livestock_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 
 final CarouselController _controller = CarouselController();
 
@@ -127,6 +129,25 @@ class _LivestockViewState extends State<LivestockViewSection>
                   ? (Text(livestock.dateAdded.toString()))
                   : ("1/27/2021"),
             ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                BarcodeWidget(
+                    barcode: Barcode.qrCode(),
+                    color: Colors.black,
+                    data: livestock.tagId,
+                    width: 150,
+                    height: 150),
+                SizedBox(width: 10),
+                ElevatedButton.icon(
+                  onPressed: null,
+                  icon: Icon(FontAwesomeIcons.share),
+                  label: Text("Export"),
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
           ],
         ),
       ),
