@@ -109,6 +109,14 @@ class _QrScreenState extends State<QrState> {
                 //         ),
                 // ),
                 ListTile(
+                  leading: FaIcon(
+                    FontAwesomeIcons.passport,
+                    color: Colors.black,
+                  ),
+                  title: Text("Tag ID"),
+                  subtitle: Text(livestock.tagId),
+                ),
+                ListTile(
                   leading: FaIcon(FontAwesomeIcons.locationArrow,
                       color: Colors.black),
                   title: Text('Current Location'),
@@ -123,24 +131,37 @@ class _QrScreenState extends State<QrState> {
                 ListTile(
                   leading: FaIcon(FontAwesomeIcons.weight, color: Colors.black),
                   title: Text('Weight'),
-                  subtitle: Text(livestock.weight.toString() + " lbs"),
+                  subtitle: livestock.weight != null
+                      ? Text(livestock.weight.toString() + " lbs")
+                      : Text("n/a"),
                 ),
-                // ListTile(
-                //   leading: FaIcon(
-                //     FontAwesomeIcons.calendarAlt,
-                //     color: Colors.black,
-                //   ),
-                //   title: Text('Date Added'),
-                //   subtitle: livestock.dateAdded != null
-                //       ? (Text(livestock.dateAdded.toString()))
-                //       : ("1/27/2021"),
-                // ),
+                ListTile(
+                  leading: FaIcon(
+                    FontAwesomeIcons.calendarAlt,
+                    color: Colors.black,
+                  ),
+                  title: Text('Date Added'),
+                  subtitle: livestock.dateAdded != null
+                      ? (Text(livestock.dateAdded.toString()))
+                      : Text("1/27/2021"),
+                ),
                 RaisedButton(
+                  elevation: 5,
                   onPressed: () {
                     scanQrCode();
                   },
-                  color: Colors.green,
-                  child: Text("Scan"),
+                  color: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  child: Text(
+                    "Rescan",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
                 SizedBox(height: 50),
               ],
