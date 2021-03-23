@@ -147,7 +147,7 @@ class _LivestockViewState extends State<LivestockViewSection>
                 ),
               ],
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 50),
           ],
         ),
       ),
