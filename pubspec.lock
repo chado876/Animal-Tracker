@@ -204,6 +204,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.7"
+  dots_indicator:
+    dependency: transitive
+    description:
+      name: dots_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   emojis:
     dependency: "direct dev"
     description:
@@ -563,6 +570,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  introduction_screen:
+    dependency: "direct dev"
+    description:
+      name: introduction_screen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.9"
   io:
     dependency: transitive
     description:

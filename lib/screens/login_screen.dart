@@ -11,6 +11,7 @@ import '../models/http_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import './intro_screen.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -206,7 +207,7 @@ class _LoginScreenState extends State<LoginCard> {
         final prefs = await SharedPreferences.getInstance();
         prefs.setString('firstName', 'Chad');
 
-        Navigator.pushReplacementNamed(context, '/main');
+        Navigator.pushReplacementNamed(context, '/intro');
       } else {
         // Sign user up
         Navigator.of(context).push(

@@ -282,20 +282,15 @@ class _MissingScreenState extends State<MissingSection> {
                               ),
                             ),
                           ),
-                          if (index == 2) Container(height: 180),
+                          if (index == livestock.length - 1)
+                            Container(height: 180),
                         ],
                       ),
                     ),
                   ),
                 );
               } else {
-                return Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "No ",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                );
+                return Container();
               }
             });
       },

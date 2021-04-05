@@ -38,11 +38,11 @@ class _MapPageState extends State<MapPage> {
   int _circleIdCounter = 1;
 
   // Type controllers
-  bool _isCircle = false;
+  bool _isCircle = true;
 
   // Set circles as points to the map
   void _setCircle() {
-    final String circleIdVal = 'circle_id_$_circleIdCounter';
+    final String circleIdVal = widget.livestock.tagId.toString();
     _circleIdCounter++;
     _circles = {};
     _circles.add(Circle(
@@ -90,15 +90,16 @@ class _MapPageState extends State<MapPage> {
               IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () {
-                  print(_isCircle);
                   ParameterHelper.postParameter(
-                      context,
-                      Parameter(
-                          isCircle: _isCircle,
-                          isPolygon: false,
-                          livestock: widget.livestock,
-                          circle: _circles.isNotEmpty ? _circles.first : null,
-                          polygon: null));
+                          context,
+                          Parameter(
+                              isCircle: _isCircle,
+                              isPolygon: false,
+                              livestock: widget.livestock,
+                              circle:
+                                  _circles.isNotEmpty ? _circles.first : null,
+                              polygon: null))
+                      .then((value) => Navigator.of(context).pop());
                 },
               ),
           ],
