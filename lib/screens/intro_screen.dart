@@ -36,29 +36,40 @@ class _IntroScreenState extends State<IntroScreen> {
       key: introKey,
       pages: [
         PageViewModel(
-          title: "Fractional shares",
+          title: "Manage your livestock",
           body:
-              "Instead of having to buy an entire share, invest any amount you want.",
+              "Add livestock to your inventory and set their digital bounds to keep them safe!",
           image: _buildImage('cowhead.png'),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Learn as you go",
+          title: "Track your livestock",
           body:
-              "Download the Stockpile app and master the market with our mini-lesson.",
+              "View your livestock's live location and receIve live notifications when they leave their bounds.",
           image: _buildImage('cowhead.png'),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Kids and teens",
+          title: "Get live updates",
           body:
-              "Kids and teens can track their stocks 24/7 and place trades that you approve.",
+              "Not only do you get live push notifications when trouble is near for your livestock, there is also " +
+                  "the option to receive them from other rearers near you!",
           image: _buildImage('cowhead.png'),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Another title page",
-          body: "Another beautiful body text for this example onboarding",
+          title: "Livestock details one scan away",
+          body:
+              "Using Quick Response (QR) Code technology, tag your livestock and scan them to " +
+                  "see their details within seconds!",
+          image: _buildImage('cowhead.png'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "Be your brother's keeper!",
+          body:
+              "View missing livestock around the country and send anonymous tips if you have information. Remember," +
+                  "we're all  in this fight against praedial larceny together!",
           image: _buildImage('cowhead.png'),
           footer: RaisedButton(
             onPressed: () {
@@ -73,19 +84,6 @@ class _IntroScreenState extends State<IntroScreen> {
               borderRadius: BorderRadius.circular(8.0),
             ),
           ),
-          decoration: pageDecoration,
-        ),
-        PageViewModel(
-          title: "Title of last page",
-          bodyWidget: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text("Click on ", style: bodyStyle),
-              Icon(Icons.edit),
-              Text(" to edit a post", style: bodyStyle),
-            ],
-          ),
-          image: _buildImage('cowhead.png'),
           decoration: pageDecoration,
         ),
       ],
