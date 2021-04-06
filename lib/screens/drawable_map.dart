@@ -19,6 +19,7 @@ import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 import '../helpers/parameter_helper.dart';
 import '../models/parameter.dart';
 import '../helpers/marker_helper.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapPage extends StatefulWidget {
   final Livestock livestock;
@@ -123,31 +124,47 @@ class _MapPageState extends State<MapPage> {
               child: Row(
                 children: <Widget>[
                   RaisedButton(
-                    color: Colors.black,
+                    color: Colors.green,
                     onPressed: () {
                       setState(() {
                         radius = radius + 10;
                         _setCircle();
                       });
                     },
-                    child: Text(
-                      'Larger',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Larger',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
                   ),
                   RaisedButton(
-                    color: Colors.black,
+                    color: Colors.red,
                     onPressed: () {
                       setState(() {
                         radius = radius - 10;
                         _setCircle();
                       });
                     },
-                    child: Text(
-                      'Smaller',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Smaller',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.remove,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
                   ),
                 ],

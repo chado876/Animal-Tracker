@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:lottie/lottie.dart';
 
 class IntroScreen extends StatefulWidget {
   @override
@@ -39,14 +40,14 @@ class _IntroScreenState extends State<IntroScreen> {
           title: "Manage your livestock",
           body:
               "Add livestock to your inventory and set their digital bounds to keep them safe!",
-          image: _buildImage('cowhead.png'),
+          image: Lottie.asset('assets/animations/cow.json'),
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Track your livestock",
           body:
               "View your livestock's live location and receIve live notifications when they leave their bounds.",
-          image: _buildImage('cowhead.png'),
+          image: Lottie.asset('assets/animations/location.json'),
           decoration: pageDecoration,
         ),
         PageViewModel(
@@ -54,7 +55,8 @@ class _IntroScreenState extends State<IntroScreen> {
           body:
               "Not only do you get live push notifications when trouble is near for your livestock, there is also " +
                   "the option to receive them from other rearers near you!",
-          image: _buildImage('cowhead.png'),
+          image: Lottie.asset('assets/animations/notification.json',
+              width: 50, height: 50),
           decoration: pageDecoration,
         ),
         PageViewModel(
@@ -62,7 +64,8 @@ class _IntroScreenState extends State<IntroScreen> {
           body:
               "Using Quick Response (QR) Code technology, tag your livestock and scan them to " +
                   "see their details within seconds!",
-          image: _buildImage('cowhead.png'),
+          image: Lottie.asset('assets/animations/qr-code-scan.json',
+              width: 50, height: 50),
           decoration: pageDecoration,
         ),
         PageViewModel(
@@ -70,20 +73,20 @@ class _IntroScreenState extends State<IntroScreen> {
           body:
               "View missing livestock around the country and send anonymous tips if you have information. Remember," +
                   "we're all  in this fight against praedial larceny together!",
-          image: _buildImage('cowhead.png'),
-          footer: RaisedButton(
-            onPressed: () {
-              introKey.currentState?.animateScroll(0);
-            },
-            child: const Text(
-              'FooButton',
-              style: TextStyle(color: Colors.white),
-            ),
-            color: Colors.lightBlue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
+          image: Lottie.asset('assets/animations/friends.json'),
+          // footer: RaisedButton(
+          //   onPressed: () {
+          //     introKey.currentState?.animateScroll(0);
+          //   },
+          //   child: const Text(
+          //     'FooButton',
+          //     style: TextStyle(color: Colors.white),
+          //   ),
+          //   color: Colors.lightBlue,
+          //   shape: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.circular(8.0),
+          //   ),
+          // ),
           decoration: pageDecoration,
         ),
       ],

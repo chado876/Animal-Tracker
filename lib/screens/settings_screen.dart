@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/auth_helper.dart';
+import '../screens/intro_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -194,8 +195,7 @@ class _SettingsScreenState extends State<Settings> {
                       color: Colors.black,
                     ),
                     onTap: () {
-                      // FirebaseAuth.instance.signOut();
-                      // Navigator.pushNamed(context, '/login');
+                      Navigator.pushReplacementNamed(context, '/intro');
                     },
                   ),
                   ListTile(
