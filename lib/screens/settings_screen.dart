@@ -12,6 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/auth_helper.dart';
 import '../screens/intro_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -71,21 +72,61 @@ class _SettingsScreenState extends State<Settings> {
       builder: (ctx, futureSnapshot) {
         if (futureSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                brightness: Brightness.light,
-                // iconTheme: IconThemeData(color: Colors.white),
-                backgroundColor: Colors.black,
-                title: Text(
-                  'Settings',
-                  style: kLabelStyle2.copyWith(color: Colors.white),
-                ),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              brightness: Brightness.light,
+              // iconTheme: IconThemeData(color: Colors.white),
+              backgroundColor: Colors.black,
+              title: Text(
+                'Settings',
+                style: kLabelStyle2.copyWith(color: Colors.white),
               ),
-              body: Center(
-                child: CircularProgressIndicator(),
-              ));
+            ),
+            body: Shimmer.fromColors(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(height: 30.0),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            width: 85,
+                            height: 85,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: Colors.grey),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.0),
+                      _buildListItems()
+                    ],
+                  ),
+                ),
+                baseColor: Colors.grey,
+                highlightColor: Colors.teal),
+          );
         }
-
         if (futureSnapshot.hasData) {
           final userData = futureSnapshot.data;
           print("PHOTO LINK:" + userData.photoLink);
@@ -114,9 +155,7 @@ class _SettingsScreenState extends State<Settings> {
                           color: Colors.grey,
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                            image: photoLink != null
-                                ? NetworkImage(userData.photoLink)
-                                : AssetImage("assets/images/profile.png"),
+                            image: NetworkImage(userData.photoLink),
                             fit: BoxFit.cover,
                           ),
                           // border: Border.all(color: Colors.lightBlueAccent),
@@ -154,65 +193,7 @@ class _SettingsScreenState extends State<Settings> {
                     ],
                   ),
                   SizedBox(height: 20.0),
-                  ListTile(
-                    title: Text("Notification Settings",
-                        style: GoogleFonts.sarala().copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        )),
-                    trailing: Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    onTap: () {
-                      // FirebaseAuth.instance.signOut();
-                      // Navigator.pushNamed(context, '/login');
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Reset Password",
-                        style: GoogleFonts.sarala().copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        )),
-                    trailing: Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    onTap: () {
-                      // FirebaseAuth.instance.signOut();
-                      // Navigator.pushNamed(context, '/login');
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Help",
-                        style: GoogleFonts.sarala().copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        )),
-                    trailing: Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, '/intro');
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Log Out",
-                        style: GoogleFonts.sarala().copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        )),
-                    trailing: Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    onTap: () {
-                      FirebaseAuth.instance.signOut();
-                      Navigator.pushNamed(context, '/login');
-                    },
-                  ),
+                  _buildListItems()
                 ],
               ),
             ),
@@ -221,6 +202,72 @@ class _SettingsScreenState extends State<Settings> {
           return Container();
         }
       },
+    );
+  }
+
+  Widget _buildListItems() {
+    return Column(
+      children: [
+        ListTile(
+          title: Text("Notification Settings",
+              style: GoogleFonts.sarala().copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              )),
+          trailing: Icon(
+            Icons.logout,
+            color: Colors.black,
+          ),
+          onTap: () {
+            // FirebaseAuth.instance.signOut();
+            // Navigator.pushNamed(context, '/login');
+          },
+        ),
+        ListTile(
+          title: Text("Reset Password",
+              style: GoogleFonts.sarala().copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              )),
+          trailing: Icon(
+            Icons.logout,
+            color: Colors.black,
+          ),
+          onTap: () {
+            // FirebaseAuth.instance.signOut();
+            // Navigator.pushNamed(context, '/login');
+          },
+        ),
+        ListTile(
+          title: Text("Help",
+              style: GoogleFonts.sarala().copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              )),
+          trailing: Icon(
+            Icons.logout,
+            color: Colors.black,
+          ),
+          onTap: () {
+            Navigator.pushReplacementNamed(context, '/intro');
+          },
+        ),
+        ListTile(
+          title: Text("Log Out",
+              style: GoogleFonts.sarala().copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              )),
+          trailing: Icon(
+            Icons.logout,
+            color: Colors.black,
+          ),
+          onTap: () {
+            FirebaseAuth.instance.signOut();
+            Navigator.pushNamed(context, '/login');
+          },
+        ),
+      ],
     );
   }
 }

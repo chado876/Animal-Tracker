@@ -81,7 +81,7 @@ dev_dependencies:
   barcode_widget: ^1.5.0
   introduction_screen: ^1.0.9
   lottie: ^0.7.0+1
-
+  shimmer: ^1.1.2
 
 
 
