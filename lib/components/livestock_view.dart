@@ -127,7 +127,7 @@ class _LivestockViewState extends State<LivestockViewSection>
               title: Text('Date Added'),
               subtitle: livestock.dateAdded != null
                   ? (Text(livestock.dateAdded.toString()))
-                  : ("1/27/2021"),
+                  : Text("1/27/2021"),
             ),
             SizedBox(height: 20),
             Row(

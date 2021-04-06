@@ -147,6 +147,7 @@ class LivestockHelper {
           age: livestock.data()['age'],
           tagId: livestock.data()['tagId'],
           category: livestock.data()['category'],
+          isMissing: livestock.data()['isMissing'],
           descripton: livestock.data()['description'],
           imageUrls: (livestock.data()['image_urls'] as List)
               ?.map((item) => item as String)

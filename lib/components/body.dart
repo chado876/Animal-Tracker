@@ -147,8 +147,8 @@ class _BodyState extends State<BodySection> {
         _buildHeader(size, firstName),
         if (_isSearching && _searchQueryController.text.length != 0)
           Container(
-            height: 350,
-            child: _searchResultView(_searchResult),
+            height: 400,
+            child: _searchResultView(_searchResult, context),
           ),
         if (!_isSearching)
           Padding(
@@ -166,14 +166,15 @@ class _BodyState extends State<BodySection> {
           // if (LivestockHelper.checkIfCategoryExists(category) == false)
           Column(
             children: [
-              Text(category,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  )),
+              Text(
+                category,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               Container(
-                height: 300,
-                width: 500,
+                height: 350,
                 child: _fetchLivestockByCategory(uid, category),
               ),
             ],
@@ -310,44 +311,63 @@ class _BodyState extends State<BodySection> {
   }
 }
 
-Widget _searchResultView(List<Livestock> livestock) {
+Widget _searchResultView(List<Livestock> livestock, BuildContext context) {
   if (livestock.length > 0) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: livestock.length,
-      itemBuilder: (BuildContext context, int index) => Card(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                  child: Image.network(
-                    livestock[index].imageUrls[0],
-                  ),
-                  width: 300,
-                  height: 350),
-              Text(livestock[index].tagId),
-              Row(
-                children: [
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text("Whee"),
-                  ),
-                ],
-              )
-            ],
+    return _buildCardView(livestock[0], context, true);
+  } else {
+    return Container();
+  }
+}
+
+Widget _buildCardView(
+    Livestock livestock, BuildContext context, bool singleView) {
+  return Card(
+    // elevation: 2,
+    margin: singleView ? EdgeInsets.all(30) : EdgeInsets.all(0),
+    // clipBehavior: Clip.antiAlias,
+    child: Column(
+      children: [
+        Flexible(
+          child: SizedBox(
+            width: 350,
+            child: ListTile(
+              leading: Icon(Icons.info),
+              title: Text(livestock.tagId),
+              subtitle: Text(
+                livestock.isMissing ? "Missing" : "Safe",
+                style: TextStyle(
+                    color: livestock.isMissing ? Colors.red : Colors.green),
+              ),
+            ),
           ),
         ),
-      ),
-    );
-  } else {
-    return Container(
-      alignment: Alignment.center,
-      child: Text(
-        "No Results",
-        style: TextStyle(color: Colors.red),
-      ),
-    );
-  }
+        Image.network(
+          livestock.imageUrls[0],
+          height: 250,
+          width: 250,
+        ),
+        ButtonBar(
+          alignment: MainAxisAlignment.center,
+          children: [
+            FlatButton(
+              color: Colors.blue,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LivestockView(
+                      livestock: livestock,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('More'),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
 }
 
 Widget _fetchLivestockByCategory(String uid, String category) {
@@ -377,67 +397,27 @@ Widget _fetchLivestockByCategory(String uid, String category) {
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: livestock.length,
-                itemBuilder: (BuildContext context, int index) =>
-                    GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: _buildCardView(
+                      Livestock(
+                        tagId: livestock[index]['tagId'],
+                        address: livestock[index]['address'],
+                        uId: livestock[index]['uId'],
+                        latitude: livestock[index]['latitude'],
+                        longitude: livestock[index]['longitude'],
+                        distinguishingFeatures: livestock[index]
+                            ['distinguishingFeatures'],
+                        weight: livestock[index]['weight'],
+                        imageUrls: (livestock[index]['image_urls'] as List)
+                            ?.map((item) => item as String)
+                            ?.toList(),
+                        category: livestock[index]['category'],
+                        age: livestock[index]['age'],
+                        isMissing: livestock[index]['isMissing'],
+                        dateAdded: livestock[index]['dateAdded'].toDate(),
+                      ),
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => LivestockView(
-                                livestock: Livestock(
-                                  tagId: livestock[index]['tagId'],
-                                  address: livestock[index]['address'],
-                                  uId: livestock[index]['uId'],
-                                  latitude: livestock[index]['latitude'],
-                                  longitude: livestock[index]['longitude'],
-                                  distinguishingFeatures: livestock[index]
-                                      ['distinguishingFeatures'],
-                                  weight: livestock[index]['weight'],
-                                  imageUrls:
-                                      (livestock[index]['image_urls'] as List)
-                                          ?.map((item) => item as String)
-                                          ?.toList(),
-                                  category: livestock[index]['category'],
-                                  age: livestock[index]['age'],
-                                  isMissing: livestock[index]['isMissing'],
-                                  dateAdded:
-                                      livestock[index]['dateAdded'].toDate(),
-                                ),
-                              )),
-                    );
-                  },
-                  child: Card(
-                      child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0)),
-                            color: livestock[index]['isMissing']
-                                ? Colors.red
-                                : Colors.green,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                            child: Text(
-                              livestock[index]['isMissing']
-                                  ? "Missing"
-                                  : "Safe",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Image.network(livestock[index]['image_urls'][0],
-                            width: 250, height: 250),
-                        Text(livestock[index]['tagId']),
-                      ],
-                    ),
-                  )),
+                      false),
                 ),
               );
             } else {
