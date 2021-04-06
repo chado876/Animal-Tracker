@@ -19,6 +19,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import './screens/intro_screen.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -82,7 +84,8 @@ class MyApp extends StatelessWidget {
             '/home': (context) => HomeScreen(),
             '/settings': (context) => SettingsScreen(),
             '/profile': (context) => ProfileScreen(),
-            '/manage': (context) => AnalyticsScreen()
+            '/manage': (context) => AnalyticsScreen(),
+            '/intro': (context) => IntroScreen()
 
             // When navigating to the "/second" route, build the SecondScreen widget.
             // '/second': (context) => SecondScreen(),

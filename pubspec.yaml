@@ -79,6 +79,10 @@ dev_dependencies:
   flutter_native_splash: ^0.3.0
   flutter_barcode_scanner: ^1.0.2
   barcode_widget: ^1.5.0
+  introduction_screen: ^1.0.9
+  lottie: ^0.7.0+1
+
+
 
 
 
@@ -116,6 +120,7 @@ flutter:
    - assets/icons/
    - assets/images/  
    - assets/svg/
+   - assets/animations/
 
   
 

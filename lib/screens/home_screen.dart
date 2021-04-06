@@ -74,7 +74,9 @@ class _HomeScreenState extends State<HomeCard>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+      ),
       body: Body(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
@@ -134,9 +136,9 @@ class _HomeScreenState extends State<HomeCard>
     );
   }
 
-  AppBar buildAppBar() {
-    return AppBar(
-      elevation: 0,
-    );
-  }
+  // AppBar buildAppBar() {
+  //   return AppBar(
+  //     elevation: 0,
+  //   );
+  // }
 }

@@ -2,7 +2,7 @@
 <!-- Modify this file to customize your launch splash screen -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <color android:color="@color/screen" />
+        <color android:color="@color/white" />
     </item>
     <!-- You can insert your own image assets here -->
     <item>

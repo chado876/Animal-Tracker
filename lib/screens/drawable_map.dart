@@ -19,6 +19,7 @@ import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 import '../helpers/parameter_helper.dart';
 import '../models/parameter.dart';
 import '../helpers/marker_helper.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapPage extends StatefulWidget {
   final Livestock livestock;
@@ -38,11 +39,11 @@ class _MapPageState extends State<MapPage> {
   int _circleIdCounter = 1;
 
   // Type controllers
-  bool _isCircle = false;
+  bool _isCircle = true;
 
   // Set circles as points to the map
   void _setCircle() {
-    final String circleIdVal = 'circle_id_$_circleIdCounter';
+    final String circleIdVal = widget.livestock.tagId.toString();
     _circleIdCounter++;
     _circles = {};
     _circles.add(Circle(
@@ -90,15 +91,16 @@ class _MapPageState extends State<MapPage> {
               IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () {
-                  print(_isCircle);
                   ParameterHelper.postParameter(
-                      context,
-                      Parameter(
-                          isCircle: _isCircle,
-                          isPolygon: false,
-                          livestock: widget.livestock,
-                          circle: _circles.isNotEmpty ? _circles.first : null,
-                          polygon: null));
+                          context,
+                          Parameter(
+                              isCircle: _isCircle,
+                              isPolygon: false,
+                              livestock: widget.livestock,
+                              circle:
+                                  _circles.isNotEmpty ? _circles.first : null,
+                              polygon: null))
+                      .then((value) => Navigator.of(context).pop());
                 },
               ),
           ],
@@ -122,31 +124,47 @@ class _MapPageState extends State<MapPage> {
               child: Row(
                 children: <Widget>[
                   RaisedButton(
-                    color: Colors.black,
+                    color: Colors.green,
                     onPressed: () {
                       setState(() {
                         radius = radius + 10;
                         _setCircle();
                       });
                     },
-                    child: Text(
-                      'Larger',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Larger',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
                   ),
                   RaisedButton(
-                    color: Colors.black,
+                    color: Colors.red,
                     onPressed: () {
                       setState(() {
                         radius = radius - 10;
                         _setCircle();
                       });
                     },
-                    child: Text(
-                      'Smaller',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Smaller',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.remove,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
                   ),
                 ],

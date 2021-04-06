@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:animal_tracker/helpers/parameter_helper.dart';
 import 'package:animal_tracker/models/parameter.dart';
+import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -132,7 +133,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Map"),
+        title: Text("Map", style: kLabelStyle2.copyWith(color: Colors.white)),
       ),
       body: Stack(
         children: [
@@ -144,12 +145,12 @@ class _MapPageState extends State<MapPage> {
                 GoogleMap(
                   initialCameraPosition: CameraPosition(
                       target: _initialcameraposition, zoom: 15.0),
-                  mapType: MapType.hybrid,
+                  mapType: MapType.normal,
                   // onMapCreated: _onMapCreated,
                   myLocationEnabled: true,
                   markers: Set.from(_markers),
                   circles: _circles,
-                  polygons: _polygons,
+                  // polygons: _polygons,
                 ),
               ],
             ),
