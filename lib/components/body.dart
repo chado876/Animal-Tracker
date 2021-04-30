@@ -54,6 +54,7 @@ class _BodyState extends State<BodySection> {
   ];
 
   String value = "Cattle";
+  var firstname;
 
   Future<List<Livestock>> getLivestockByCategory(category) async {
     List<Livestock> res =
@@ -105,9 +106,11 @@ class _BodyState extends State<BodySection> {
     return result;
   }
 
-  Future<UserObject> fetchUserData() async {
-    UserObject currentUser = await AuthHelper.fetchData();
-    return currentUser;
+  Future<void> fetchUserData() async {
+    UserObject user = await AuthHelper.fetchData();
+    setState(() {
+      firstname = user.firstName;
+    });
   }
 
   Widget _searchResultView(List<Livestock> livestock, BuildContext context) {
@@ -125,7 +128,7 @@ class _BodyState extends State<BodySection> {
         .size; // provides total height and width of screen
     return Column(
       children: [
-        _buildHeader(size, "Chad"),
+        _buildHeader(size, firstname),
         SmartSelect<String>.single(
             title: 'Livestock Category',
             value: value,
