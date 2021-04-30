@@ -135,7 +135,6 @@ class _BodyState extends State<BodySection> {
           Expanded(
             child: _searchResultView(_searchResult, context),
           ),
-        SizedBox(height: 50),
         if (!_isSearching)
           Expanded(
             child: _fetchLivestock(),
@@ -322,9 +321,9 @@ class _BodyState extends State<BodySection> {
                                   //     ['description'],
                                 ),
                                 context));
+                  } else {
+                    return Container();
                   }
-                } else {
-                  return Container();
                 }
               });
         }
