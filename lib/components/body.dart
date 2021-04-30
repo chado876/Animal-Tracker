@@ -138,7 +138,7 @@ class _BodyState extends State<BodySection> {
         SizedBox(height: 50),
         if (!_isSearching)
           Expanded(
-            child: _fetchMissingLivestock(),
+            child: _fetchLivestock(),
           ),
       ],
     );
@@ -238,15 +238,25 @@ class _BodyState extends State<BodySection> {
     );
   }
 
-  Widget _fetchMissingLivestock() {
-    TextEditingController tipController = new TextEditingController();
-
+  Widget _fetchLivestock() {
     return FutureBuilder(
       future: AuthHelper.getCurrentUser(),
       builder: (ctx, futureSnapshot) {
         if (futureSnapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
+          );
+        } else if (futureSnapshot.hasError) {
+          ScaffoldMessenger.of(ctx).showSnackBar(
+            SnackBar(
+              content: Text("An error occurred! Please try again later."),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return Center(
+            child: Container(
+              child: Text("An error occurred!"),
+            ),
           );
         } else if (futureSnapshot.hasData) {
           return StreamBuilder(
@@ -261,37 +271,58 @@ class _BodyState extends State<BodySection> {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
-                }
-                final livestock = snapshot.data.docs;
-
-                if (livestock.length > 0) {
-                  return ListView.builder(
-                      // scrollDirection: Axis.horizontal,
-                      itemCount: livestock.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          _buildCardView(
-                              Livestock(
-                                tagId: livestock[index]['tagId'],
-                                address: livestock[index]['address'],
-                                uId: livestock[index]['uId'],
-                                latitude: livestock[index]['latitude'],
-                                longitude: livestock[index]['longitude'],
-                                distinguishingFeatures: livestock[index]
-                                    ['distinguishingFeatures'],
-                                weight: livestock[index]['weight'],
-                                imageUrls:
-                                    (livestock[index]['image_urls'] as List)
-                                        ?.map((item) => item as String)
-                                        ?.toList(),
-                                category: livestock[index]['category'],
-                                age: livestock[index]['age'],
-                                isMissing: livestock[index]['isMissing'],
-                                dateAdded:
-                                    livestock[index]['dateAdded'].toDate(),
-                                // descripton: livestock[index]
-                                //     ['description'],
-                              ),
-                              context));
+                } else if (snapshot.hasError) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(
+                        content:
+                            Text("An error occurred! Please try again later."),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  });
+                  return Center(
+                    child: Container(
+                      child: Text(
+                        "An error occurred!",
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  );
+                } else if (snapshot.hasData) {
+                  final livestock = snapshot.data.docs;
+                  if (livestock.length > 0) {
+                    return ListView.builder(
+                        // scrollDirection: Axis.horizontal,
+                        itemCount: livestock.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            _buildCardView(
+                                Livestock(
+                                  tagId: livestock[index]['tagId'],
+                                  address: livestock[index]['address'],
+                                  uId: livestock[index]['uId'],
+                                  latitude: livestock[index]['latitude'],
+                                  longitude: livestock[index]['longitude'],
+                                  distinguishingFeatures: livestock[index]
+                                      ['distinguishingFeatures'],
+                                  weight: livestock[index]['weight'],
+                                  imageUrls:
+                                      (livestock[index]['image_urls'] as List)
+                                          ?.map((item) => item as String)
+                                          ?.toList(),
+                                  category: livestock[index]['category'],
+                                  age: livestock[index]['age'],
+                                  isMissing: livestock[index]['isMissing'],
+                                  dateAdded:
+                                      livestock[index]['dateAdded'].toDate(),
+                                  descripton: null,
+                                  // descripton: livestock[index]
+                                  //     ['description'],
+                                ),
+                                context));
+                  }
                 } else {
                   return Container();
                 }

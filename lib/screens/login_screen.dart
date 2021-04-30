@@ -71,6 +71,8 @@ class LoginCard extends StatefulWidget {
 class _LoginScreenState extends State<LoginCard> {
   bool _rememberMe = false;
   bool err = false;
+  bool authErr = false;
+  var authErrMsg = '';
   var errorMessage = '';
   bool _obscureText = true;
   bool _loginBtnDisabled = false;
@@ -219,9 +221,13 @@ class _LoginScreenState extends State<LoginCard> {
           ),
         );
       }
+    } on FirebaseAuthException catch (e) {
+      authErrMsg = e.message;
+      authErr = true;
     } on PlatformException catch (error) {
       err = true;
       errorMessage = error.message;
+      print(authErrMsg);
       if (error.toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use.';
       } else if (error.toString().contains('INVALID_EMAIL')) {
@@ -236,6 +242,7 @@ class _LoginScreenState extends State<LoginCard> {
       // _showErrorDialog(error.message);
     } catch (error) {
       print(error.toString());
+      print(error);
       var errorMessage = error.toString();
       // _showErrorDialog(errorMessage);
     }
@@ -244,6 +251,16 @@ class _LoginScreenState extends State<LoginCard> {
       _isLoading = false;
       _loginBtnDisabled = true;
     });
+  }
+
+  Widget _buildErrorBox() {
+    return Container(
+      padding: EdgeInsets.all(5),
+      child: Text(
+        authErrMsg,
+        style: TextStyle(color: Colors.red),
+      ),
+    );
   }
 
   Widget _buildEmailTF() {
@@ -652,7 +669,8 @@ class _LoginScreenState extends State<LoginCard> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 10),
+              if (authErr) _buildErrorBox(),
               _buildEmailTF(),
               SizedBox(
                 height: 5.0,
