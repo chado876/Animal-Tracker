@@ -1,6 +1,5 @@
 import 'package:animal_tracker/notifications/notif_main.dart';
 import 'package:animal_tracker/screens/additional_info_screen.dart';
-import 'package:animal_tracker/screens/auth_screen.dart';
 import 'package:animal_tracker/screens/main_screen.dart';
 import 'package:animal_tracker/screens/profile_screen.dart';
 import 'package:animal_tracker/screens/settings_screen.dart';
@@ -9,7 +8,6 @@ import './screens/login_screen.dart';
 import 'package:provider/provider.dart';
 
 import './providers/auth.dart';
-import './screens/auth_screen.dart';
 import './screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
