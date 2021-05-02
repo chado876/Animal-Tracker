@@ -53,20 +53,11 @@ class _AddLivestockState extends State<AddLivestockSection> {
   bool imagesLoaded = false;
   bool addImages = false;
   bool imgError = false;
+  bool hasErr = false;
 
   PlaceLocation _pickedLocation;
 
   Livestock livestock;
-
-  List<String> _categories = [
-    "Cattle",
-    "Sheep",
-    "Pig",
-    "Goat",
-    "Horse",
-    "Donkey",
-    "Other",
-  ];
 
   String value = 'Cattle';
   List<S2Choice<String>> options = [
@@ -87,98 +78,112 @@ class _AddLivestockState extends State<AddLivestockSection> {
   TextEditingController nameController = TextEditingController();
 
   Future<void> _trySubmit() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      PlaceLocation pickedLocation = _pickedLocation;
-
-      // _formKey.currentState.save(); no longer using forms
-      final _auth = FirebaseAuth.instance;
-      User user = _auth.currentUser;
-
-      int x = 0;
-
-      for (var image in images) {
-        String fileName = tagIdController.text + x.toString();
-        await postImage(
-                imageFile: image,
-                fileName: fileName,
-                tagId: tagIdController.text,
-                userId: user.uid)
-            .then((url) {
-          _imageUrls.add(url.toString());
-        });
-        x++;
-      }
-
-      final address = await LocationHelper.getPlacedAddress(
-          pickedLocation.latitude, pickedLocation.longitude);
-
-      locationData = PlaceLocation(
-          latitude: pickedLocation.latitude,
-          longitude: pickedLocation.longitude,
-          address: address);
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('livestock')
-          .doc(tagIdController.text)
-          .set({
-        'uId': user.uid,
-        'tagId': tagIdController.text,
-        'category': value,
-        'age': ageController.text,
-        'weight': double.parse(weightController.text),
-        'distinguishingFeatures': featuresController.text,
-        'image_urls': _imageUrls,
-        'latitude': locationData.latitude,
-        'longitude': locationData.longitude,
-        'address': locationData.address,
-        'description': descController.text,
-        'isMissing': false,
-        'dateAdded': generateCurrentDate(),
-      });
-      livestock = Livestock(
-        uId: user.uid,
-        tagId: tagIdController.text,
-        category: value,
-        age: ageController.text,
-        weight: double.parse(weightController.text),
-        distinguishingFeatures: featuresController.text,
-        descripton: descController.text,
-        imageUrls: _imageUrls,
-        latitude: locationData.latitude,
-        longitude: locationData.longitude,
-        address: locationData.address,
-        isMissing: false,
-      );
-
-      postSuccess = true;
-    } on PlatformException catch (err) {
-      postSuccess = false;
-      var message = 'An error occurred, pelase check your credentials!';
-
-      if (err.message != null) {
-        message = err.message;
-      }
-
+    if (_pickedLocation == null ||
+        tagIdController.text == null ||
+        imagesLoaded == false) {
+      hasErr = true;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(
+              "Oops, something is missing. Please fill out all required information!"),
           backgroundColor: Theme.of(context).errorColor,
         ),
       );
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (err) {
-      print(err);
-      setState(() {
-        _isLoading = false;
-      });
+    } else {
+      hasErr = false;
+      try {
+        setState(() {
+          _isLoading = true;
+        });
+
+        PlaceLocation pickedLocation = _pickedLocation;
+
+        // _formKey.currentState.save(); no longer using forms
+        final _auth = FirebaseAuth.instance;
+        User user = _auth.currentUser;
+
+        int x = 0;
+
+        for (var image in images) {
+          String fileName = tagIdController.text + x.toString();
+          await postImage(
+                  imageFile: image,
+                  fileName: fileName,
+                  tagId: tagIdController.text,
+                  userId: user.uid)
+              .then((url) {
+            _imageUrls.add(url.toString());
+          });
+          x++;
+        }
+
+        final address = await LocationHelper.getPlacedAddress(
+            pickedLocation.latitude, pickedLocation.longitude);
+
+        locationData = PlaceLocation(
+            latitude: pickedLocation.latitude,
+            longitude: pickedLocation.longitude,
+            address: address);
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('livestock')
+            .doc(tagIdController.text)
+            .set({
+          'uId': user.uid,
+          'tagId': tagIdController.text,
+          'category': value,
+          'age': ageController.text,
+          'weight': double.parse(weightController.text),
+          'distinguishingFeatures': featuresController.text,
+          'image_urls': _imageUrls,
+          'latitude': locationData.latitude,
+          'longitude': locationData.longitude,
+          'address': locationData.address,
+          'description': descController.text,
+          'isMissing': false,
+          'dateAdded': generateCurrentDate(),
+        });
+        livestock = Livestock(
+          uId: user.uid,
+          tagId: tagIdController.text,
+          category: value,
+          age: ageController.text,
+          weight: double.parse(weightController.text),
+          distinguishingFeatures: featuresController.text,
+          descripton: descController.text,
+          imageUrls: _imageUrls,
+          latitude: locationData.latitude,
+          longitude: locationData.longitude,
+          address: locationData.address,
+          isMissing: false,
+        );
+
+        postSuccess = true;
+      } on PlatformException catch (err) {
+        postSuccess = false;
+        var message = 'An error occurred, pelase check your credentials!';
+
+        if (err.message != null) {
+          message = err.message;
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Theme.of(context).errorColor,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      } catch (err) {
+        print(err);
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -386,9 +391,12 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   width: 300,
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                     elevation: 5.0,
                     textColor: Colors.white,
-                    color: Colors.lightGreen,
+                    color: Colors.green,
                     child: Text('Add Livestock'),
                     onPressed: () {
                       _trySubmit().then((value) {
@@ -420,18 +428,22 @@ class _AddLivestockState extends State<AddLivestockSection> {
                   )),
               SizedBox(height: 10),
               Container(
-                  height: 50,
-                  width: 300,
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: RaisedButton(
-                    elevation: 5.0,
-                    textColor: Colors.white,
-                    color: Colors.redAccent,
-                    child: Text('Cancel'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  )),
+                height: 50,
+                width: 300,
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  elevation: 5.0,
+                  textColor: Colors.white,
+                  color: Colors.red,
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
               SizedBox(
                 height: 80,
               ),
