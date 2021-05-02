@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileCard>
         password: _userPassword,
       );
 
-      Navigator.pushNamed(context, '/main');
+      Navigator.pushNamed(context, '/intro');
     } on PlatformException catch (err) {
       var message = 'An error occurred, pelase check your credentials!';
 
@@ -462,39 +462,6 @@ class _ProfileScreenState extends State<ProfileCard>
       // ),
     );
   }
-
-  // uploadImage() async {
-  //   await Firebase.initializeApp();
-  //   final _storage = FirebaseStorage.instance;
-  //   final _picker = ImagePicker();
-  //   PickedFile image;
-
-  //   //Check Permissions
-  //   await Permission.photos.request();
-
-  //   var permissionStatus = await Permission.photos.status;
-
-  //   if (permissionStatus.isGranted) {
-  //     //Select Image
-  //     image = await _picker.getImage(source: ImageSource.gallery);
-  //     var file = File(image.path);
-
-  //     if (image != null) {
-  //       //Upload to Firebase
-  //       var snapshot =
-  //           await _storage.ref().child('folderName/imageName').putFile(file);
-  //       var downloadUrl = await snapshot.ref.getDownloadURL();
-
-  //       setState(() {
-  //         imageUrl = downloadUrl;
-  //       });
-  //     } else {
-  //       print('No Path Received');
-  //     }
-  //   } else {
-  //     print('Grant Permissions and try again');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {

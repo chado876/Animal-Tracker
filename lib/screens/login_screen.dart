@@ -205,11 +205,7 @@ class _LoginScreenState extends State<LoginCard> {
           email: _authData['email'],
           password: _authData['password'],
         );
-
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setString('firstName', 'Chad');
-
-        Navigator.pushReplacementNamed(context, '/intro');
+        Navigator.pushReplacementNamed(context, '/main');
       } else {
         // Sign user up
         Navigator.of(context).push(
