@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animal_tracker/models/livestock.dart';
+import 'package:animal_tracker/screens/rfid_options_screen.dart';
 import 'package:animal_tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -416,16 +417,16 @@ class _AddLivestockState extends State<AddLivestockSection> {
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }).then((value) => postSuccess
-                          ? Navigator.push(
+                          ? Navigator.pushReplacement(
                               context,
                               new MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    MapPage(livestock: livestock),
+                                    RfidOptionsScreen(livestock: livestock),
                               ),
                             )
                           : null);
                     },
-                  )),
+                  ),),
               SizedBox(height: 10),
               Container(
                 height: 50,

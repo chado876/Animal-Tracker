@@ -18,6 +18,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import './screens/intro_screen.dart';
+import './screens/rfid_options_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,7 +84,8 @@ class MyApp extends StatelessWidget {
             '/settings': (context) => SettingsScreen(),
             '/profile': (context) => ProfileScreen(),
             '/manage': (context) => AnalyticsScreen(),
-            '/intro': (context) => IntroScreen()
+            '/intro': (context) => IntroScreen(),
+            '/rfid': (context) => RfidOptionsScreen()
 
             // When navigating to the "/second" route, build the SecondScreen widget.
             // '/second': (context) => SecondScreen(),

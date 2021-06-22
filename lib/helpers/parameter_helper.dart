@@ -159,6 +159,7 @@ class ParameterHelper {
             longitude: doc.data()['livestock']['longitude'],
             tagId: doc.data()['livestock']['id'],
             uId: doc.data()['livestock']['ownerUid'],
+            isMissing: doc.data()['livestock']['isMissing']
           ),
           circle: doc.data()['Circle'] != null
               ? Circle(
