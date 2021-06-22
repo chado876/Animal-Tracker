@@ -215,7 +215,7 @@ class _SettingsScreenState extends State<Settings> {
                 fontSize: 20,
               )),
           trailing: Icon(
-            Icons.logout,
+            Icons.notification_important,
             color: Colors.black,
           ),
           onTap: () {
@@ -230,7 +230,7 @@ class _SettingsScreenState extends State<Settings> {
                 fontSize: 20,
               )),
           trailing: Icon(
-            Icons.logout,
+            Icons.settings,
             color: Colors.black,
           ),
           onTap: () {
@@ -245,7 +245,7 @@ class _SettingsScreenState extends State<Settings> {
                 fontSize: 20,
               )),
           trailing: Icon(
-            Icons.logout,
+            Icons.help,
             color: Colors.black,
           ),
           onTap: () {
@@ -264,7 +264,7 @@ class _SettingsScreenState extends State<Settings> {
           ),
           onTap: () {
             FirebaseAuth.instance.signOut();
-            Navigator.pushNamed(context, '/login');
+            Navigator.pushReplacementNamed(context, '/login');
           },
         ),
       ],

@@ -23,7 +23,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapPage extends StatefulWidget {
   final Livestock livestock;
-  MapPage({@required this.livestock});
+  final String tagFrequency;
+  final String tagType;
+
+  MapPage(
+      {@required this.livestock,
+      @required this.tagFrequency,
+      @required this.tagType});
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -33,13 +39,23 @@ class _MapPageState extends State<MapPage> {
   Set<Circle> _circles = HashSet<Circle>();
   Set<Marker> _markers = HashSet<Marker>();
 
-  double radius = 50;
+  double radius = 0;
+  double maxRange = 0;
+  double increment = 0;
 
   //ids
   int _circleIdCounter = 1;
 
   // Type controllers
   bool _isCircle = true;
+
+  @override
+  void initState() {
+    _setParams();
+    _setMarkers();
+    _setCircle();
+    super.initState();
+  }
 
   // Set circles as points to the map
   void _setCircle() {
@@ -73,11 +89,43 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  @override
-  void initState() {
-    _setMarkers();
-    _setCircle();
-    super.initState();
+  void _setParams() {
+    switch (widget.tagType) {
+      case "Active":
+        switch (widget.tagFrequency) {
+          case "UHF":
+            maxRange = 35;
+            increment = 5;
+            break;
+          case "HF":
+            maxRange = 1.5;
+            increment = 0.3;
+            break;
+          case "LF":
+            maxRange = 1;
+            increment = 0.2;
+            break;
+        }
+        break;
+      case "Passive":
+        switch (widget.tagFrequency) {
+          case "UHF":
+            maxRange = 6;
+            increment = 1;
+            break;
+          case "HF":
+            maxRange = 1.5;
+            increment = 0.3;
+            break;
+          case "LF":
+            maxRange = 1;
+            increment = 0.2;
+            break;
+        }
+        break;
+    }
+
+    radius = maxRange;
   }
 
   @override
@@ -127,7 +175,7 @@ class _MapPageState extends State<MapPage> {
                     color: Colors.green,
                     onPressed: () {
                       setState(() {
-                        radius = radius + 10;
+                        if (radius + increment <= maxRange) radius = radius + increment;
                         _setCircle();
                       });
                     },
@@ -149,7 +197,7 @@ class _MapPageState extends State<MapPage> {
                     color: Colors.red,
                     onPressed: () {
                       setState(() {
-                        radius = radius - 10;
+                        radius = radius - increment;
                         _setCircle();
                       });
                     },

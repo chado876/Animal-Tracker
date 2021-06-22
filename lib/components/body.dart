@@ -436,7 +436,8 @@ Widget _buildCardView(Livestock livestock, BuildContext context) {
               );
             },
             child: Container(
-              width: 70,
+              width: 50,
+              alignment: Alignment.center,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
