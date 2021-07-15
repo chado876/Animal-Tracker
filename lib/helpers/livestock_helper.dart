@@ -14,7 +14,6 @@ class LivestockHelper {
 
   static Future<List<Livestock>> getLivestockData() async {
     UserObject currentUser = await AuthHelper.fetchData();
-    print(currentUser.uid);
     List<Livestock> allLivestock = [];
 
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -45,6 +44,7 @@ class LivestockHelper {
     });
     return allLivestock;
   }
+
 
   static Future<List<Livestock>> getLivestockDataByCategory(
       String category) async {

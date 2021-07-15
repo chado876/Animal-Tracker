@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginCard> {
           _authData['password'],
         );
       }
-      Navigator.pushNamed(context, '/main');
+      Navigator.pushNamed(context, '/intro');
     } on PlatformException catch (error) {
       err = true;
       print(error.toString());
@@ -644,6 +644,12 @@ class _LoginScreenState extends State<LoginCard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Text('GrazeTrace',style: TextStyle(
+            color: Colors.black,
+            fontFamily: 'OpenSans',
+            fontSize: 24.0,
+            fontWeight: FontWeight.bold,
+          ),),
               Image.asset('assets/logos/templogo.png', height: 180, width: 180),
               if (_authMode == AuthMode.Login)
                 Text(

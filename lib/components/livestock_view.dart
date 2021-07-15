@@ -14,6 +14,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:intl/intl.dart';
+
 
 final CarouselController _controller = CarouselController();
 
@@ -127,7 +129,7 @@ class _LivestockViewState extends State<LivestockViewSection>
               ),
               title: Text('Date Added'),
               subtitle: livestock.dateAdded != null
-                  ? (Text(livestock.dateAdded.toString()))
+                  ? (Text(DateFormat.yMMMd().add_jm().format(livestock.dateAdded).toString()))
                   : Text("1/27/2021"),
             ),
             SizedBox(height: 20),

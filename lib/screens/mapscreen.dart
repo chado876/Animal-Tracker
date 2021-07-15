@@ -42,6 +42,8 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
+
+
   void setParameters() async {
     parameters = await ParameterHelper.getParameters();
     print(parameters.length);

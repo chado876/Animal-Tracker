@@ -152,7 +152,7 @@ Widget TipView(Tip tip, BuildContext ctx) {
           if (tip.location != null) showMap(tip, ctx),
           ListTile(
             title: Text(tip.tipMessage),
-            subtitle: Text("Sent ${tip.dateSent}"),
+            subtitle: Text("Sent ${DateFormat.yMMMd().add_jm().format(tip.dateSent)}"),
           )
         ],
       ));
